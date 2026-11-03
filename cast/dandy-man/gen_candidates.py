@@ -25,7 +25,7 @@ PRIMARY, SOFT, TEXT, GOLD, BG, LIFT = (
 SHADE = "#3E1480"  # darker than primary for trousers/shoes; 60% of the figure stays purple
 
 
-def hat(tilt_deg, tall=True):
+def hat(tilt_deg, tall=True, lift=(0, 0)):
     # Classic top hat, sized to the head: crown 68 wide at the base, 78 tall; brim 112 wide.
     # Sits lower on the head (brim line y=206) so it covers the top of the skull.
     base = 206
@@ -33,7 +33,7 @@ def hat(tilt_deg, tall=True):
     crown = f"M166 {base} L163 {top + 5} Q163 {top} 168 {top} L232 {top} Q237 {top} 237 {top + 5} L234 {base} Z"
     brim = f"M144 {base + 1} Q145 {base - 6} 151 {base - 5} L249 {base - 5} Q255 {base - 6} 256 {base + 1} Q200 {base + 11} 144 {base + 1} Z"
     return f"""
-  <g transform="rotate({tilt_deg} 200 {base})">
+  <g transform="translate({lift[0]} {lift[1]}) rotate({tilt_deg} 200 {base})">
     <path d="{crown}" fill="{PRIMARY}"/>
     <rect x="165" y="{base - 18}" width="70" height="12" fill="{GOLD}"/>
     <path d="{brim}" fill="{PRIMARY}"/>
@@ -55,7 +55,7 @@ def head(brow="flat"):
   <rect x="191" y="270" width="18" height="32" fill="{TEXT}"/>"""
 
 
-def body(arms="cane", slim=1.0):
+def body(arms="cane", slim=1.0, legs="stand"):
     sw = int(60 * slim)  # half shoulder width
     ww = int(44 * slim)  # half waist width
     coat = (
@@ -74,18 +74,58 @@ def body(arms="cane", slim=1.0):
     buttons = "".join(
         f'<circle cx="200" cy="{y}" r="3" fill="{TEXT}"/>' for y in (350, 374, 398)
     )
-    legs = (
-        f'<rect x="{200 - ww + 6}" y="430" width="{ww - 12}" height="262" fill="{PRIMARY}"/>'
-        f'<rect x="{200 + 6}" y="430" width="{ww - 12}" height="262" fill="{PRIMARY}"/>'
-        f'<rect x="{200 - ww + 2}" y="686" width="{ww - 2}" height="14" rx="6" fill="{LIFT}"/>'
-        f'<rect x="{200 + 2}" y="686" width="{ww - 2}" height="14" rx="6" fill="{LIFT}"/>'
-    )
-    if arms == "cane":
+    if legs == "stand":
+        legs_svg = (
+            f'<rect x="{200 - ww + 6}" y="430" width="{ww - 12}" height="262" fill="{PRIMARY}"/>'
+            f'<rect x="{200 + 6}" y="430" width="{ww - 12}" height="262" fill="{PRIMARY}"/>'
+            f'<rect x="{200 - ww + 2}" y="686" width="{ww - 2}" height="14" rx="6" fill="{LIFT}"/>'
+            f'<rect x="{200 + 2}" y="686" width="{ww - 2}" height="14" rx="6" fill="{LIFT}"/>'
+        )
+    else:
+        # Walking: each leg is a thick stroke from the hip to a foot position; feet stay on y=690.
+        lw = ww - 12
+        if legs == "walk1":   # legs apart, mid-stride
+            back, front = (150, 686), (252, 686)
+            back_knee, front_knee = (168, 560), (236, 560)
+        else:                 # legs passing
+            back, front = (190, 686), (214, 686)
+            back_knee, front_knee = (192, 560), (214, 540)
+        def leg(hip_x, knee, foot):
+            return (f'<path d="M{hip_x} 440 L{knee[0]} {knee[1]} L{foot[0]} {foot[1]}" stroke="{PRIMARY}" '
+                    f'stroke-width="{lw}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>')
+        def shoe(foot):
+            return f'<rect x="{foot[0] - lw // 2 - 4}" y="686" width="{lw + 8}" height="14" rx="6" fill="{LIFT}"/>'
+        legs_svg = (leg(200 - ww // 2, back_knee, back) + leg(200 + ww // 2, front_knee, front)
+                    + shoe(back) + shoe(front))
+    legs = legs_svg
+    if arms in ("cane", "cane-swing-back", "cane-swing-fwd"):
+        tip = {"cane": 30, "cane-swing-back": 0, "cane-swing-fwd": 58}[arms]
         arms_svg = f"""
   <path d="M{200 - sw} 310 L{200 - sw - 16} 430" stroke="{PRIMARY}" stroke-width="24" stroke-linecap="round" fill="none"/>
   <circle cx="{200 - sw - 18}" cy="444" r="12" fill="{TEXT}"/>
   <path d="M{200 + sw} 310 L{200 + sw + 18} 420" stroke="{PRIMARY}" stroke-width="24" stroke-linecap="round" fill="none"/>
   <circle cx="{200 + sw + 22}" cy="434" r="12" fill="{TEXT}"/>
+  <path d="M{200 + sw + 22} 424 L{200 + sw + tip} 690" stroke="{SOFT}" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <circle cx="{200 + sw + 22}" cy="434" r="12" fill="{TEXT}"/>
+  <circle cx="{200 + sw + 22}" cy="416" r="11" fill="{GOLD}"/>
+  <rect x="{200 + sw + tip - 4}" y="682" width="9" height="14" rx="3" fill="{SOFT}"/>"""
+    elif arms == "hat-tip":
+        # Left arm (viewer's left) raised, holding the hat above the head; right arm on the cane.
+        arms_svg = f"""
+  <path d="M{200 - sw} 310 L{200 - sw - 4} 168" stroke="{PRIMARY}" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <circle cx="{200 - sw - 4}" cy="156" r="12" fill="{TEXT}"/>
+  <path d="M{200 + sw} 310 L{200 + sw + 18} 420" stroke="{PRIMARY}" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <path d="M{200 + sw + 22} 424 L{200 + sw + 30} 690" stroke="{SOFT}" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <circle cx="{200 + sw + 22}" cy="434" r="12" fill="{TEXT}"/>
+  <circle cx="{200 + sw + 22}" cy="416" r="11" fill="{GOLD}"/>
+  <rect x="{200 + sw + 26}" y="682" width="9" height="14" rx="3" fill="{SOFT}"/>"""
+    elif arms == "pointing":
+        # Left arm raised, finger toward the up-right (a blackboard behind him); cane in the right hand.
+        arms_svg = f"""
+  <path d="M{200 - sw} 310 L{200 - sw - 40} 170" stroke="{PRIMARY}" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <circle cx="{200 - sw - 42}" cy="158" r="12" fill="{TEXT}"/>
+  <path d="M{200 - sw - 36} 148 L{200 - sw - 18} 124" stroke="{TEXT}" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <path d="M{200 + sw} 310 L{200 + sw + 18} 420" stroke="{PRIMARY}" stroke-width="24" stroke-linecap="round" fill="none"/>
   <path d="M{200 + sw + 22} 424 L{200 + sw + 30} 690" stroke="{SOFT}" stroke-width="7" stroke-linecap="round" fill="none"/>
   <circle cx="{200 + sw + 22}" cy="434" r="12" fill="{TEXT}"/>
   <circle cx="{200 + sw + 22}" cy="416" r="11" fill="{GOLD}"/>
@@ -113,14 +153,23 @@ def body(arms="cane", slim=1.0):
   {arms_svg}"""
 
 
-def figure(hat_tilt, arms, slim, brow, tall):
+def figure(hat_tilt, arms, slim, brow, tall, legs="stand", hat_lift=(0, 0)):
     # Body first, then head and hat so the hat sits on top.
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 700" width="400" height="700">
-  {body(arms=arms, slim=slim)}
+  {body(arms=arms, slim=slim, legs=legs)}
   {head(brow=brow)}
-  {hat(hat_tilt, tall=tall)}
+  {hat(hat_tilt, tall=tall, lift=hat_lift)}
 </svg>
 """
+
+
+# Named poses of the approved Dandy Man (candidate A). Written to cast/dandy-man/<name>.svg.
+POSES = {
+    "walk-1": dict(hat_tilt=0, arms="cane-swing-fwd", slim=1.0, brow="flat", tall=True, legs="walk1"),
+    "walk-2": dict(hat_tilt=0, arms="cane-swing-back", slim=1.0, brow="flat", tall=True, legs="walk2"),
+    "hat-tip": dict(hat_tilt=-18, arms="hat-tip", slim=1.0, brow="raised", tall=True, hat_lift=(-60, -62)),
+    "pointing": dict(hat_tilt=0, arms="pointing", slim=1.0, brow="raised", tall=True),
+}
 
 
 CANDIDATES = {
@@ -144,6 +193,10 @@ def main():
         png = os.path.join(OUT, f"{key}.png")
         cairosvg.svg2png(bytestring=svg.encode(), write_to=png, output_width=400, output_height=700)
         previews.append((label, png))
+
+    for name, spec in POSES.items():
+        with open(os.path.join(HERE, f"{name}.svg"), "w") as f:
+            f.write(figure(**spec))
 
     # Contact sheet on the brand background.
     W, H = 400, 700

@@ -23,7 +23,12 @@ def check_layout(scenes, canvas, contract):
     bottom = H - (contract["layout"]["vertical_safe_bottom_px"] if H > W else margin)
     safe = (margin, top, W - margin, bottom)
     for sc in scenes:
-        boxes = [(e["name"], e["bbox"]) for e in sc["laid_out"] if e.get("bbox")]
+        for e in sc["laid_out"]:
+            if e.get("background"):
+                b = e["bbox"]
+                if b[0] < 0 or b[1] < 0 or b[2] > W or b[3] > H:
+                    out.append((sc["id"], f"{e['name']} (background) leaves the canvas: bbox={tuple(int(v) for v in b)}"))
+        boxes = [(e["name"], e["bbox"]) for e in sc["laid_out"] if e.get("bbox") and not e.get("background")]
         for name, b in boxes:
             if b[0] < safe[0] or b[1] < safe[1] or b[2] > safe[2] or b[3] > safe[3]:
                 out.append((sc["id"], f"{name} leaves the safe zone {safe}: bbox={tuple(int(v) for v in b)}"))

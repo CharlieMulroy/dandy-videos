@@ -26,7 +26,7 @@
   <line x1="194" y1="263" x2="206" y2="263" stroke="#1A0F2E" stroke-width="2.5" stroke-linecap="round"/>
   <rect x="191" y="270" width="18" height="32" fill="#F3EEFF"/>
   
-  <g transform="rotate(0 200 206)">
+  <g transform="translate(0 0) rotate(0 200 206)">
     <path d="M166 206 L163 133 Q163 128 168 128 L232 128 Q237 128 237 133 L234 206 Z" fill="#601FB7"/>
     <rect x="165" y="188" width="70" height="12" fill="#F5C542"/>
     <path d="M144 207 Q145 200 151 201 L249 201 Q255 200 256 207 Q200 217 144 207 Z" fill="#601FB7"/>

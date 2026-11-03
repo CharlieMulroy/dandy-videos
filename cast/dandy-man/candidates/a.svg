@@ -6,15 +6,16 @@
   <path d="M174 300 L186 360 L200 326 Z M226 300 L214 360 L200 326 Z" fill="#601FB7"/>
   <circle cx="200" cy="350" r="3" fill="#F3EEFF"/><circle cx="200" cy="374" r="3" fill="#F3EEFF"/><circle cx="200" cy="398" r="3" fill="#F3EEFF"/>
   <path d="" fill="#F3EEFF"/>
-  <path d="M199 303 L184 294 L184 312 Z M201 303 L216 294 L216 312 Z M196 298 L204 298 L204 308 L196 308 Z" fill="#F3EEFF"/>
+  <path d="M199 308 L184 299 L184 317 Z M201 308 L216 299 L216 317 Z M196 303 L204 303 L204 313 L196 313 Z" fill="#F3EEFF"/>
   
   <path d="M140 310 L124 430" stroke="#601FB7" stroke-width="24" stroke-linecap="round" fill="none"/>
   <circle cx="122" cy="444" r="12" fill="#F3EEFF"/>
   <path d="M260 310 L278 420" stroke="#601FB7" stroke-width="24" stroke-linecap="round" fill="none"/>
   <circle cx="282" cy="434" r="12" fill="#F3EEFF"/>
-  <path d="M290 424 L298 690" stroke="#B39DDB" stroke-width="7" stroke-linecap="round" fill="none"/>
-  <circle cx="290" cy="418" r="11" fill="#F5C542"/>
-  <rect x="294" y="682" width="9" height="14" rx="3" fill="#B39DDB"/>
+  <path d="M282 424 L290 690" stroke="#B39DDB" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <circle cx="282" cy="434" r="12" fill="#F3EEFF"/>
+  <circle cx="282" cy="416" r="11" fill="#F5C542"/>
+  <rect x="286" y="682" width="9" height="14" rx="3" fill="#B39DDB"/>
   
   <circle cx="200" cy="236" r="40" fill="#F3EEFF"/>
   <circle cx="186" cy="232" r="3.5" fill="#1A0F2E"/>
@@ -23,11 +24,11 @@
   <path d="M206 219 Q214 213 224 219" stroke="#1A0F2E" stroke-width="3" fill="none" stroke-linecap="round"/>
   <path d="M200 254 C194 246 184 247 181 250 C179 253 185 257 200 258 C215 257 221 253 219 250 C216 247 206 246 200 254 Z" fill="#1A0F2E"/>
   <line x1="194" y1="263" x2="206" y2="263" stroke="#1A0F2E" stroke-width="2.5" stroke-linecap="round"/>
-  <rect x="191" y="270" width="18" height="28" fill="#F3EEFF"/>
+  <rect x="191" y="270" width="18" height="34" fill="#F3EEFF"/>
   
-  <g transform="rotate(0 200 196)">
-    <path d="M162 196 L158 106 Q158 100 164 100 L236 100 Q242 100 242 106 L238 196 Z" fill="#601FB7"/>
-    <rect x="160" y="168" width="80" height="14" fill="#F5C542"/>
-    <path d="M134 197 Q135 190 142 191 L258 191 Q265 190 266 197 Q200 208 134 197 Z" fill="#601FB7"/>
+  <g transform="rotate(0 200 206)">
+    <path d="M166 206 L163 133 Q163 128 168 128 L232 128 Q237 128 237 133 L234 206 Z" fill="#601FB7"/>
+    <rect x="164" y="180" width="72" height="12" fill="#F5C542"/>
+    <path d="M144 207 Q145 200 151 201 L249 201 Q255 200 256 207 Q200 217 144 207 Z" fill="#601FB7"/>
   </g>
 </svg>

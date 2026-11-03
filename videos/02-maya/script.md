@@ -2,51 +2,52 @@
 
 **Takeaway:** Non-coders building with agents don't fail for lack of skill; they fail because every new session starts from zero. Give the agent the state and the projects get finished.
 
-**Format:** fully animated, Charlie voiceover as Dandy Man. Real-life use case category. Maya is a new
-cast figure (a builder who is not a coder; the stick-figure style says nothing about skill, the narration
-does). Dandy Man narrates from the blackboard for the diagnosis beat only; the rest is Maya at her desk.
-Her three projects are shown as small graph panels so "unfinished" and "finished" are visible, not told.
+**Format:** fully animated, Charlie voiceover as a plain narrator (not Dandy Man: this is a real-life
+use case video, and Dandy Man only appears in educational videos). Maya is a new cast figure. Show more
+than tell: the narration is short and the screen carries the story. Her three projects are small graph
+panels whose fill state is the plot (half-drawn, broken, redrawn, complete).
 
-**Target length:** 50 s (about 125 narrated words). Status: draft v1, not yet reviewed by Charlie or Nick.
+**Target length:** 45 s (about 80 narrated words). Status: draft v2 (Dandy Man removed, narration cut), awaiting Charlie's review.
 
-| # | Sec | Visual | On-screen text | Narration (Dandy Man) |
+| # | Sec | Visual | On-screen text | Narration |
 | --- | --- | --- | --- | --- |
-| 1 | 0-5 | Maya at her desk, agent (Employee) beside her. Three small project panels appear one at a time above them: Budget tracker, Workout log, Side business site. Each graph has one or two nodes filled, the rest empty outlines. | "Not a coder." | Meet Maya. She's not a coder. She just started building things with Claude Code. |
-| 2 | 5-10 | Panels hold. A progress tick lands on each: "started", "started", "started". | "Started: 3 / Finished: 0" | A budget tracker. A workout log. A site for her side business. All started. None finished. |
-| 3 | 10-19 | Session Reset wipe. Morning clock. Agent thought bubble goes blank. Panel 1: agent speech bubble "What budget tracker?" Panel 2: the Workout log graph greys out and redraws from node one (rebuild). Panel 3: Maya's own thought bubble fills with text, then she pushes it away. Context rot red on the broken edges. | "What budget tracker?" / "rebuilt from scratch" / "re-explain it, again" | Every time she came back, the agent had no idea where things were. It asked, what budget tracker. It rebuilt the workout log from scratch. The site? She got tired of re-explaining it. |
-| 4 | 19-26 | Cut to the blackboard. Dandy Man walks in, points. Chalk: the three project graphs, drawn faint. He circles them. | "The projects weren't dead." | Here's the thing. The projects weren't dead. The agent just couldn't see them. Every new session starts from zero. |
-| 5 | 26-36 | Chalk graphs slide together into one clean graph with typed edges; a gold node marks "Dandy". Agent figure rises beside the board, reads the graph (eyes to board), then an arrow writes back. | "what exists, what's connected, what's next" / "reads first, writes back" | So Maya put all three in Dandy. Each project became a graph. What exists, what's connected, what's next. Now the agent reads it before it starts, and writes back what it changed. |
-| 6 | 36-45 | Back to the desk. Caption "3 weeks later". The three panels return, now fully drawn, each getting a gold tick in turn: Budget tracker, Workout log, Site: live. Maya and agent, same pose as scene 1. | "3 weeks later" / "Finished: 3" | Three weeks later. Budget tracker, done. Workout log, done. The site is live. Same Maya. Same agent. Nothing re-explained. |
-| 7 | 45-50 | End card. | dandylabs.dev / 14-day free trial | Finish what you started. |
+| 1 | 0-5 | Maya at her desk, agent (Employee) beside her. Three small project panels pop in above them, one at a time: Budget tracker, Workout log, Side business site. Each has one or two nodes filled, the rest dashed outlines. | "Maya. Not a coder." | Maya isn't a coder. She builds things with Claude Code anyway. |
+| 2 | 5-9 | Panels hold. A small grey tick lands under each: "started". The tally counts up to 3, then "finished" stays at 0. | "Started 3. Finished 0." | All started. None finished. |
+| 3 | 9-14 | Session Reset wipe. Morning clock. Agent's thought bubble empties. Panel 1 (Budget tracker) greys out; agent speech bubble: "What budget tracker?" | "What budget tracker?" | Every new session, the agent starts from nothing. |
+| 4 | 14-19 | Session Reset wipe again. Panel 2 (Workout log) greys out and redraws itself from node one; the old nodes fade as the new ones appear. Context Rot red on the dropped edge. | "rebuilt from scratch" | (no narration; let the redraw play) |
+| 5 | 19-24 | Session Reset wipe again. Panel 3 (Side business site). Maya's thought bubble fills with tiny text lines, she slumps, the bubble drifts off. Agent bubble blank. | "re-explaining it, again" | The projects weren't dead. The agent just couldn't see them. |
+| 6 | 24-33 | Maya sits up. The three panels slide down into one clean graph in the center with typed labels on the edges; a single gold node, "Dandy", at the root. The agent's eyes go to the graph; a short arrow draws from the graph to the agent (read), then back (write). No wipe; same session. | "what exists, what's connected, what's next" / "reads first, writes back" | So she put them in Dandy. Now the agent reads the state before it starts, and writes back what it changed. |
+| 7 | 33-40 | Caption "3 weeks later" over a quick morning wipe. Same desk, same pose as scene 1. The three panels return fully drawn; a gold tick lands on each in turn. Tally: "Finished 3." | "3 weeks later" / "Finished 3." | Three weeks later. Same Maya. Same agent. |
+| 8 | 40-45 | End card. | dandylabs.dev / 14-day free trial | Finish what you started. |
 
 ## Narration, read straight through
 
-Meet Maya. She's not a coder. She just started building things with Claude Code.
+Maya isn't a coder. She builds things with Claude Code anyway.
 
-A budget tracker. A workout log. A site for her side business. All started. None finished.
+All started. None finished.
 
-Every time she came back, the agent had no idea where things were. It asked, what budget tracker. It rebuilt the workout log from scratch. The site? She got tired of re-explaining it.
+Every new session, the agent starts from nothing.
 
-Here's the thing. The projects weren't dead. The agent just couldn't see them. Every new session starts from zero.
+The projects weren't dead. The agent just couldn't see them.
 
-So Maya put all three in Dandy. Each project became a graph. What exists, what's connected, what's next. Now the agent reads it before it starts, and writes back what it changed.
+So she put them in Dandy. Now the agent reads the state before it starts, and writes back what it changed.
 
-Three weeks later. Budget tracker, done. Workout log, done. The site is live. Same Maya. Same agent. Nothing re-explained.
+Three weeks later. Same Maya. Same agent.
 
 Finish what you started.
 
 ## Notes
 
 - Expansion of the earlier silent Maya concept: that version showed the stall and the "weeks later" jump.
-  This one adds (a) three distinct failure modes, one per project (forgot it, rebuilt it, made her
-  re-explain it), so viewers recognise their own; (b) the diagnosis beat from Dandy Man, so the fix is
-  not magic; (c) the "same Maya, same agent" mirror so the only variable that changed is Dandy.
-- "Claude Code" is named once because that is what the audience uses; fine to swap for "an AI agent"
-  if Nick would rather not name a vendor.
-- The three projects are deliberately ordinary. Swap any of them for a real customer-style project
-  (note-visualization tool, CRM) if that reads better, but keep them things a non-coder would start.
-- New assets: Maya figure (idle, thinking, pushing-away), three small project panels in three fill states
-  (sparse, greyed/rebuilding, complete), "3 weeks later" caption style. Scene Spec lists them.
-- Messaging check: leads with the problem; "state" named without jargon; no Jira, harness or framework;
-  no proof/traction lines (individual-builder video); no long dashes; max 12 words on screen per frame.
+  This one gives each project its own failure (forgot it, rebuilt it, made her re-explain it) so viewers
+  recognise their own, and mirrors scene 1 in scene 7 so the only variable that changed is Dandy.
+- Scene 4 has no narration on purpose. The redraw is the joke; a line over it would step on it.
+- Charlie speaks as a plain narrator here. Dandy Man is reserved for educational videos (rule recorded in
+  the Cast and Assets node in Dandy, Nov 2).
+- "Claude Code" is named once, by decision (Nov 2): it is what the audience uses.
+- The three projects are deliberately ordinary, by decision (Nov 2).
+- New assets: Maya figure (idle, slumped, sitting-up), the project panel element in four states (sparse,
+  greyed, redrawing, complete) with a tick, and the tally caption. Scene Spec lists them.
+- Messaging check: leads with the problem; "state" named plainly; no Jira, harness or framework; no proof
+  or traction lines (individual-builder video); no long dashes; max 12 words on screen per frame.
 - Closing line "Finish what you started." is this video's own; 01 keeps "Pick up where you left off."

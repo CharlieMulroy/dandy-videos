@@ -3,8 +3,9 @@
 Code-generated marketing videos for Dandy (dandylabs.dev).
 
 Every video is rendered by the same Python template from a scene spec, using the shared
-Style Contract and Cast. Rules live in Dandy (the "Dandy Marketing" product); this repo holds
-the files those rules point at.
+Style Contract and Cast. Rules live in Dandy (product "Dandy Marketing", id 35809f49-b7df-47fd-bdfb-5429ea6b7576);
+this repo holds the files those rules point at. Dandy invariants 2, 3 and 4 are enforced by
+`render/checks.py`; report each run's results back to Dandy after rendering.
 
 ```
 style/contract.json        palette, type, grid, safe zones, motion, copy rules

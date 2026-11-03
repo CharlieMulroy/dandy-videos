@@ -391,6 +391,22 @@ def caption(frame, text, t_local, y=0.68, role="body", align="left", exit_at=Non
         yy += lh
 
 
+def draw_cue(frame, cues, t_global):
+    """Burned-in narration captions, same style as render.py: bold, centred, on a dark pill."""
+    cue = next((c for c in cues if c["start"] <= t_global < c["end"]), None)
+    if cue is None:
+        return
+    sizes = CONTRACT["type"]["vertical"]
+    fnt = font("Inter-Bold.otf", int(sizes["body"] * 0.95))
+    d = ImageDraw.Draw(frame)
+    tw = d.textlength(cue["text"], font=fnt)
+    y = 0.80 * H
+    x = W / 2 - tw / 2
+    pad = 18
+    d.rounded_rectangle((x - pad, y - pad * 0.6, x + tw + pad, y + fnt.size * 1.15 + pad * 0.4), radius=14, fill=rgb(PAL["background"]) + (200,))
+    d.text((x, y), cue["text"], font=fnt, fill=rgb(PAL["text"]) + (255,))
+
+
 def end_card(frame_room, t, dur):
     """Soft end card: the room darkens and blurs under the hat, wordmark and the two contract lines."""
     p = ease(t / 1.2)
@@ -476,7 +492,20 @@ def copy_qa():
     return problems
 
 
+def apply_timing():
+    """voiceover/lofi.json may carry {"durations": {scene_id: seconds}} from the aligner."""
+    path = os.path.join(VIDEO, "voiceover", "lofi.json")
+    if not os.path.exists(path):
+        return
+    with open(path) as f:
+        timing = json.load(f).get("durations", {})
+    for sc in SCENES:
+        if sc["id"] in timing:
+            sc["dur"] = float(timing[sc["id"]])
+
+
 def render(preview=False, final=False, stills=False):
+    apply_timing()
     out = os.path.join(VIDEO, "out")
     os.makedirs(out, exist_ok=True)
     problems = copy_qa()
@@ -488,6 +517,11 @@ def render(preview=False, final=False, stills=False):
         print("QA FAILED:", problems)
         return False
     tmp = tempfile.mkdtemp(prefix="dandy-lofi-")
+    cues = None
+    cap_path = os.path.join(VIDEO, "captions.json")
+    if os.path.exists(cap_path) and not preview:
+        with open(cap_path) as f:
+            cues = json.load(f)["cues"]
     n, offset, contact = 0, 0.0, []
     step = 1.0 / FPS
     last_room = None
@@ -507,6 +541,8 @@ def render(preview=False, final=False, stills=False):
             for cid, text, at, y, role, align, exit_at in CAPTIONS:
                 if cid == sc["id"]:
                     caption(fr, text, t - at, y=y, role=role, align=align, exit_at=exit_at, t_abs=t)
+            if cues:
+                draw_cue(fr, cues, offset + t)
             if stills:
                 if i in (int(1.0 * FPS), int((sc["dur"] - 0.6) * FPS)):
                     fr.convert("RGB").save(os.path.join(out, f"lofi-{sc['id']}-{t:04.1f}.png"))

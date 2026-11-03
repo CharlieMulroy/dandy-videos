@@ -3,7 +3,7 @@
  "scenes": [
   {
    "id": "s1-night",
-   "duration": 5.9,
+   "duration": 5.3,
    "exit": "cut",
    "floor": 0.74,
    "floor_horizontal": 0.88,
@@ -101,7 +101,7 @@
   },
   {
    "id": "s2-morning",
-   "duration": 4.1,
+   "duration": 3.5,
    "enter": "wipe",
    "floor": 0.74,
    "floor_horizontal": 0.88,
@@ -207,7 +207,7 @@
   },
   {
    "id": "s3-rot",
-   "duration": 10.0,
+   "duration": 9.7,
    "exit": "cut",
    "floor": 0.78,
    "floor_horizontal": 0.9,
@@ -253,8 +253,8 @@
      "y": 0.17,
      "x_horizontal": 0.44,
      "y_horizontal": 0.17,
-     "enter_at": 1.9,
-     "strike_at": 3.6,
+     "enter_at": 1.7,
+     "strike_at": 3.8,
      "exit_at": 9.5
     },
     {
@@ -267,8 +267,8 @@
      "y": 0.225,
      "x_horizontal": 0.44,
      "y_horizontal": 0.27,
-     "enter_at": 2.6,
-     "strike_at": 4.3,
+     "enter_at": 2.4,
+     "strike_at": 4.5,
      "exit_at": 9.5
     },
     {
@@ -281,8 +281,8 @@
      "y": 0.28,
      "x_horizontal": 0.44,
      "y_horizontal": 0.37,
-     "enter_at": 3.3,
-     "strike_at": 5.0,
+     "enter_at": 3.2,
+     "strike_at": 5.2,
      "exit_at": 9.5
     },
     {
@@ -307,12 +307,12 @@
      ],
      "enter_at": 7.2,
      "spread": {
-      "at": 8.0,
+      "at": 7.9,
       "ms": 900,
       "px": 110
      },
      "broken_edge": 0,
-     "break_at": 8.7
+     "break_at": 8.5
     },
     {
      "name": "cap",
@@ -324,14 +324,14 @@
      "y": 0.5,
      "x_horizontal": 0.46,
      "y_horizontal": 0.76,
-     "enter_at": 8.8,
+     "enter_at": 8.7,
      "exit_at": 9.6
     }
    ]
   },
   {
    "id": "s4-state",
-   "duration": 6.0,
+   "duration": 5.8,
    "enter": "cut",
    "exit": "cut",
    "floor": 0.78,
@@ -397,7 +397,7 @@
       "px": 110
      },
      "merge_at": 1.2,
-     "exit_at": 2.2
+     "exit_at": 1.9
     },
     {
      "name": "sl",
@@ -414,8 +414,8 @@
       "State layer"
      ],
      "edges": [],
-     "enter_at": 2.4,
-     "exit_at": 5.6,
+     "enter_at": 2.1,
+     "exit_at": 5.4,
      "gold_node": 0
     },
     {
@@ -428,14 +428,14 @@
      "y": 0.5,
      "x_horizontal": 0.46,
      "y_horizontal": 0.76,
-     "enter_at": 3.0,
-     "exit_at": 5.6
+     "enter_at": 2.6,
+     "exit_at": 5.4
     }
    ]
   },
   {
    "id": "s5-how",
-   "duration": 12.0,
+   "duration": 11.6,
    "enter": "cut",
    "floor": 0.78,
    "floor_horizontal": 0.9,
@@ -463,7 +463,7 @@
      "sequence": [
       {
        "asset": "cast/dandy-man/pointing.svg",
-       "at": 8.7
+       "at": 8.9
       }
      ],
      "x": 0.27,
@@ -519,7 +519,7 @@
      "x_horizontal": 0.34,
      "y_horizontal": 0.9,
      "height_horizontal": 0.3,
-     "enter_at": 4.2
+     "enter_at": 4.5
     },
     {
      "name": "cap1",
@@ -531,8 +531,8 @@
      "y": 0.5,
      "x_horizontal": 0.46,
      "y_horizontal": 0.76,
-     "enter_at": 4.6,
-     "exit_at": 8.6
+     "enter_at": 4.9,
+     "exit_at": 8.8
     },
     {
      "name": "cap2",
@@ -550,7 +550,7 @@
   },
   {
    "id": "s6-fixed",
-   "duration": 4.3,
+   "duration": 4.2,
    "floor": 0.74,
    "floor_horizontal": 0.88,
    "elements": [
@@ -587,7 +587,7 @@
      "x_horizontal": 0.08,
      "y_horizontal": 0.24,
      "width_horizontal": 0.36,
-     "enter_at": 2.4
+     "enter_at": 2.0
     },
     {
      "name": "graph",
@@ -648,13 +648,13 @@
   {
    "id": "end",
    "type": "end_card",
-   "duration": 5.0,
+   "duration": 4.5,
    "push": 0
   }
  ],
  "audio": {
-  "file": "videos/01-why-dandy/voiceover/charlie-take1.m4a",
-  "offset_s": 3.06,
-  "note": "offset_s = seconds trimmed from the start of the file so narration lines up with the scenes"
+  "file": "videos/01-why-dandy/voiceover/charlie-take2.m4a",
+  "offset_s": 0.0,
+  "note": "take 2 (headset), trimmed to 43.2 s; speech starts at 0.82 s"
  }
 }

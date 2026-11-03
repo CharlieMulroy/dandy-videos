@@ -3,163 +3,163 @@
  "y_horizontal": 0.935,
  "cues": [
   {
-   "start": 0.8,
-   "end": 2.49,
+   "start": 0.82,
+   "end": 1.86,
    "text": "A builder and his agent"
   },
   {
-   "start": 2.49,
-   "end": 3.84,
+   "start": 1.86,
+   "end": 3.11,
    "text": "have a great night."
   },
   {
-   "start": 3.84,
-   "end": 4.51,
+   "start": 3.11,
+   "end": 3.79,
    "text": "Schema, decisions,"
   },
   {
-   "start": 4.51,
-   "end": 6.35,
+   "start": 3.79,
+   "end": 5.16,
    "text": "half the thing built."
   },
   {
-   "start": 6.35,
-   "end": 7.53,
+   "start": 5.81,
+   "end": 7.56,
    "text": "Next morning, new session."
   },
   {
-   "start": 7.53,
-   "end": 9.29,
+   "start": 7.56,
+   "end": 9.3,
    "text": "The agent remembers none of it."
   },
   {
-   "start": 10.33,
-   "end": 12.0,
+   "start": 9.3,
+   "end": 10.55,
    "text": "This is context rot."
   },
   {
-   "start": 12.0,
-   "end": 12.91,
+   "start": 10.55,
+   "end": 12.02,
    "text": "Notes, markdown files,"
   },
   {
-   "start": 12.91,
-   "end": 14.42,
+   "start": 12.02,
+   "end": 13.89,
    "text": "planning tools all rot too,"
   },
   {
-   "start": 14.42,
-   "end": 15.94,
+   "start": 13.89,
+   "end": 14.83,
    "text": "because a human has to"
   },
   {
-   "start": 15.94,
-   "end": 17.42,
+   "start": 14.83,
+   "end": 15.4,
    "text": "keep them current."
   },
   {
-   "start": 17.42,
-   "end": 18.71,
+   "start": 16.07,
+   "end": 17.42,
    "text": "So the plan says one thing"
   },
   {
-   "start": 18.71,
-   "end": 19.78,
+   "start": 17.42,
+   "end": 18.35,
    "text": "and the code says another."
   },
   {
-   "start": 20.46,
-   "end": 21.85,
+   "start": 18.98,
+   "end": 20.49,
    "text": "Dandy is the state layer."
   },
   {
-   "start": 21.85,
-   "end": 22.97,
+   "start": 20.49,
+   "end": 21.45,
    "text": "One place that knows"
   },
   {
-   "start": 22.97,
-   "end": 24.09,
+   "start": 21.45,
+   "end": 22.69,
    "text": "what your software is,"
   },
   {
-   "start": 24.09,
-   "end": 24.92,
+   "start": 22.69,
+   "end": 23.46,
    "text": "kept current by"
   },
   {
-   "start": 24.92,
-   "end": 25.76,
+   "start": 23.46,
+   "end": 24.79,
    "text": "the agents themselves."
   },
   {
-   "start": 26.44,
-   "end": 28.03,
+   "start": 24.79,
+   "end": 26.17,
    "text": "Your product is a graph"
   },
   {
-   "start": 28.03,
-   "end": 28.98,
-   "text": "of projects with"
+   "start": 26.17,
+   "end": 27.09,
+   "text": "of projects"
   },
   {
-   "start": 28.98,
-   "end": 30.25,
-   "text": "typed inputs and outputs."
+   "start": 27.09,
+   "end": 29.08,
+   "text": "with typed inputs and outputs."
   },
   {
-   "start": 30.25,
-   "end": 31.52,
+   "start": 29.08,
+   "end": 30.51,
    "text": "Every agent reads it"
   },
   {
-   "start": 31.52,
-   "end": 32.47,
+   "start": 30.51,
+   "end": 31.18,
    "text": "before it starts"
   },
   {
-   "start": 32.47,
-   "end": 34.93,
+   "start": 31.18,
+   "end": 32.52,
    "text": "and writes back what it changed."
   },
   {
-   "start": 34.93,
-   "end": 36.09,
+   "start": 33.33,
+   "end": 34.56,
    "text": "Change something upstream,"
   },
   {
-   "start": 36.09,
-   "end": 37.64,
+   "start": 34.56,
+   "end": 36.33,
    "text": "and everything downstream knows."
   },
   {
-   "start": 38.44,
-   "end": 39.63,
+   "start": 36.33,
+   "end": 37.99,
    "text": "Next morning, new session."
   },
   {
-   "start": 39.63,
-   "end": 40.82,
+   "start": 37.99,
+   "end": 38.81,
    "text": "The agent picks up"
   },
   {
-   "start": 40.82,
-   "end": 42.78,
+   "start": 38.81,
+   "end": 39.84,
    "text": "exactly where it left off."
   },
   {
-   "start": 42.78,
-   "end": 44.55,
+   "start": 40.54,
+   "end": 41.76,
    "text": "Pick up where you left off."
   },
   {
-   "start": 44.55,
-   "end": 45.14,
+   "start": 41.76,
+   "end": 42.5,
    "text": "Every time."
   },
   {
-   "start": 45.14,
-   "end": 45.73,
+   "start": 42.5,
+   "end": 42.86,
    "text": "With Dandy."
   }
  ]

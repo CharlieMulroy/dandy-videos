@@ -8,12 +8,12 @@
   <circle cx="119" cy="146" r="4" fill="#1A0F2E"/>
   <circle cx="141" cy="146" r="4" fill="#1A0F2E"/>
   <path d="M120 164 Q130 172 140 164" stroke="#1A0F2E" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <circle cx="174" cy="122" r="6" stroke="#F3EEFF" stroke-width="5" fill="none"/>
-  <circle cx="192" cy="104" r="9" stroke="#F3EEFF" stroke-width="5" fill="none"/>
-  <ellipse cx="236" cy="58" rx="60" ry="34" stroke="#F3EEFF" stroke-width="5" fill="none"/>
-  <rect x="196" y="50" width="20" height="16" rx="4" fill="none" stroke="#7C4DFF" stroke-width="3"/>
-  <rect x="226" y="50" width="20" height="16" rx="4" fill="none" stroke="#7C4DFF" stroke-width="3"/>
-  <rect x="256" y="50" width="20" height="16" rx="4" fill="none" stroke="#7C4DFF" stroke-width="3"/>
-  <line x1="216" y1="58" x2="226" y2="58" stroke="#7C4DFF" stroke-width="3"/>
-  <line x1="246" y1="58" x2="256" y2="58" stroke="#7C4DFF" stroke-width="3"/>
+  <circle cx="174" cy="122" r="7" stroke="#F3EEFF" stroke-width="5" fill="none"/>
+  <circle cx="194" cy="100" r="11" stroke="#F3EEFF" stroke-width="5" fill="none"/>
+  <ellipse cx="230" cy="44" rx="68" ry="42" stroke="#F3EEFF" stroke-width="5" fill="none"/>
+  <rect x="178" y="32" width="28" height="22" rx="5" fill="none" stroke="#7C4DFF" stroke-width="4"/>
+  <rect x="216" y="32" width="28" height="22" rx="5" fill="none" stroke="#7C4DFF" stroke-width="4"/>
+  <rect x="254" y="32" width="28" height="22" rx="5" fill="none" stroke="#7C4DFF" stroke-width="4"/>
+  <line x1="206" y1="43" x2="216" y2="43" stroke="#7C4DFF" stroke-width="4"/>
+  <line x1="244" y1="43" x2="254" y2="43" stroke="#7C4DFF" stroke-width="4"/>
 </svg>

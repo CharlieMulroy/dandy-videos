@@ -57,17 +57,17 @@ def employee(cape="flutter", bubble=False, bubble_graph=False):
     if bubble:
         ob = f'stroke="{TEXT}" stroke-width="5" fill="none"'
         parts += [
-            f'<circle cx="{cx + 44}" cy="122" r="6" {ob}/>',
-            f'<circle cx="{cx + 62}" cy="104" r="9" {ob}/>',
-            f'<ellipse cx="{cx + 106}" cy="58" rx="60" ry="34" {ob}/>',
+            f'<circle cx="{cx + 44}" cy="122" r="7" {ob}/>',
+            f'<circle cx="{cx + 64}" cy="100" r="11" {ob}/>',
+            f'<ellipse cx="{cx + 100}" cy="44" rx="68" ry="42" {ob}/>',
         ]
         if bubble_graph:
             # three tiny nodes and two edges inside the bubble: what the agent is holding in mind
-            gx = cx + 106 - 40
+            gx = cx + 100 - 52
             for i in range(3):
-                parts.append(f'<rect x="{gx + i * 30}" y="50" width="20" height="16" rx="4" fill="none" stroke="{HI}" stroke-width="3"/>')
+                parts.append(f'<rect x="{gx + i * 38}" y="32" width="28" height="22" rx="5" fill="none" stroke="{HI}" stroke-width="4"/>')
             for i in range(2):
-                parts.append(f'<line x1="{gx + 20 + i * 30}" y1="58" x2="{gx + 30 + i * 30}" y2="58" stroke="{HI}" stroke-width="3"/>')
+                parts.append(f'<line x1="{gx + 28 + i * 38}" y1="43" x2="{gx + 38 + i * 38}" y2="43" stroke="{HI}" stroke-width="4"/>')
     return svg("0 0 300 600", "\n".join("  " + p for p in parts))
 
 

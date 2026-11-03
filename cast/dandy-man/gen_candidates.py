@@ -26,15 +26,14 @@ SHADE = "#3E1480"  # darker than primary for trousers/shoes; 60% of the figure s
 
 
 def hat(tilt_deg, tall=True):
-    # Top hat: slightly concave sides, flared top, brim that curls up at the ends. Sits on y=196.
-    top = 112 if tall else 136
-    crown = (f"M166 196 Q170 {top + 50} 168 {top + 6} Q168 {top} 174 {top} "
-             f"L226 {top} Q232 {top} 232 {top + 6} Q230 {top + 50} 234 196 Z")
-    brim = "M136 198 Q137 189 145 191 Q200 203 255 191 Q263 189 264 198 Q200 212 136 198 Z"
+    # Classic top hat: straight crown with a slight flare at the top, flat-ish brim. Sits on y=196.
+    top = 100 if tall else 128
+    crown = f"M162 196 L158 {top + 6} Q158 {top} 164 {top} L236 {top} Q242 {top} 242 {top + 6} L238 196 Z"
+    brim = "M134 197 Q135 190 142 191 L258 191 Q265 190 266 197 Q200 208 134 197 Z"
     return f"""
   <g transform="rotate({tilt_deg} 200 196)">
     <path d="{crown}" fill="{PRIMARY}"/>
-    <path d="M168 178 Q200 184 232 178 L232 166 Q200 172 168 166 Z" fill="{GOLD}"/>
+    <rect x="160" y="168" width="80" height="14" fill="{GOLD}"/>
     <path d="{brim}" fill="{PRIMARY}"/>
   </g>"""
 
@@ -51,7 +50,7 @@ def head(brow="flat"):
   <path d="M206 219 Q214 213 224 219" stroke="{BG}" stroke-width="3" fill="none" stroke-linecap="round"/>
   <path d="M200 254 C194 246 184 247 181 250 C179 253 185 257 200 258 C215 257 221 253 219 250 C216 247 206 246 200 254 Z" fill="{BG}"/>
   <line x1="194" y1="263" x2="206" y2="263" stroke="{BG}" stroke-width="2.5" stroke-linecap="round"/>
-  <rect x="188" y="268" width="24" height="34" rx="6" fill="{TEXT}"/>"""
+  <rect x="191" y="270" width="18" height="28" fill="{TEXT}"/>"""
 
 
 def body(arms="cane", slim=1.0):
@@ -67,8 +66,9 @@ def body(arms="cane", slim=1.0):
     lapels = (
         f"M{200 - 26} 300 L{200 - 14} 360 L200 326 Z M{200 + 26} 300 L{200 + 14} 360 L200 326 Z"
     )
-    collar = f"M190 298 L200 314 L210 298 L210 294 L190 294 Z"
-    cravat = f"M200 310 L184 302 L184 318 Z M200 310 L216 302 L216 318 Z M196 306 L204 306 L204 314 L196 314 Z"
+    collar = ""
+    cravat = (f"M199 303 L184 294 L184 312 Z M201 303 L216 294 L216 312 Z "
+              f"M196 298 L204 298 L204 308 L196 308 Z")
     buttons = "".join(
         f'<circle cx="200" cy="{y}" r="3" fill="{TEXT}"/>' for y in (350, 374, 398)
     )
@@ -84,9 +84,9 @@ def body(arms="cane", slim=1.0):
   <circle cx="{200 - sw - 18}" cy="444" r="12" fill="{TEXT}"/>
   <path d="M{200 + sw} 310 L{200 + sw + 18} 420" stroke="{PRIMARY}" stroke-width="24" stroke-linecap="round" fill="none"/>
   <circle cx="{200 + sw + 22}" cy="434" r="12" fill="{TEXT}"/>
-  <path d="M{200 + sw + 22} 446 L{200 + sw + 30} 690" stroke="{SOFT}" stroke-width="7" stroke-linecap="round" fill="none"/>
-  <path d="M{200 + sw + 22} 446 Q{200 + sw + 22} 420 {200 + sw + 4} 424" stroke="{TEXT}" stroke-width="9" stroke-linecap="round" fill="none"/>
-  <rect x="{200 + sw + 26}" y="682" width="9" height="14" rx="3" fill="{LIFT}"/>"""
+  <path d="M{200 + sw + 30} 424 L{200 + sw + 38} 690" stroke="{SOFT}" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <circle cx="{200 + sw + 30}" cy="418" r="11" fill="{GOLD}"/>
+  <rect x="{200 + sw + 34}" y="682" width="9" height="14" rx="3" fill="{SOFT}"/>"""
     elif arms == "behind":
         arms_svg = f"""
   <path d="M{200 - sw} 310 Q{200 - sw - 30} 380 {200 - 10} 420" stroke="{PRIMARY}" stroke-width="22" stroke-linecap="round" fill="none"/>

@@ -6,7 +6,7 @@
 the builder's story; the classroom is the setting, not a bit. No "class" roleplay. Everything drawn on the
 blackboard uses chalk-style versions of the motifs (graph, session reset, context rot).
 
-**Target length:** 45 s (about 110 narrated words). Status: draft v2, not yet reviewed by Nick.
+**Target length:** 45 s (about 110 narrated words). Status: draft v3, not yet reviewed by Nick.
 
 | # | Sec | Visual | On-screen text | Narration (Dandy Man) |
 | --- | --- | --- | --- | --- |
@@ -15,8 +15,8 @@ blackboard uses chalk-style versions of the motifs (graph, session reset, contex
 | 3 | 10-17 | Cut to the blackboard. Dandy Man walks in from the left, taps the board; "notes", "markdown", "planning tools" appear and get crossed out. Two chalk columns, Plan and Code, drift apart; an edge snaps red. | "Plan ≠ Code" | This is context rot. Notes, markdown files, planning tools all rot too, because a human has to keep them current. So the plan says one thing and the code says another. |
 | 4 | 17-24 | Hat tip. The two columns slide together into one chalk graph. | "One source of truth" | Dandy is the state layer. One place that knows what your software is, kept current by the agents themselves. |
 | 5 | 24-34 | Blackboard: the graph, nodes with typed contracts on the edges. An agent figure reads it, then writes back. Dandy Man edits the top node; the change ripples down every edge, the changed node gold. | "Agents read it, write back, and changes flow downstream" | Your product is a graph of projects with typed inputs and outputs. Every agent reads it before it starts and writes back what it changed. Change something upstream, and everything downstream knows. |
-| 6 | 34-41 | Back to the desk, morning. Employee reads the graph, nods, gets to work. Dandy Man in the doorway. | "Live. In production." | We build Dandy with Dandy. Live, in production, with paying customers. |
-| 7 | 41-45 | End card. | dandylabs.dev / 14-day free trial | Give your agents a memory. |
+| 6 | 34-41 | Back to the desk, morning (mirror of beat 2): clock at 9:02, the agent's thought bubble still holds the graph, the builder is already working. | "9:02 AM" / "Nothing lost." | Next morning, new session. The agent picks up exactly where it left off. |
+| 7 | 41-45 | End card. | dandylabs.dev / 14-day free trial | Pick up where you left off. Every time. |
 
 ## Narration, read straight through
 
@@ -30,9 +30,9 @@ Dandy is the state layer. One place that knows what your software is, kept curre
 
 Your product is a graph of projects with typed inputs and outputs. Every agent reads it before it starts and writes back what it changed. Change something upstream, and everything downstream knows.
 
-We build Dandy with Dandy. Live, in production, with paying customers.
+Next morning, new session. The agent picks up exactly where it left off.
 
-Give your agents a memory.
+Pick up where you left off. Every time.
 
 ## Notes
 
@@ -40,4 +40,4 @@ Give your agents a memory.
 - New assets this script needs: blackboard motif, chalk variants of the graph, Dandy Man walk cycle and hat tip,
   Employee with cape, builder-at-desk scene. Scene Spec lists them.
 - Messaging check: leads with the problem; "state layer" named; no Jira, harness or framework; no promises; no long dashes.
-- The closing line "Give your agents a memory" is a candidate tagline; swap if Nick has a preferred one.
+- Closing line chosen Nov 2: "Pick up where you left off. Every time." The "live, in production" line was cut: this video is for individual builders, not investors; it stays in the messaging rules for enterprise-facing videos.

@@ -32,5 +32,19 @@ Rendered MP4s are not committed; they go to the shared drive and Dandy stores th
 6. Drafts: `render.py <video> --canvas vertical`; final: `--final` (2x supersample, crf 17, ~7 min).
 7. After every render, report_test_results to Dandy for the three check names in invariants 2, 3, 4.
 
-Video 01 final: videos/01-why-dandy/out/01-why-dandy-vertical-final.mp4 (44.6 s, take 2 narration, captions).
-Held for Nick's review alongside videos 02 and 03 before posting.
+## State (Nov 3, 2026)
+
+- Three video kinds (Dandy invariants 4 and 5): informational videos use the house style with Dandy Man,
+  the classroom backdrop (motifs/classroom.svg) and this renderer; real-life use case and metaphor videos
+  get their own look per video, share the palette, copy rules and safe zones, and end on the soft end card
+  without Dandy Man.
+- The "Renderer" node in Dandy's Shared Foundations mirrors render/render.py; when you add an element type
+  or change a rule here, update that node so every Scene Spec downstream is flagged.
+- 01 Why Dandy: final rendered (videos/01-why-dandy/out/01-why-dandy-vertical-final.mp4, 44.6 s), held for Nick.
+- 02 Maya: chosen look is the room, rendered by videos/02-maya/lofi/render_lofi.py (its own renderer; the
+  scenes are in that file). Preview done; waiting on Charlie's voiceover in videos/02-maya/voiceover/ plus a
+  voiceover/lofi.json {"file": ..., "offset_s": 0} for the mux. videos/02-maya/scenes.json is the earlier
+  house-style cut, kept for reference.
+- 03 The Gap: classroom, videos/03-the-gap/scenes.json, preview done; waiting on the voiceover. Scenes cut on
+  one board, so every scene has "push": 0.
+- After every render, report the three check names to Dandy with report_test_results (invariants 2, 3, 4).

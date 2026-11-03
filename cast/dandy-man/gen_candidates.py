@@ -35,7 +35,7 @@ def hat(tilt_deg, tall=True):
     return f"""
   <g transform="rotate({tilt_deg} 200 {base})">
     <path d="{crown}" fill="{PRIMARY}"/>
-    <rect x="164" y="{base - 26}" width="72" height="12" fill="{GOLD}"/>
+    <rect x="165" y="{base - 18}" width="70" height="12" fill="{GOLD}"/>
     <path d="{brim}" fill="{PRIMARY}"/>
   </g>"""
 
@@ -52,7 +52,7 @@ def head(brow="flat"):
   <path d="M206 219 Q214 213 224 219" stroke="{BG}" stroke-width="3" fill="none" stroke-linecap="round"/>
   <path d="M200 254 C194 246 184 247 181 250 C179 253 185 257 200 258 C215 257 221 253 219 250 C216 247 206 246 200 254 Z" fill="{BG}"/>
   <line x1="194" y1="263" x2="206" y2="263" stroke="{BG}" stroke-width="2.5" stroke-linecap="round"/>
-  <rect x="191" y="270" width="18" height="34" fill="{TEXT}"/>"""
+  <rect x="191" y="270" width="18" height="42" fill="{TEXT}"/>"""
 
 
 def body(arms="cane", slim=1.0):
@@ -69,8 +69,8 @@ def body(arms="cane", slim=1.0):
         f"M{200 - 26} 300 L{200 - 14} 360 L200 326 Z M{200 + 26} 300 L{200 + 14} 360 L200 326 Z"
     )
     collar = ""
-    cravat = (f"M199 308 L184 299 L184 317 Z M201 308 L216 299 L216 317 Z "
-              f"M196 303 L204 303 L204 313 L196 313 Z")
+    cravat = (f"M199 316 L184 307 L184 325 Z M201 316 L216 307 L216 325 Z "
+              f"M196 311 L204 311 L204 321 L196 321 Z")
     buttons = "".join(
         f'<circle cx="200" cy="{y}" r="3" fill="{TEXT}"/>' for y in (350, 374, 398)
     )

@@ -26,15 +26,16 @@ SHADE = "#3E1480"  # darker than primary for trousers/shoes; 60% of the figure s
 
 
 def hat(tilt_deg, tall=True):
-    # Crown sits on the head (y=196). "tall" is a modest top hat; the small one is a bowler-ish stub.
-    top = 96 if tall else 120
-    crown = f"M162 196 L158 {top + 8} Q158 {top} 166 {top} L234 {top} Q242 {top} 242 {top + 8} L238 196 Z"
-    band_y = 170
+    # Top hat: slightly concave sides, flared top, brim that curls up at the ends. Sits on y=196.
+    top = 112 if tall else 136
+    crown = (f"M166 196 Q170 {top + 50} 168 {top + 6} Q168 {top} 174 {top} "
+             f"L226 {top} Q232 {top} 232 {top + 6} Q230 {top + 50} 234 196 Z")
+    brim = "M136 198 Q137 189 145 191 Q200 203 255 191 Q263 189 264 198 Q200 212 136 198 Z"
     return f"""
   <g transform="rotate({tilt_deg} 200 196)">
     <path d="{crown}" fill="{PRIMARY}"/>
-    <rect x="160" y="{band_y}" width="80" height="14" fill="{GOLD}"/>
-    <rect x="138" y="190" width="124" height="14" rx="7" fill="{PRIMARY}"/>
+    <path d="M168 178 Q200 184 232 178 L232 166 Q200 172 168 166 Z" fill="{GOLD}"/>
+    <path d="{brim}" fill="{PRIMARY}"/>
   </g>"""
 
 
@@ -50,7 +51,7 @@ def head(brow="flat"):
   <path d="M206 219 Q214 213 224 219" stroke="{BG}" stroke-width="3" fill="none" stroke-linecap="round"/>
   <path d="M200 254 C194 246 184 247 181 250 C179 253 185 257 200 258 C215 257 221 253 219 250 C216 247 206 246 200 254 Z" fill="{BG}"/>
   <line x1="194" y1="263" x2="206" y2="263" stroke="{BG}" stroke-width="2.5" stroke-linecap="round"/>
-  <rect x="190" y="272" width="20" height="20" fill="{TEXT}"/>"""
+  <rect x="188" y="268" width="24" height="34" rx="6" fill="{TEXT}"/>"""
 
 
 def body(arms="cane", slim=1.0):
@@ -66,16 +67,16 @@ def body(arms="cane", slim=1.0):
     lapels = (
         f"M{200 - 26} 300 L{200 - 14} 360 L200 326 Z M{200 + 26} 300 L{200 + 14} 360 L200 326 Z"
     )
-    collar = f"M186 292 L200 310 L214 292 Z"
-    cravat = f"M192 310 Q200 322 208 310 L204 332 L196 332 Z"
+    collar = f"M190 298 L200 314 L210 298 L210 294 L190 294 Z"
+    cravat = f"M200 310 L184 302 L184 318 Z M200 310 L216 302 L216 318 Z M196 306 L204 306 L204 314 L196 314 Z"
     buttons = "".join(
         f'<circle cx="200" cy="{y}" r="3" fill="{TEXT}"/>' for y in (350, 374, 398)
     )
     legs = (
-        f'<rect x="{200 - ww + 6}" y="430" width="{ww - 12}" height="340" fill="{SHADE}"/>'
-        f'<rect x="{200 + 6}" y="430" width="{ww - 12}" height="340" fill="{SHADE}"/>'
-        f'<rect x="{200 - ww + 2}" y="766" width="{ww - 4}" height="14" rx="6" fill="{LIFT}"/>'
-        f'<rect x="{200 + 2}" y="766" width="{ww - 4}" height="14" rx="6" fill="{LIFT}"/>'
+        f'<rect x="{200 - ww + 6}" y="430" width="{ww - 12}" height="262" fill="{PRIMARY}"/>'
+        f'<rect x="{200 + 6}" y="430" width="{ww - 12}" height="262" fill="{PRIMARY}"/>'
+        f'<rect x="{200 - ww + 2}" y="686" width="{ww - 2}" height="14" rx="6" fill="{LIFT}"/>'
+        f'<rect x="{200 + 2}" y="686" width="{ww - 2}" height="14" rx="6" fill="{LIFT}"/>'
     )
     if arms == "cane":
         arms_svg = f"""
@@ -83,8 +84,9 @@ def body(arms="cane", slim=1.0):
   <circle cx="{200 - sw - 18}" cy="444" r="12" fill="{TEXT}"/>
   <path d="M{200 + sw} 310 L{200 + sw + 18} 420" stroke="{PRIMARY}" stroke-width="24" stroke-linecap="round" fill="none"/>
   <circle cx="{200 + sw + 22}" cy="434" r="12" fill="{TEXT}"/>
-  <line x1="{200 + sw + 22}" y1="440" x2="{200 + sw + 34}" y2="776" stroke="{SOFT}" stroke-width="6" stroke-linecap="round"/>
-  <circle cx="{200 + sw + 22}" cy="436" r="8" fill="{TEXT}"/>"""
+  <path d="M{200 + sw + 22} 446 L{200 + sw + 30} 690" stroke="{SOFT}" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M{200 + sw + 22} 446 Q{200 + sw + 22} 420 {200 + sw + 4} 424" stroke="{TEXT}" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <rect x="{200 + sw + 26}" y="682" width="9" height="14" rx="3" fill="{LIFT}"/>"""
     elif arms == "behind":
         arms_svg = f"""
   <path d="M{200 - sw} 310 Q{200 - sw - 30} 380 {200 - 10} 420" stroke="{PRIMARY}" stroke-width="22" stroke-linecap="round" fill="none"/>
@@ -110,7 +112,7 @@ def body(arms="cane", slim=1.0):
 
 def figure(hat_tilt, arms, slim, brow, tall):
     # Body first, then head and hat so the hat sits on top.
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 800" width="400" height="800">
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 700" width="400" height="700">
   {body(arms=arms, slim=slim)}
   {head(brow=brow)}
   {hat(hat_tilt, tall=tall)}
@@ -137,11 +139,11 @@ def main():
         with open(path, "w") as f:
             f.write(svg)
         png = os.path.join(OUT, f"{key}.png")
-        cairosvg.svg2png(bytestring=svg.encode(), write_to=png, output_width=400, output_height=800)
+        cairosvg.svg2png(bytestring=svg.encode(), write_to=png, output_width=400, output_height=700)
         previews.append((label, png))
 
     # Contact sheet on the brand background.
-    W, H = 400, 800
+    W, H = 400, 700
     pad = 60
     sheet = Image.new("RGB", (len(previews) * (W + pad) + pad, H + pad * 2 + 40), BG)
     for i, (label, png) in enumerate(previews):

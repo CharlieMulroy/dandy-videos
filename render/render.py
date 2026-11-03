@@ -138,14 +138,17 @@ def layout_scene(scene, canvas_name):
         return dict(id=scene["id"], type=stype, duration=scene["duration"],
                     transition=scene.get("transition", "fade"), laid_out=laid, W=W, H=H)
 
+    def pick(e, key, default=None):
+        return e.get(f"{key}_{canvas_name}", e.get(key, default))
+
     for e in scene["elements"]:
         t = e["type"]
-        x = e["x"] * W
-        y = e["y"] * H
+        x = pick(e, "x") * W
+        y = pick(e, "y") * H
         if t == "text":
             role = e.get("role", "body")
             fnt = font(role, sizes[role])
-            max_w = e.get("width", 1 - 2 * margin / W) * W
+            max_w = pick(e, "width", 1 - 2 * margin / W) * W
             lines = wrap(e["text"], fnt, max_w, measure)
             lh = fnt.size * 1.2
             widths = [measure.textlength(l, font=fnt) for l in lines]
@@ -158,7 +161,7 @@ def layout_scene(scene, canvas_name):
                              align=align, bbox=(x0, y0, x0 + bw, y0 + bh), enter_at=e.get("enter_at", 0),
                              gold=bool(e.get("gold")), rot_at=e.get("rot_at")))
         elif t == "sprite":
-            h = int(e.get(f"height_{canvas_name}", e.get("height", 0.4)) * H)
+            h = int(pick(e, "height", 0.4) * H)
             spr = load_sprite(e["asset"], h)
             anchor = e.get("anchor", "feet")
             x0 = x - spr.width / 2
@@ -168,7 +171,7 @@ def layout_scene(scene, canvas_name):
                              bbox=(x0, y0, x0 + spr.width, y0 + spr.height), enter=e.get("enter", "fade"),
                              enter_at=e.get("enter_at", 0), gold=bool(e.get("gold")), rot_at=e.get("rot_at")))
         elif t == "graph":
-            gw = e.get("width", 0.7) * W
+            gw = pick(e, "width", 0.7) * W
             n = len(e["nodes"])
             fnt = font("caption", sizes["caption"])
             node_h = sizes["caption"] * 2.2

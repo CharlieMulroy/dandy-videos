@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="wall" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1500"><stop offset="0" stop-color="#1A0F2E"/><stop offset="1" stop-color="#2A1B45"/></linearGradient>
+    <radialGradient id="winlight" gradientUnits="userSpaceOnUse" cx="540.0" cy="691.1999999999999" r="972.0"><stop offset="0" stop-color="#B39DDB" stop-opacity="0.10"/><stop offset="1" stop-color="#B39DDB" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect x="0" y="0" width="1080" height="1500" fill="url(#wall)"/>
+  <rect x="0" y="0" width="1080" height="1500" fill="url(#winlight)"/>
+  <rect x="0" y="1200" width="1080" height="300" fill="#2A1B45"/>
+  <rect x="0" y="1200" width="1080" height="12" fill="#4A3566"/>
+  <rect x="24" y="1232" width="100" height="236" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.6"/>
+  <rect x="156" y="1232" width="100" height="236" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.6"/>
+  <rect x="288" y="1232" width="100" height="236" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.6"/>
+  <rect x="420" y="1232" width="100" height="236" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.6"/>
+  <rect x="552" y="1232" width="100" height="236" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.6"/>
+  <rect x="684" y="1232" width="100" height="236" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.6"/>
+  <rect x="816" y="1232" width="100" height="236" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.6"/>
+  <rect x="948" y="1232" width="100" height="236" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.6"/>
+  <rect x="0" y="1500" width="1080" height="420" fill="#140B24"/>
+  <rect x="0" y="1486" width="1080" height="14" fill="#4A3566"/>
+  <line x1="0" y1="1560" x2="1080" y2="1560" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="0" y1="1640" x2="1080" y2="1640" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="0" y1="1720" x2="1080" y2="1720" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="0" y1="1800" x2="1080" y2="1800" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="0" y1="1880" x2="1080" y2="1880" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="0" y1="1960" x2="1080" y2="1960" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="120" y1="1500" x2="0" y2="1920" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="360" y1="1500" x2="300" y2="1920" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="600" y1="1500" x2="600" y2="1920" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="840" y1="1500" x2="900" y2="1920" stroke="#1A0F2E" stroke-width="3"/>
+  <line x1="1080" y1="1500" x2="1200" y2="1920" stroke="#1A0F2E" stroke-width="3"/>
+  <rect x="38" y="228" width="1004" height="914" rx="14" fill="#4A3566"/>
+  <rect x="50" y="240" width="980" height="890" rx="8" fill="#33234A"/>
+  <rect x="60" y="250" width="960" height="870" rx="4" fill="#241838"/>
+  <ellipse cx="760" cy="750" rx="180" ry="90" fill="#B39DDB" opacity="0.04"/>
+  <ellipse cx="320" cy="1010" rx="140" ry="60" fill="#B39DDB" opacity="0.03"/>
+  <rect x="100" y="1142" width="880" height="22" rx="6" fill="#4A3566"/>
+  <rect x="170" y="1132" width="54" height="10" rx="5" fill="#F3EEFF"/>
+  <rect x="240" y="1132" width="54" height="10" rx="5" fill="#B39DDB"/>
+  <rect x="830" y="1124" width="96" height="18" rx="4" fill="#601FB7"/>
+  <rect x="66" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <rect x="162" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <rect x="258" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <rect x="354" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <rect x="450" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <rect x="546" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <rect x="642" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <rect x="738" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <rect x="834" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <rect x="930" y="150" width="70" height="56" rx="4" fill="#F3EEFF" opacity="0.9"/>
+  <text x="101" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">A</text>
+  <text x="197" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">B</text>
+  <text x="293" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">C</text>
+  <text x="389" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">D</text>
+  <text x="485" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">E</text>
+  <text x="581" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">F</text>
+  <text x="677" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">G</text>
+  <text x="773" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">H</text>
+  <text x="869" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">I</text>
+  <text x="965" y="190" font-family="Inter, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#601FB7">J</text>
+  <circle cx="980" cy="84" r="52" fill="#B39DDB"/>
+  <circle cx="980" cy="84" r="44" fill="#F3EEFF"/>
+  <line x1="980" y1="84" x2="980" y2="56" stroke="#1A0F2E" stroke-width="5" stroke-linecap="round"/>
+  <line x1="980" y1="84" x2="1004" y2="92" stroke="#1A0F2E" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="980" cy="84" r="4" fill="#1A0F2E"/>
+  <rect x="700" y="1270" width="360" height="26" rx="8" fill="#4A3566"/>
+  <rect x="716" y="1296" width="328" height="190" rx="6" fill="#33234A"/>
+  <rect x="740" y="1320" width="280" height="60" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.7"/>
+  <rect x="740" y="1400" width="280" height="60" rx="6" fill="none" stroke="#4A3566" stroke-width="4" opacity="0.7"/>
+  <circle cx="760" cy="1250" r="22" fill="#F5C542"/>
+  <path d="M760 1228 Q764 1214 776 1210" stroke="#33234A" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <rect x="820" y="1240" width="110" height="30" rx="4" fill="#601FB7"/>
+  <rect x="828" y="1216" width="96" height="24" rx="4" fill="#B39DDB"/>
+  <ellipse cx="990" cy="1268" rx="34" ry="8" fill="#33234A"/>
+  <line x1="990" y1="1268" x2="990" y2="1230" stroke="#33234A" stroke-width="6"/>
+  <circle cx="990" cy="1192" r="42" fill="#7C4DFF"/>
+  <path d="M962 1170 Q990 1160 1016 1178 M956 1198 Q990 1186 1024 1200 M968 1222 Q992 1210 1014 1220" stroke="#601FB7" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M960 1160 A44 44 0 0 1 1022 1226" stroke="#33234A" stroke-width="5" fill="none"/>
+  <rect x="40" y="1400" width="90" height="96" rx="12" fill="#33234A"/>
+  <path d="M85 1400 Q20 1330 40 1240 Q86 1300 85 1400 M85 1400 Q140 1320 160 1230 Q110 1290 85 1400 M85 1400 Q70 1320 96 1200 Q118 1300 85 1400" fill="#3F8E6A"/>
+  <path d="M620 1420 L636 1496 L686 1496 L702 1420 Z" fill="#2A1B45" stroke="#4A3566" stroke-width="4"/>
+</svg>

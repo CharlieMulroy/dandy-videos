@@ -1,0 +1,731 @@
+{
+ "takeaway": "Harnesses, agents, skills and tools describe how an agent works; none of them hold what you are building. Dandy is that missing layer.",
+ "scenes": [
+  {
+   "id": "s1-stack",
+   "duration": 8.5,
+   "exit": "cut",
+   "floor": 0.78,
+   "elements": [
+    {
+     "name": "room",
+     "type": "sprite",
+     "asset": "motifs/classroom.svg",
+     "anchor": "topleft",
+     "background": true,
+     "x": 0,
+     "y": 0,
+     "height": 1.0,
+     "enter": "cut"
+    },
+    {
+     "name": "dm",
+     "type": "sprite",
+     "asset": "cast/dandy-man/idle.svg",
+     "anchor": "feet",
+     "x": 0.27,
+     "y": 0.78,
+     "height": 0.34,
+     "enter": "walk",
+     "walk_frames": [
+      "cast/dandy-man/walk-1.svg",
+      "cast/dandy-man/walk-2.svg"
+     ],
+     "sequence": [
+      {
+       "asset": "cast/dandy-man/pointing.svg",
+       "at": 1.6
+      },
+      {
+       "asset": "cast/dandy-man/idle.svg",
+       "at": 7.0
+      }
+     ]
+    },
+    {
+     "name": "st-harness",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Harness",
+     "x": 0.1,
+     "y": 0.15,
+     "enter_at": 1.8
+    },
+    {
+     "name": "vendors",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Claude Code, Cursor, Codex",
+     "x": 0.1,
+     "y": 0.2,
+     "width": 0.34,
+     "enter_at": 2.6,
+     "exit_at": 7.6
+    },
+    {
+     "name": "st-agents",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Agents",
+     "x": 0.1,
+     "y": 0.275,
+     "enter_at": 3.9
+    },
+    {
+     "name": "st-skills",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Skills",
+     "x": 0.1,
+     "y": 0.33,
+     "enter_at": 5.0
+    },
+    {
+     "name": "st-tools",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Tools",
+     "x": 0.1,
+     "y": 0.385,
+     "enter_at": 6.1
+    }
+   ]
+  },
+  {
+   "id": "s2-work",
+   "duration": 6.0,
+   "enter": "cut",
+   "exit": "cut",
+   "floor": 0.78,
+   "elements": [
+    {
+     "name": "room",
+     "type": "sprite",
+     "asset": "motifs/classroom.svg",
+     "anchor": "topleft",
+     "background": true,
+     "x": 0,
+     "y": 0,
+     "height": 1.0,
+     "enter": "cut"
+    },
+    {
+     "name": "dm",
+     "type": "sprite",
+     "asset": "cast/dandy-man/idle.svg",
+     "anchor": "feet",
+     "x": 0.27,
+     "y": 0.78,
+     "height": 0.34,
+     "enter": "cut"
+    },
+    {
+     "name": "st-harness",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Harness",
+     "x": 0.1,
+     "y": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "st-agents",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Agents",
+     "x": 0.1,
+     "y": 0.275,
+     "enter": "cut"
+    },
+    {
+     "name": "st-skills",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Skills",
+     "x": 0.1,
+     "y": 0.33,
+     "enter": "cut"
+    },
+    {
+     "name": "st-tools",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Tools",
+     "x": 0.1,
+     "y": 0.385,
+     "enter": "cut"
+    },
+    {
+     "name": "work",
+     "type": "graph",
+     "chalk": true,
+     "nodes": [
+      "Plan",
+      "Build",
+      "Ship"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "x": 0.755,
+     "y": 0.24,
+     "width": 0.32,
+     "scale": 0.75,
+     "enter_at": 0.4
+    },
+    {
+     "name": "cap",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "the work",
+     "x": 0.55,
+     "y": 0.5,
+     "enter_at": 1.2
+    }
+   ]
+  },
+  {
+   "id": "s3-gap",
+   "duration": 8.0,
+   "enter": "wipe",
+   "exit": "cut",
+   "floor": 0.78,
+   "elements": [
+    {
+     "name": "room",
+     "type": "sprite",
+     "asset": "motifs/classroom.svg",
+     "anchor": "topleft",
+     "background": true,
+     "x": 0,
+     "y": 0,
+     "height": 1.0,
+     "enter": "cut"
+    },
+    {
+     "name": "dm",
+     "type": "sprite",
+     "asset": "cast/dandy-man/idle.svg",
+     "anchor": "feet",
+     "x": 0.27,
+     "y": 0.78,
+     "height": 0.34,
+     "enter": "cut",
+     "sequence": [
+      {
+       "asset": "cast/dandy-man/pointing.svg",
+       "at": 1.0
+      }
+     ]
+    },
+    {
+     "name": "st-harness",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Harness",
+     "x": 0.1,
+     "y": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "st-agents",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Agents",
+     "x": 0.1,
+     "y": 0.275,
+     "enter": "cut"
+    },
+    {
+     "name": "st-skills",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Skills",
+     "x": 0.1,
+     "y": 0.33,
+     "enter": "cut"
+    },
+    {
+     "name": "st-tools",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Tools",
+     "x": 0.1,
+     "y": 0.385,
+     "enter": "cut"
+    },
+    {
+     "name": "work",
+     "type": "graph",
+     "chalk": true,
+     "nodes": [
+      "Plan",
+      "Build",
+      "Ship"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "x": 0.755,
+     "y": 0.24,
+     "width": 0.32,
+     "scale": 0.75,
+     "enter": "cut",
+     "rot_at": 0.3,
+     "rot_until": 2.4,
+     "broken_edge": 1,
+     "break_at": 6.2
+    },
+    {
+     "name": "gap",
+     "type": "graph",
+     "chalk": true,
+     "nodes": [
+      "?"
+     ],
+     "edges": [],
+     "x": 0.45,
+     "y": 0.24,
+     "width": 0.1,
+     "enter_at": 1.2
+    },
+    {
+     "name": "mem",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "memory files",
+     "x": 0.5,
+     "y": 0.33,
+     "enter_at": 2.6,
+     "strike_at": 4.6
+    },
+    {
+     "name": "notes",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "notes",
+     "x": 0.5,
+     "y": 0.385,
+     "enter_at": 3.3,
+     "strike_at": 5.0
+    },
+    {
+     "name": "cap",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "memory rots",
+     "x": 0.55,
+     "y": 0.5,
+     "enter_at": 4.8
+    }
+   ]
+  },
+  {
+   "id": "s4-state",
+   "duration": 6.0,
+   "enter": "cut",
+   "exit": "cut",
+   "floor": 0.78,
+   "elements": [
+    {
+     "name": "room",
+     "type": "sprite",
+     "asset": "motifs/classroom.svg",
+     "anchor": "topleft",
+     "background": true,
+     "x": 0,
+     "y": 0,
+     "height": 1.0,
+     "enter": "cut"
+    },
+    {
+     "name": "dm",
+     "type": "sprite",
+     "asset": "cast/dandy-man/idle.svg",
+     "anchor": "feet",
+     "x": 0.27,
+     "y": 0.78,
+     "height": 0.34,
+     "enter": "cut",
+     "sequence": [
+      {
+       "asset": "cast/dandy-man/hat-tip.svg",
+       "at": 0.4
+      },
+      {
+       "asset": "cast/dandy-man/idle.svg",
+       "at": 2.0
+      }
+     ]
+    },
+    {
+     "name": "st-harness",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Harness",
+     "x": 0.1,
+     "y": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "st-agents",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Agents",
+     "x": 0.1,
+     "y": 0.275,
+     "enter": "cut"
+    },
+    {
+     "name": "st-skills",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Skills",
+     "x": 0.1,
+     "y": 0.33,
+     "enter": "cut"
+    },
+    {
+     "name": "st-tools",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Tools",
+     "x": 0.1,
+     "y": 0.385,
+     "enter": "cut"
+    },
+    {
+     "name": "work",
+     "type": "graph",
+     "chalk": true,
+     "nodes": [
+      "Plan",
+      "Build",
+      "Ship"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "x": 0.755,
+     "y": 0.24,
+     "width": 0.32,
+     "scale": 0.75,
+     "enter": "cut",
+     "edge_labels": [
+      "schema",
+      "schema"
+     ]
+    },
+    {
+     "name": "gap",
+     "type": "graph",
+     "chalk": true,
+     "nodes": [
+      "?"
+     ],
+     "edges": [],
+     "x": 0.45,
+     "y": 0.24,
+     "width": 0.1,
+     "enter": "cut",
+     "exit_at": 0.6
+    },
+    {
+     "name": "state",
+     "type": "graph",
+     "chalk": true,
+     "nodes": [
+      "State layer"
+     ],
+     "edges": [],
+     "x": 0.45,
+     "y": 0.24,
+     "width": 0.19,
+     "scale": 0.85,
+     "gold": true,
+     "gold_node": 0,
+     "enter_at": 0.8
+    },
+    {
+     "name": "cap1",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "reads first",
+     "x": 0.55,
+     "y": 0.5,
+     "enter_at": 2.2,
+     "exit_at": 4.0
+    },
+    {
+     "name": "cap2",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "writes back",
+     "x": 0.55,
+     "y": 0.5,
+     "enter_at": 4.2
+    }
+   ]
+  },
+  {
+   "id": "s5-flow",
+   "duration": 5.0,
+   "enter": "cut",
+   "exit": "cut",
+   "floor": 0.78,
+   "elements": [
+    {
+     "name": "room",
+     "type": "sprite",
+     "asset": "motifs/classroom.svg",
+     "anchor": "topleft",
+     "background": true,
+     "x": 0,
+     "y": 0,
+     "height": 1.0,
+     "enter": "cut"
+    },
+    {
+     "name": "dm",
+     "type": "sprite",
+     "asset": "cast/dandy-man/idle.svg",
+     "anchor": "feet",
+     "x": 0.27,
+     "y": 0.78,
+     "height": 0.34,
+     "enter": "cut",
+     "sequence": [
+      {
+       "asset": "cast/dandy-man/pointing.svg",
+       "at": 0.8
+      }
+     ]
+    },
+    {
+     "name": "st-harness",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Harness",
+     "x": 0.1,
+     "y": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "st-agents",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Agents",
+     "x": 0.1,
+     "y": 0.275,
+     "enter": "cut"
+    },
+    {
+     "name": "st-skills",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Skills",
+     "x": 0.1,
+     "y": 0.33,
+     "enter": "cut"
+    },
+    {
+     "name": "st-tools",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "Tools",
+     "x": 0.1,
+     "y": 0.385,
+     "enter": "cut"
+    },
+    {
+     "name": "work",
+     "type": "graph",
+     "chalk": true,
+     "nodes": [
+      "Plan",
+      "Build",
+      "Ship"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "x": 0.755,
+     "y": 0.24,
+     "width": 0.32,
+     "scale": 0.75,
+     "enter": "cut",
+     "edge_labels": [
+      "schema",
+      "schema"
+     ],
+     "gold": true,
+     "gold_node": 0,
+     "ripple_at": 1.0
+    },
+    {
+     "name": "state",
+     "type": "graph",
+     "chalk": true,
+     "nodes": [
+      "State layer"
+     ],
+     "edges": [],
+     "x": 0.45,
+     "y": 0.24,
+     "width": 0.19,
+     "scale": 0.85,
+     "enter": "cut"
+    },
+    {
+     "name": "cap",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "flows downstream",
+     "x": 0.55,
+     "y": 0.5,
+     "enter_at": 1.4
+    },
+    {
+     "name": "ledger",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "on the record",
+     "x": 0.5,
+     "y": 0.33,
+     "enter_at": 3.2
+    }
+   ]
+  },
+  {
+   "id": "s6-benefits",
+   "duration": 10.0,
+   "enter": "fade",
+   "floor": 0.78,
+   "elements": [
+    {
+     "name": "room",
+     "type": "sprite",
+     "asset": "motifs/classroom.svg",
+     "anchor": "topleft",
+     "background": true,
+     "x": 0,
+     "y": 0,
+     "height": 1.0,
+     "enter": "cut"
+    },
+    {
+     "name": "dm",
+     "type": "sprite",
+     "asset": "cast/dandy-man/idle.svg",
+     "anchor": "feet",
+     "x": 0.27,
+     "y": 0.78,
+     "height": 0.34,
+     "enter": "cut",
+     "sequence": [
+      {
+       "asset": "cast/dandy-man/pointing.svg",
+       "at": 1.0
+      }
+     ]
+    },
+    {
+     "name": "b1",
+     "type": "text",
+     "role": "body",
+     "chalk": true,
+     "text": "Pick up where you left off",
+     "x": 0.1,
+     "y": 0.16,
+     "enter_at": 1.0,
+     "width": 0.8
+    },
+    {
+     "name": "b2",
+     "type": "text",
+     "role": "body",
+     "chalk": true,
+     "text": "One source of truth",
+     "x": 0.1,
+     "y": 0.25,
+     "enter_at": 4.0,
+     "width": 0.8
+    },
+    {
+     "name": "b3",
+     "type": "text",
+     "role": "body",
+     "chalk": true,
+     "text": "Any harness",
+     "x": 0.1,
+     "y": 0.34,
+     "enter_at": 7.0,
+     "width": 0.8
+    }
+   ]
+  },
+  {
+   "id": "end",
+   "type": "end_card",
+   "duration": 4.5,
+   "push": 0
+  }
+ ]
+}

@@ -259,7 +259,7 @@ def layout_scene(scene, canvas_name):
             laid.append(dict(common, type="text", role=role, text=e["text"], lines=lines, font=fnt, color=color,
                              x=x0, y=y0, align=align, bbox=bbox, strike_at=e.get("strike_at"),
                              chalk=bool(e.get("chalk")), lower_third=lt, bubble=bubble, tail=e.get("tail", "right"),
-                             text_w=bw, text_h=bh))
+                             text_w=bw, text_h=bh, enter=e.get("enter", "fade")))
         elif t == "sprite":
             h = int(pick(e, "height", 0.4) * H)
             flip = bool(e.get("flip"))
@@ -348,7 +348,7 @@ def draw_text(frame, el, alpha, dx, dy, t_local):
         if first_lx is None:
             first_lx = lx
         if chalk:
-            p = max(0.0, min(1.0, (t_local - i * write_s) / write_s))
+            p = 1.0 if el.get("enter") == "cut" else max(0.0, min(1.0, (t_local - i * write_s) / write_s))
             if p <= 0:
                 continue
             ly = el["y"] + i * lh
@@ -359,7 +359,7 @@ def draw_text(frame, el, alpha, dx, dy, t_local):
             tl.putalpha(Image.composite(tl.split()[3], Image.new("L", frame.size, 0), mask))
             layer.alpha_composite(tl)
         else:
-            p = ease_out((t_local - 0.15 * i) / RISE_S)
+            p = 1.0 if el.get("enter") == "cut" else ease_out((t_local - 0.15 * i) / RISE_S)
             if p <= 0:
                 continue
             ly = el["y"] + i * lh + (1 - p) * RISE_PX

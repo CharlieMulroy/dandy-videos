@@ -83,8 +83,13 @@ _sprite_cache = {}
 def load_sprite(rel, height, flip=False):
     key = (rel, height, flip)
     if key not in _sprite_cache:
-        png = cairosvg.svg2png(url=os.path.join(ROOT, rel), output_height=height)
-        im = Image.open(io.BytesIO(png)).convert("RGBA")
+        path = os.path.join(ROOT, rel)
+        if rel.lower().endswith(".png"):
+            im = Image.open(path).convert("RGBA")
+            im = im.resize((int(im.width * height / im.height), height), Image.LANCZOS)
+        else:
+            png = cairosvg.svg2png(url=path, output_height=height)
+            im = Image.open(io.BytesIO(png)).convert("RGBA")
         if flip:
             im = ImageOps.mirror(im)
         _sprite_cache[key] = im
@@ -109,6 +114,44 @@ def wrap(text, fnt, max_w, draw):
     return lines
 
 
+_bg_cache = {}
+
+
+def background(W, H, floor_y=None):
+    """Dark purple base with a soft radial light behind the action and an optional stage floor."""
+    key = (W, H, floor_y)
+    if key in _bg_cache:
+        return _bg_cache[key].copy()
+    base = rgb(PAL["background"])
+    lift = rgb(PAL["background_lift"])
+    small = Image.new("RGB", (W // 8, H // 8), base)
+    d = ImageDraw.Draw(small)
+    cx, cy, r = small.width * 0.5, small.height * 0.42, small.width * 0.75
+    for i in range(40, 0, -1):
+        f = i / 40
+        col = tuple(int(base[k] + (lift[k] - base[k]) * 0.75 * (1 - f)) for k in range(3))
+        d.ellipse((cx - r * f, cy - r * f * 1.15, cx + r * f, cy + r * f * 1.15), fill=col)
+    small = small.filter(ImageFilter.GaussianBlur(radius=12))
+    bg = small.resize((W, H), Image.BICUBIC)
+    if floor_y is not None:
+        fy = int(floor_y * H)
+        d = ImageDraw.Draw(bg)
+        dark = tuple(int(c * 0.82) for c in base)
+        d.rectangle((0, fy, W, H), fill=dark)
+        d.line([(0, fy), (W, fy)], fill=lift, width=3)
+    _bg_cache[key] = bg
+    return bg.copy()
+
+
+def draw_shadow(frame, x0, y0, w, h):
+    """Soft ellipse under a character's feet."""
+    sw, sh = int(w * 0.75), max(10, int(h * 0.035))
+    layer = Image.new("RGBA", (sw + 40, sh + 40), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).ellipse((20, 20, 20 + sw, 20 + sh), fill=(0, 0, 0, 110))
+    layer = layer.filter(ImageFilter.GaussianBlur(radius=8))
+    frame.alpha_composite(layer, (int(x0 + w / 2 - sw / 2 - 20), int(y0 + h - sh / 2 - 20)))
+
+
 # ---------- layout ----------
 def layout_scene(scene, canvas_name):
     cv = CONTRACT["canvases"][canvas_name]
@@ -118,8 +161,11 @@ def layout_scene(scene, canvas_name):
     measure = ImageDraw.Draw(Image.new("RGB", (8, 8)))
     laid = []
     stype = scene.get("type", "normal")
+
+    def pick(e, key, default=None):
+        return e.get(f"{key}_{canvas_name}", e.get(key, default))
     base = dict(id=scene["id"], type=stype, duration=scene["duration"], enter=scene.get("enter", "fade"),
-                exit=scene.get("exit", "fade"), W=W, H=H)
+                exit=scene.get("exit", "fade"), W=W, H=H, floor=pick(scene, "floor"), push=scene.get("push", 0.04))
 
     def pick(e, key, default=None):
         return e.get(f"{key}_{canvas_name}", e.get(key, default))
@@ -133,9 +179,15 @@ def layout_scene(scene, canvas_name):
                          bbox=(x, y, x + spr.width, y + spr.height), enter="fade", enter_at=0.0,
                          sequence=[], walk_frames=[]))
         cx = (x + spr.width + (W - margin)) / 2
-        fh = font("headline", int(sizes["headline"] * 1.4))
+        fh = font("headline", int(sizes["headline"] * 1.5))
         tw = measure.textlength("Dandy", font=fh)
-        ty = H * 0.5 - sizes["headline"] * 1.2
+        hat_h = int(H * (0.09 if H > W else 0.16))
+        hat = load_sprite("motifs/logo-hat-light.png", hat_h)
+        ty = H * 0.5 - sizes["headline"] * 0.9
+        hy = ty - hat.height - CONTRACT["layout"]["spacing_unit_px"] * 2
+        laid.append(dict(name="logo_hat", type="sprite", img=hat, x=snap(cx - hat.width / 2), y=snap(hy),
+                         bbox=(cx - hat.width / 2, hy, cx + hat.width / 2, hy + hat.height), enter="fade", enter_at=0.0,
+                         sequence=[], walk_frames=[]))
         laid.append(dict(name="wordmark", type="text", role="headline", text="Dandy", lines=["Dandy"],
                          font=fh, color=PAL["text"], x=snap(cx - tw / 2), y=snap(ty), align="left",
                          bbox=(cx - tw / 2, ty, cx + tw / 2, ty + fh.size * 1.1), enter_at=0.0, gold=False))
@@ -173,8 +225,11 @@ def layout_scene(scene, canvas_name):
             color = PAL["accent_gold"] if e.get("gold") else (PAL["soft"] if e.get("chalk") else PAL["text"])
             if e.get("color") in PAL:
                 color = PAL[e["color"]]
+            lt = bool(e.get("lower_third"))
+            bx0 = x0 - (CONTRACT["layout"]["spacing_unit_px"] + 8) if lt else x0
             laid.append(dict(common, type="text", role=role, text=e["text"], lines=lines, font=fnt, color=color,
-                             x=x0, y=y0, align=align, bbox=(x0, y0, x0 + bw, y0 + bh), strike_at=e.get("strike_at")))
+                             x=x0, y=y0, align=align, bbox=(bx0, y0, x0 + bw, y0 + bh), strike_at=e.get("strike_at"),
+                             chalk=bool(e.get("chalk")), lower_third=lt))
         elif t == "sprite":
             h = int(pick(e, "height", 0.4) * H)
             flip = bool(e.get("flip"))
@@ -193,7 +248,8 @@ def layout_scene(scene, canvas_name):
             seq = [dict(asset=s["asset"], at=s["at"], img=load_sprite(s["asset"], h, flip)) for s in e.get("sequence", [])]
             laid.append(dict(common, type="sprite", img=spr, x=x0, y=y0, bbox=(x0, y0, x0 + spr.width, y0 + spr.height),
                              enter=e.get("enter", "fade"), walk_frames=[frames[a] for a in e.get("walk_frames", [])],
-                             sequence=seq))
+                             sequence=seq, idle=bool(e.get("idle", anchor == "feet" and not e.get("background"))),
+                             shadow=bool(e.get("shadow", anchor == "feet" and not e.get("background")))))
         elif t == "graph":
             gw = pick(e, "width", 0.7) * W
             n = len(e["nodes"])
@@ -209,8 +265,11 @@ def layout_scene(scene, canvas_name):
                 nodes.append(dict(label=label, box=(nx, y0, nx + node_w, y0 + node_h)))
             spread = e.get("spread")
             pad = spread["px"] if spread else 0
+            panel = bool(e.get("panel"))
+            ppad = CONTRACT["layout"]["spacing_unit_px"] * 2 if panel else 0
             laid.append(dict(common, type="graph", enter=e.get("enter", "fade"), nodes=nodes, edges=e.get("edges", []), font=fnt, chalk=bool(e.get("chalk")),
-                             bbox=(x0 - pad, y0 - (sizes["caption"] * 1.4 if e.get("edge_labels") else 0), x0 + gw + pad, y0 + node_h),
+                             bbox=(x0 - pad - ppad, y0 - (sizes["caption"] * 1.4 if e.get("edge_labels") else 0) - ppad, x0 + gw + pad + ppad, y0 + node_h + ppad),
+                             panel=panel,
                              broken_edge=e.get("broken_edge"), break_at=e.get("break_at"), gold_node=e.get("gold_node"),
                              spread=spread, merge_at=e.get("merge_at"), ripple_at=e.get("ripple_at"),
                              edge_labels=e.get("edge_labels"), label_font=font("caption", int(sizes["caption"] * 0.7))))
@@ -231,18 +290,40 @@ def draw_text(frame, el, alpha, dx, dy, t_local):
     d = ImageDraw.Draw(layer)
     lh = el["font"].size * 1.2
     col = rgb(el["color"])
+    chalk = el.get("chalk")
+    write_s = 0.55  # seconds to write one chalk line
+    first_lx = None
     for i, line in enumerate(el["lines"]):
-        p = ease_out((t_local - 0.15 * i) / RISE_S)
-        if p <= 0:
-            continue
         lw = d.textlength(line, font=el["font"])
         lx = el["x"] if el["align"] == "left" else el["bbox"][0] + (el["bbox"][2] - el["bbox"][0] - lw) / 2
-        ly = el["y"] + i * lh + (1 - p) * RISE_PX
-        d.text((lx + dx, ly + dy), line, font=el["font"], fill=col + (int(255 * p),))
+        if first_lx is None:
+            first_lx = lx
+        if chalk:
+            p = max(0.0, min(1.0, (t_local - i * write_s) / write_s))
+            if p <= 0:
+                continue
+            ly = el["y"] + i * lh
+            tl = Image.new("RGBA", frame.size, (0, 0, 0, 0))
+            ImageDraw.Draw(tl).text((lx + dx, ly + dy), line, font=el["font"], fill=col + (235,))
+            mask = Image.new("L", frame.size, 0)
+            ImageDraw.Draw(mask).rectangle((lx + dx - 4, ly + dy - 10, lx + dx + lw * p + 6, ly + dy + lh), fill=255)
+            tl.putalpha(Image.composite(tl.split()[3], Image.new("L", frame.size, 0), mask))
+            layer.alpha_composite(tl)
+        else:
+            p = ease_out((t_local - 0.15 * i) / RISE_S)
+            if p <= 0:
+                continue
+            ly = el["y"] + i * lh + (1 - p) * RISE_PX
+            d.text((lx + dx, ly + dy), line, font=el["font"], fill=col + (int(255 * p),))
         if el.get("strike_at") is not None and t_local + el["enter_at"] >= el["strike_at"]:
             sp = ease_out((t_local + el["enter_at"] - el["strike_at"]) / 0.3)
-            yy = ly + el["font"].size * 0.58 + dy
+            yy = el["y"] + i * lh + el["font"].size * 0.58 + dy
             d.line([(lx + dx, yy), (lx + dx + lw * sp, yy)], fill=rgb(PAL["warning"]) + (255,), width=max(4, el["font"].size // 10))
+    if el.get("lower_third") and first_lx is not None:
+        p = ease_out(t_local / RISE_S)
+        bar_h = (lh * len(el["lines"]) - el["font"].size * 0.2) * p
+        bx = first_lx + dx - CONTRACT["layout"]["spacing_unit_px"] - 2
+        d.rounded_rectangle((bx, el["y"] + dy, bx + 6, el["y"] + dy + bar_h), radius=3, fill=rgb(PAL["highlight"]) + (255,))
     frame.alpha_composite(with_alpha(layer, alpha))
 
 
@@ -274,6 +355,10 @@ def draw_sprite(frame, el, t_local, alpha, dx, dy):
         a = 1.0
     else:
         a = ease_out(t_local / TR)
+    if el.get("idle") and not (el["enter"] == "walk" and t_local < 1.1):
+        dy += math.sin(t_local * 2 * math.pi / 3.2) * 3
+    if el.get("shadow"):
+        draw_shadow(frame, el["x"] + dx, el["y"], img.width, img.height) if a * alpha >= 0.99 else None
     paste_sprite(frame, img, el["x"] + dx, el["y"] + dy, a * alpha)
 
 
@@ -302,6 +387,14 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
     for i, nd in enumerate(el["nodes"]):
         b = nd["box"]
         boxes.append((b[0] + offs[i] + dx, b[1] + dy, b[2] + offs[i] + dx, b[3] + dy))
+    if el.get("panel"):
+        pp = CONTRACT["layout"]["spacing_unit_px"] * 2
+        allb = (min(b[0] for b in boxes) - pp, min(b[1] for b in boxes) - pp - (el["label_font"].size * 1.6 + 12 if el.get("edge_labels") else 0),
+                max(b[2] for b in boxes) + pp, max(b[3] for b in boxes) + pp)
+        glow = Image.new("RGBA", frame.size, (0, 0, 0, 0))
+        ImageDraw.Draw(glow).rounded_rectangle((allb[0] - 6, allb[1] - 6, allb[2] + 6, allb[3] + 6), radius=28, fill=hi + (70,))
+        layer.alpha_composite(glow.filter(ImageFilter.GaussianBlur(radius=18)))
+        rounded(d, allb, fill=lift + (255,), outline=hi + (255,), width=3, r=24)
     # ripple: nodes light up in turn after ripple_at; first node stays gold
     lit = set()
     if el["ripple_at"] is not None and t_abs >= el["ripple_at"]:
@@ -309,6 +402,18 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
         lit = {min(k, n - 1)}
     for i, nd in enumerate(el["nodes"]):
         box = boxes[i]
+        # pop-in: scale 0.7 -> 1.06 -> 1.0 over 380 ms, staggered per node (skipped on cut entry)
+        pop = 1.0
+        if el.get("enter") != "cut":
+            q = (t_local - 0.12 * i) / 0.38
+            if q <= 0:
+                continue
+            if q < 1:
+                pop = 0.7 + 0.36 * ease_out(q) - 0.06 * ease_out(max(0, (q - 0.6) / 0.4))
+        if pop != 1.0:
+            cxb, cyb = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+            hw, hh = (box[2] - box[0]) / 2 * pop, (box[3] - box[1]) / 2 * pop
+            box = (cxb - hw, cyb - hh, cxb + hw, cyb + hh)
         is_gold = (el.get("gold_node") == i and (el["ripple_at"] is None or t_abs >= el["ripple_at"])) or i in lit
         col = gold if is_gold else line_col
         rounded(d, box, fill=fill, outline=col + (255,), width=4)
@@ -317,6 +422,8 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
                nd["label"], font=el["font"], fill=txt + (255,))
     for k, (a, b) in enumerate(el["edges"]):
         start = k * edge_s
+        if el.get("enter") != "cut":
+            start = max(start, 0.12 * max(a, b) + 0.3)  # wait for the target node to pop in
         if el["ripple_at"] is not None and t_abs >= el["ripple_at"]:
             start = el["ripple_at"] - el["enter_at"] + k * 0.45
             p = ease_out((t_local - start) / 0.4)
@@ -353,7 +460,7 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
     frame.alpha_composite(with_alpha(layer, alpha))
 
 
-def context_rot(frame, bbox, p):
+def context_rot(frame, bbox, p, bg):
     x0, y0, x1, y1 = (int(v) for v in bbox)
     pad = 40
     box = (max(0, x0 - pad), max(0, y0 - pad), min(frame.width, x1 + pad), min(frame.height, y1 + pad))
@@ -362,7 +469,7 @@ def context_rot(frame, bbox, p):
     region = region.filter(ImageFilter.GaussianBlur(radius=12 * p))
     a = region.split()[3].point(lambda v: int(v * (1 - 0.6 * p)))
     region.putalpha(a)
-    base = Image.new("RGBA", region.size, rgb(PAL["background"]) + (255,))
+    base = bg.crop(box).convert("RGBA")
     base.alpha_composite(region)
     frame.paste(base, box)
 
@@ -383,7 +490,8 @@ def element_alpha_and_offset(el, t):
 
 def render_frame(scene, t):
     W, H = scene["W"], scene["H"]
-    frame = Image.new("RGBA", (W, H), rgb(PAL["background"]) + (255,))
+    bg = background(W, H, scene.get("floor"))
+    frame = bg.convert("RGBA")
     for el in scene["laid_out"]:
         t_local = t - el.get("enter_at", 0)
         if t_local < 0:
@@ -402,7 +510,7 @@ def render_frame(scene, t):
             draw_graph(frame, el, t_local, p * alpha, dx, dy)
         if el.get("rot_at") is not None and t >= el["rot_at"]:
             rp = ease_out((t - el["rot_at"]) / (M["context_rot_ms"] / 1000))
-            context_rot(frame, el["bbox"], rp)
+            context_rot(frame, el["bbox"], rp, bg)
     return frame
 
 
@@ -444,6 +552,13 @@ def qa(video_dir, canvas_name, spec, scenes):
 
 def composite(scene, t):
     frame = render_frame(scene, t)
+    push = scene.get("push", 0)
+    if push:
+        sc = 1 + push * (t / scene["duration"])
+        W, H = frame.size
+        nw, nh = int(W * sc), int(H * sc)
+        big = frame.resize((nw, nh), Image.BILINEAR)
+        frame = big.crop(((nw - W) // 2, (nh - H) // 2, (nw - W) // 2 + W, (nh - H) // 2 + H))
     a = scene_alpha(scene, t)
     if a < 1:
         bg = Image.new("RGBA", frame.size, rgb(PAL["background"]) + (255,))

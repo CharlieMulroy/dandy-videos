@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+<defs>
+  <linearGradient id="hood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C4DFF"/><stop offset="1" stop-color="#601FB7"/></linearGradient>
+</defs>
+<rect x="180" y="1040" width="34" height="240" rx="14" fill="#33234A"/>
+<rect x="190" y="1255" width="190" height="30" rx="12" fill="#33234A"/>
+<rect x="272" y="1285" width="26" height="110" fill="#33234A"/>
+<path d="M200 1400 L370 1400 M285 1395 L285 1370" stroke="#33234A" stroke-width="18" stroke-linecap="round"/>
+<path d="M300 1262 L450 1262 L450 1400" stroke="#3D2A72" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<ellipse cx="468" cy="1408" rx="40" ry="16" fill="#F3EEFF"/>
+<path d="M290 1270 Q340 1120 450 1148 L470 1200 Q360 1200 330 1280 Z" fill="url(#hood)"/>
+<path d="M390 1180 L520 1176" stroke="url(#hood)" stroke-width="44" stroke-linecap="round" fill="none"/>
+<circle cx="532" cy="1176" r="20" fill="#F1C9A5"/>
+<circle cx="475" cy="1150" r="54" fill="#F1C9A5"/>
+<path d="M419 1162 Q411 1086 475 1090 Q525 1092 527 1136 Q497 1114 457 1128 Q435 1142 419 1162 Z" fill="#2B1A3F"/>
+<circle cx="411" cy="1122" r="24" fill="#2B1A3F"/>
+<path d="M431 1140 Q465 1072 511 1106" stroke="#F3EEFF" stroke-width="9" fill="none" stroke-linecap="round"/>
+<rect x="415" y="1130" width="26" height="40" rx="10" fill="#F3EEFF"/>
+<circle cx="505" cy="1146" r="5" fill="#2B1A3F"/>
+<path d="M493 1130 Q507 1124 517 1132" stroke="#2B1A3F" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M499 1172 Q509 1168 517 1174" stroke="#2B1A3F" stroke-width="4" fill="none" stroke-linecap="round"/>
+</svg>

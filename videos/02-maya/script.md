@@ -51,3 +51,22 @@ Finish what you started.
 - Messaging check: leads with the problem; "state" named plainly; no Jira, harness or framework; no proof
   or traction lines (individual-builder video); no long dashes; max 12 words on screen per frame.
 - Closing line "Finish what you started." is this video's own; 01 keeps "Pick up where you left off."
+
+## v3: the room (Nov 2, after the house-style cut)
+
+Direction change: use-case videos get their own look. This one is a cozy room at night, drawn in code
+(videos/02-maya/lofi/gen_room.py, rendered by videos/02-maya/lofi/render_lofi.py). No Dandy Man; soft end card.
+The agent is the chat window on Maya's monitor. The bulletin board carries the three projects as cards with
+progress bars and a pink sticky note per problem.
+
+| # | Sec | Shot | On-screen text | Narration |
+| --- | --- | --- | --- | --- |
+| 1 | 0-6 | Wide: Maya typing at night, rain, chat on screen (she asks for a budget tracker, the agent builds it). Slow push in. | "Maya. Not a coder." | Maya isn't a coder. She builds things with Claude Code anyway. |
+| 2 | 6-13 | Board close-up: three cards pin on (Budget tracker 60%, Workout log 45%, Side business site 30%), then three notes: "where was I?", "rebuilt it. again.", "explained it 4 times". | "Started 3. Finished 0." | Three projects. None finished. |
+| 3 | 13-20 | Screen close-up: Maya types "add the chart to the budget tracker"; agent: "Which budget tracker? I have no context on that." Maya slumps onto the desk. | (chat only) | (none) |
+| 4 | 20-29 | Screen: a Dandy panel slides in (Budget tracker: Income done, Spend done, Chart next); agent reads it and starts at Chart; Maya sits up, then types again. | (chat only) | Then she put them in Dandy. Now every session starts from what's actually true. |
+| 5 | 29-35 | Wide time-lapse: the window cycles night, day, night; rain stops; Maya keeps working. | "3 weeks later" | Three weeks later. |
+| 6 | 35-42 | Board close-up: notes peel off, progress bars fill to 100%, a DONE stamp lands on each card. | "Finished 3." | Same Maya. Same agent. |
+| 7 | 42-46.5 | Soft end card: the room dims and blurs; hat, Dandy, dandylabs.dev, 14-day free trial. | "Finish what you started." | Finish what you started. |
+
+Narration, straight through (about 45 words): Maya isn't a coder. She builds things with Claude Code anyway. / Three projects. None finished. / Then she put them in Dandy. Now every session starts from what's actually true. / Three weeks later. Same Maya. Same agent. / Finish what you started.

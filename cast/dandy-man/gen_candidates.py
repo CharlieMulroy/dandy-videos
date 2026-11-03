@@ -52,7 +52,7 @@ def head(brow="flat"):
   <path d="M206 219 Q214 213 224 219" stroke="{BG}" stroke-width="3" fill="none" stroke-linecap="round"/>
   <path d="M200 254 C194 246 184 247 181 250 C179 253 185 257 200 258 C215 257 221 253 219 250 C216 247 206 246 200 254 Z" fill="{BG}"/>
   <line x1="194" y1="263" x2="206" y2="263" stroke="{BG}" stroke-width="2.5" stroke-linecap="round"/>
-  <rect x="191" y="270" width="18" height="42" fill="{TEXT}"/>"""
+  <rect x="191" y="270" width="18" height="32" fill="{TEXT}"/>"""
 
 
 def body(arms="cane", slim=1.0):
@@ -109,7 +109,7 @@ def body(arms="cane", slim=1.0):
   <path d="{lapels}" fill="{PRIMARY}"/>
   {buttons}
   <path d="{collar}" fill="{TEXT}"/>
-  <path d="{cravat}" fill="{TEXT}"/>
+  <path d="{cravat}" fill="{TEXT}" stroke="{BG}" stroke-width="2.5" stroke-linejoin="round"/>
   {arms_svg}"""
 
 

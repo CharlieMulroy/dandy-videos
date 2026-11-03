@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 800" width="400" height="800">
+  
+  <rect x="162" y="430" width="32" height="340" fill="#3E1480"/><rect x="206" y="430" width="32" height="340" fill="#3E1480"/><rect x="158" y="766" width="40" height="14" rx="6" fill="#2A1B45"/><rect x="202" y="766" width="40" height="14" rx="6" fill="#2A1B45"/>
+  <path d="M140 300 Q134 300 136 312 L156 440 L162 560 L194 560 L200 452 L206 560 L238 560 L244 440 L264 312 Q266 300 260 300 Z" fill="#601FB7"/>
+  <path d="M174 300 L200 326 L226 300 L222 420 L178 420 Z" fill="#B39DDB"/>
+  <path d="M174 300 L186 360 L200 326 Z M226 300 L214 360 L200 326 Z" fill="#601FB7"/>
+  <circle cx="200" cy="350" r="3" fill="#F3EEFF"/><circle cx="200" cy="374" r="3" fill="#F3EEFF"/><circle cx="200" cy="398" r="3" fill="#F3EEFF"/>
+  <path d="M186 292 L200 310 L214 292 Z" fill="#F3EEFF"/>
+  <path d="M192 310 Q200 322 208 310 L204 332 L196 332 Z" fill="#F3EEFF"/>
+  
+  <path d="M140 310 L124 430" stroke="#601FB7" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <circle cx="122" cy="444" r="12" fill="#F3EEFF"/>
+  <path d="M260 310 L278 420" stroke="#601FB7" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <circle cx="282" cy="434" r="12" fill="#F3EEFF"/>
+  <line x1="282" y1="440" x2="294" y2="776" stroke="#B39DDB" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="282" cy="436" r="8" fill="#F3EEFF"/>
+  
+  <circle cx="200" cy="236" r="40" fill="#F3EEFF"/>
+  <circle cx="186" cy="232" r="3.5" fill="#1A0F2E"/>
+  <circle cx="214" cy="232" r="3.5" fill="#1A0F2E"/>
+  <path d="M176 219 Q186 213 194 219" stroke="#1A0F2E" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M206 219 Q214 213 224 219" stroke="#1A0F2E" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M200 254 C194 246 184 247 181 250 C179 253 185 257 200 258 C215 257 221 253 219 250 C216 247 206 246 200 254 Z" fill="#1A0F2E"/>
+  <line x1="194" y1="263" x2="206" y2="263" stroke="#1A0F2E" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="190" y="272" width="20" height="20" fill="#F3EEFF"/>
+  
+  <g transform="rotate(0 200 196)">
+    <path d="M162 196 L158 104 Q158 96 166 96 L234 96 Q242 96 242 104 L238 196 Z" fill="#601FB7"/>
+    <rect x="160" y="170" width="80" height="14" fill="#F5C542"/>
+    <rect x="138" y="190" width="124" height="14" rx="7" fill="#601FB7"/>
+  </g>
+</svg>

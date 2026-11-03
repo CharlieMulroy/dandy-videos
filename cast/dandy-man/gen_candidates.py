@@ -26,14 +26,15 @@ SHADE = "#3E1480"  # darker than primary for trousers/shoes; 60% of the figure s
 
 
 def hat(tilt_deg, tall=True):
-    top = 40 if tall else 70
-    crown = f"M152 196 L146 {top + 10} Q146 {top} 156 {top} L244 {top} Q254 {top} 254 {top + 10} L248 196 Z"
-    band_y = 166
+    # Crown sits on the head (y=196). "tall" is a modest top hat; the small one is a bowler-ish stub.
+    top = 96 if tall else 120
+    crown = f"M162 196 L158 {top + 8} Q158 {top} 166 {top} L234 {top} Q242 {top} 242 {top + 8} L238 196 Z"
+    band_y = 170
     return f"""
   <g transform="rotate({tilt_deg} 200 196)">
     <path d="{crown}" fill="{PRIMARY}"/>
-    <rect x="149" y="{band_y}" width="102" height="16" fill="{GOLD}"/>
-    <rect x="128" y="190" width="144" height="16" rx="8" fill="{PRIMARY}"/>
+    <rect x="160" y="{band_y}" width="80" height="14" fill="{GOLD}"/>
+    <rect x="138" y="190" width="124" height="14" rx="7" fill="{PRIMARY}"/>
   </g>"""
 
 

@@ -36,7 +36,7 @@ def employee(cape="flutter", bubble=False):
     else:  # drooping straight down behind the body
         cape_path = f"M{cx - 16} 196 L{cx - 34} 440 Q{cx - 10} 448 {cx + 4} 430 L{cx - 2} 220 Z"
     parts = [
-        f'<path d="{cape_path}" fill="{HI}"/>',
+        # (cape removed Nov 2 at Charlie's request; cape_path kept for the super employee video)
         # body
         f'<line x1="{cx}" y1="190" x2="{cx}" y2="400" {stroke}/>',
         # legs

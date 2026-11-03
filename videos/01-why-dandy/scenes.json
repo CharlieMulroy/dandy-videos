@@ -1,85 +1,660 @@
 {
-  "takeaway": "Agents forget everything between sessions; Dandy is the state layer that remembers, so plan and code stay one thing.",
-  "scenes": [
-    {"id": "s1-night", "duration": 5, "exit": "cut", "floor": 0.74, "floor_horizontal": 0.88, "elements": [
-      {"name": "clock", "type": "sprite", "asset": "motifs/clock-night.svg", "anchor": "center",
-       "x": 0.84, "y": 0.17, "height": 0.07, "x_horizontal": 0.92, "y_horizontal": 0.17, "height_horizontal": 0.12, "enter": "fade"},
-      {"name": "time", "type": "text", "role": "caption", "text": "11:48 PM", "x": 0.08, "y": 0.155, "y_horizontal": 0.14},
-      {"name": "line", "type": "text", "role": "body", "text": "Schema designed. Decisions made. Half built.",
-       "x": 0.08, "y": 0.24, "width": 0.7, "x_horizontal": 0.08, "y_horizontal": 0.26, "width_horizontal": 0.36, "enter_at": 0.8},
-      {"name": "graph", "type": "graph", "panel": true, "x": 0.5, "y": 0.43, "width": 0.7, "x_horizontal": 0.67, "y_horizontal": 0.33, "width_horizontal": 0.32,
-       "nodes": ["Schema", "Decide", "Build"], "edges": [[0, 1], [1, 2]], "enter_at": 1.6},
-      {"name": "desk", "type": "sprite", "asset": "cast/figures/builder.svg", "anchor": "feet", "idle": false,
-       "x": 0.378, "y": 0.74, "height": 0.23, "x_horizontal": 0.22, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"},
-      {"name": "agent", "type": "sprite", "asset": "cast/figures/employee-thinking.svg", "anchor": "feet",
-       "x": 0.81, "y": 0.74, "height": 0.22, "x_horizontal": 0.47, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"}
-    ]},
-    {"id": "s2-morning", "duration": 5, "enter": "wipe", "floor": 0.74, "floor_horizontal": 0.88, "elements": [
-      {"name": "clock", "type": "sprite", "asset": "motifs/clock-morning.svg", "anchor": "center",
-       "x": 0.84, "y": 0.17, "height": 0.07, "x_horizontal": 0.92, "y_horizontal": 0.17, "height_horizontal": 0.12, "enter": "cut"},
-      {"name": "time", "type": "text", "role": "caption", "text": "9:02 AM", "x": 0.08, "y": 0.155, "y_horizontal": 0.14},
-      {"name": "line", "type": "text", "role": "body", "text": "New session. Nothing remembered.",
-       "x": 0.08, "y": 0.24, "width": 0.7, "x_horizontal": 0.08, "y_horizontal": 0.26, "width_horizontal": 0.36, "enter_at": 1.6},
-      {"name": "graph", "type": "graph", "panel": true, "enter": "cut", "x": 0.5, "y": 0.43, "width": 0.7, "x_horizontal": 0.67, "y_horizontal": 0.33, "width_horizontal": 0.32,
-       "nodes": ["Schema", "Decide", "Build"], "edges": [[0, 1], [1, 2]], "enter_at": 0.0, "rot_at": 1.2},
-      {"name": "desk", "type": "sprite", "asset": "cast/figures/builder.svg", "anchor": "feet", "idle": false,
-       "x": 0.378, "y": 0.74, "height": 0.23, "x_horizontal": 0.22, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"},
-      {"name": "agent", "type": "sprite", "asset": "cast/figures/employee-thinking.svg", "anchor": "feet",
-       "sequence": [{"asset": "cast/figures/employee-blank.svg", "at": 1.4}],
-       "x": 0.81, "y": 0.74, "height": 0.22, "x_horizontal": 0.47, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"}
-    ]},
-    {"id": "s3-rot", "duration": 7, "exit": "cut", "floor": 0.78, "floor_horizontal": 0.9, "elements": [
-      {"name": "board", "type": "sprite", "asset": "motifs/blackboard.svg", "anchor": "topleft", "background": true,
-       "x": 0.022, "y": 0.12, "height": 0.34, "x_horizontal": 0.41, "y_horizontal": 0.1, "height_horizontal": 0.55, "enter": "cut"},
-      {"name": "dm", "type": "sprite", "asset": "cast/dandy-man/idle.svg", "anchor": "feet", "enter": "walk",
-       "walk_frames": ["cast/dandy-man/walk-1.svg", "cast/dandy-man/walk-2.svg"],
-       "x": 0.27, "y": 0.78, "height": 0.36, "x_horizontal": 0.16, "y_horizontal": 0.9, "height_horizontal": 0.66},
-      {"name": "t1", "type": "text", "role": "caption", "chalk": true, "text": "notes", "x": 0.14, "y": 0.17, "x_horizontal": 0.44, "y_horizontal": 0.17, "enter_at": 1.3, "strike_at": 2.8, "exit_at": 6.5},
-      {"name": "t2", "type": "text", "role": "caption", "chalk": true, "text": "markdown files", "x": 0.14, "y": 0.225, "x_horizontal": 0.44, "y_horizontal": 0.27, "enter_at": 1.9, "strike_at": 3.4, "exit_at": 6.5},
-      {"name": "t3", "type": "text", "role": "caption", "chalk": true, "text": "planning tools", "x": 0.14, "y": 0.28, "x_horizontal": 0.44, "y_horizontal": 0.37, "enter_at": 2.5, "strike_at": 4.0, "exit_at": 6.5},
-      {"name": "pc", "type": "graph", "chalk": true, "x": 0.5, "y": 0.36, "width": 0.5, "x_horizontal": 0.654, "y_horizontal": 0.55, "width_horizontal": 0.3,
-       "nodes": ["Plan", "Code"], "edges": [[0, 1]], "enter_at": 4.0, "spread": {"at": 5.0, "ms": 900, "px": 110}, "broken_edge": 0, "break_at": 5.7},
-      {"name": "cap", "type": "text", "role": "caption", "lower_third": true, "text": "Plan ≠ Code", "x": 0.56, "y": 0.5, "x_horizontal": 0.46, "y_horizontal": 0.76, "enter_at": 5.8, "exit_at": 6.6}
-    ]},
-    {"id": "s4-state", "duration": 7, "enter": "cut", "exit": "cut", "floor": 0.78, "floor_horizontal": 0.9, "elements": [
-      {"name": "board", "type": "sprite", "asset": "motifs/blackboard.svg", "anchor": "topleft", "background": true,
-       "x": 0.022, "y": 0.12, "height": 0.34, "x_horizontal": 0.41, "y_horizontal": 0.1, "height_horizontal": 0.55, "enter": "cut"},
-      {"name": "dm", "type": "sprite", "asset": "cast/dandy-man/idle.svg", "anchor": "feet", "enter": "cut",
-       "sequence": [{"asset": "cast/dandy-man/hat-tip.svg", "at": 1.0}, {"asset": "cast/dandy-man/idle.svg", "at": 2.6}],
-       "x": 0.27, "y": 0.78, "height": 0.36, "x_horizontal": 0.16, "y_horizontal": 0.9, "height_horizontal": 0.66},
-      {"name": "pc", "type": "graph", "chalk": true, "enter": "cut", "x": 0.5, "y": 0.36, "width": 0.5, "x_horizontal": 0.654, "y_horizontal": 0.5, "width_horizontal": 0.3,
-       "nodes": ["Plan", "Code"], "edges": [], "enter_at": 0.0, "spread": {"at": 0.0, "ms": 1, "px": 110}, "merge_at": 1.2, "exit_at": 2.2},
-      {"name": "sl", "type": "graph", "chalk": true, "gold": true, "x": 0.5, "y": 0.36, "width": 0.34, "x_horizontal": 0.654, "y_horizontal": 0.5, "width_horizontal": 0.22,
-       "nodes": ["State layer"], "edges": [], "enter_at": 2.4, "exit_at": 6.6, "gold_node": 0},
-      {"name": "cap", "type": "text", "role": "caption", "lower_third": true, "text": "One source of truth", "x": 0.56, "y": 0.5, "x_horizontal": 0.46, "y_horizontal": 0.76, "enter_at": 3.0, "exit_at": 6.6}
-    ]},
-    {"id": "s5-how", "duration": 10, "enter": "cut", "floor": 0.78, "floor_horizontal": 0.9, "elements": [
-      {"name": "board", "type": "sprite", "asset": "motifs/blackboard.svg", "anchor": "topleft", "background": true,
-       "x": 0.022, "y": 0.12, "height": 0.34, "x_horizontal": 0.41, "y_horizontal": 0.1, "height_horizontal": 0.55, "enter": "cut"},
-      {"name": "dm", "type": "sprite", "asset": "cast/dandy-man/idle.svg", "anchor": "feet", "enter": "cut",
-       "sequence": [{"asset": "cast/dandy-man/pointing.svg", "at": 5.6}],
-       "x": 0.27, "y": 0.78, "height": 0.36, "x_horizontal": 0.16, "y_horizontal": 0.9, "height_horizontal": 0.66},
-      {"name": "g", "type": "graph", "chalk": true, "x": 0.5, "y": 0.3, "width": 0.8, "x_horizontal": 0.654, "y_horizontal": 0.4, "width_horizontal": 0.44,
-       "nodes": ["Ingest", "Clean", "Report"], "edges": [[0, 1], [1, 2]], "edge_labels": ["schema", "schema"],
-       "enter_at": 0.3, "ripple_at": 6.2, "gold_node": 0, "gold": true},
-      {"name": "agent", "type": "sprite", "asset": "cast/figures/employee.svg", "anchor": "feet", "enter": "rise",
-       "x": 0.83, "y": 0.78, "height": 0.16, "x_horizontal": 0.34, "y_horizontal": 0.9, "height_horizontal": 0.3, "enter_at": 2.6},
-      {"name": "cap1", "type": "text", "role": "caption", "lower_third": true, "text": "reads, writes back", "x": 0.56, "y": 0.5, "x_horizontal": 0.46, "y_horizontal": 0.76, "enter_at": 3.0, "exit_at": 5.6},
-      {"name": "cap2", "type": "text", "role": "caption", "lower_third": true, "text": "flows downstream", "x": 0.56, "y": 0.5, "x_horizontal": 0.46, "y_horizontal": 0.76, "enter_at": 6.2}
-    ]},
-    {"id": "s6-fixed", "duration": 7, "floor": 0.74, "floor_horizontal": 0.88, "elements": [
-      {"name": "clock", "type": "sprite", "asset": "motifs/clock-morning.svg", "anchor": "center",
-       "x": 0.84, "y": 0.17, "height": 0.07, "x_horizontal": 0.92, "y_horizontal": 0.17, "height_horizontal": 0.12, "enter": "fade"},
-      {"name": "time", "type": "text", "role": "caption", "text": "9:02 AM", "x": 0.08, "y": 0.155, "y_horizontal": 0.14},
-      {"name": "line", "type": "text", "role": "headline", "text": "Nothing lost.",
-       "x": 0.08, "y": 0.22, "width": 0.7, "x_horizontal": 0.08, "y_horizontal": 0.24, "width_horizontal": 0.36, "enter_at": 2.4},
-      {"name": "graph", "type": "graph", "panel": true, "x": 0.5, "y": 0.43, "width": 0.7, "x_horizontal": 0.67, "y_horizontal": 0.33, "width_horizontal": 0.32,
-       "nodes": ["Schema", "Decide", "Build"], "edges": [[0, 1], [1, 2]], "enter_at": 0.4},
-      {"name": "desk", "type": "sprite", "asset": "cast/figures/builder.svg", "anchor": "feet", "idle": false,
-       "x": 0.378, "y": 0.74, "height": 0.23, "x_horizontal": 0.22, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"},
-      {"name": "agent", "type": "sprite", "asset": "cast/figures/employee-thinking.svg", "anchor": "feet",
-       "x": 0.81, "y": 0.74, "height": 0.22, "x_horizontal": 0.47, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"}
-    ]},
-    {"id": "end", "type": "end_card", "duration": 4, "push": 0}
-  ]
+ "takeaway": "Agents forget everything between sessions; Dandy is the state layer that remembers, so plan and code stay one thing.",
+ "scenes": [
+  {
+   "id": "s1-night",
+   "duration": 5.9,
+   "exit": "cut",
+   "floor": 0.74,
+   "floor_horizontal": 0.88,
+   "elements": [
+    {
+     "name": "clock",
+     "type": "sprite",
+     "asset": "motifs/clock-night.svg",
+     "anchor": "center",
+     "x": 0.84,
+     "y": 0.17,
+     "height": 0.07,
+     "x_horizontal": 0.92,
+     "y_horizontal": 0.17,
+     "height_horizontal": 0.12,
+     "enter": "fade"
+    },
+    {
+     "name": "time",
+     "type": "text",
+     "role": "caption",
+     "text": "11:48 PM",
+     "x": 0.08,
+     "y": 0.155,
+     "y_horizontal": 0.14
+    },
+    {
+     "name": "line",
+     "type": "text",
+     "role": "body",
+     "text": "Schema designed. Decisions made. Half built.",
+     "x": 0.08,
+     "y": 0.24,
+     "width": 0.7,
+     "x_horizontal": 0.08,
+     "y_horizontal": 0.26,
+     "width_horizontal": 0.36,
+     "enter_at": 0.8
+    },
+    {
+     "name": "graph",
+     "type": "graph",
+     "panel": true,
+     "x": 0.5,
+     "y": 0.43,
+     "width": 0.7,
+     "x_horizontal": 0.67,
+     "y_horizontal": 0.33,
+     "width_horizontal": 0.32,
+     "nodes": [
+      "Schema",
+      "Decide",
+      "Build"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "enter_at": 1.6
+    },
+    {
+     "name": "desk",
+     "type": "sprite",
+     "asset": "cast/figures/builder.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.378,
+     "y": 0.74,
+     "height": 0.23,
+     "x_horizontal": 0.22,
+     "y_horizontal": 0.88,
+     "height_horizontal": 0.42,
+     "enter": "cut"
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee-thinking.svg",
+     "anchor": "feet",
+     "x": 0.81,
+     "y": 0.74,
+     "height": 0.22,
+     "x_horizontal": 0.47,
+     "y_horizontal": 0.88,
+     "height_horizontal": 0.42,
+     "enter": "cut"
+    }
+   ]
+  },
+  {
+   "id": "s2-morning",
+   "duration": 4.1,
+   "enter": "wipe",
+   "floor": 0.74,
+   "floor_horizontal": 0.88,
+   "elements": [
+    {
+     "name": "clock",
+     "type": "sprite",
+     "asset": "motifs/clock-morning.svg",
+     "anchor": "center",
+     "x": 0.84,
+     "y": 0.17,
+     "height": 0.07,
+     "x_horizontal": 0.92,
+     "y_horizontal": 0.17,
+     "height_horizontal": 0.12,
+     "enter": "cut"
+    },
+    {
+     "name": "time",
+     "type": "text",
+     "role": "caption",
+     "text": "9:02 AM",
+     "x": 0.08,
+     "y": 0.155,
+     "y_horizontal": 0.14
+    },
+    {
+     "name": "line",
+     "type": "text",
+     "role": "body",
+     "text": "New session. Nothing remembered.",
+     "x": 0.08,
+     "y": 0.24,
+     "width": 0.7,
+     "x_horizontal": 0.08,
+     "y_horizontal": 0.26,
+     "width_horizontal": 0.36,
+     "enter_at": 1.6
+    },
+    {
+     "name": "graph",
+     "type": "graph",
+     "panel": true,
+     "enter": "cut",
+     "x": 0.5,
+     "y": 0.43,
+     "width": 0.7,
+     "x_horizontal": 0.67,
+     "y_horizontal": 0.33,
+     "width_horizontal": 0.32,
+     "nodes": [
+      "Schema",
+      "Decide",
+      "Build"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "enter_at": 0.0,
+     "rot_at": 1.2
+    },
+    {
+     "name": "desk",
+     "type": "sprite",
+     "asset": "cast/figures/builder.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.378,
+     "y": 0.74,
+     "height": 0.23,
+     "x_horizontal": 0.22,
+     "y_horizontal": 0.88,
+     "height_horizontal": 0.42,
+     "enter": "cut"
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee-thinking.svg",
+     "anchor": "feet",
+     "sequence": [
+      {
+       "asset": "cast/figures/employee-blank.svg",
+       "at": 1.4
+      }
+     ],
+     "x": 0.81,
+     "y": 0.74,
+     "height": 0.22,
+     "x_horizontal": 0.47,
+     "y_horizontal": 0.88,
+     "height_horizontal": 0.42,
+     "enter": "cut"
+    }
+   ]
+  },
+  {
+   "id": "s3-rot",
+   "duration": 10.0,
+   "exit": "cut",
+   "floor": 0.78,
+   "floor_horizontal": 0.9,
+   "elements": [
+    {
+     "name": "board",
+     "type": "sprite",
+     "asset": "motifs/blackboard.svg",
+     "anchor": "topleft",
+     "background": true,
+     "x": 0.022,
+     "y": 0.12,
+     "height": 0.34,
+     "x_horizontal": 0.41,
+     "y_horizontal": 0.1,
+     "height_horizontal": 0.55,
+     "enter": "cut"
+    },
+    {
+     "name": "dm",
+     "type": "sprite",
+     "asset": "cast/dandy-man/idle.svg",
+     "anchor": "feet",
+     "enter": "walk",
+     "walk_frames": [
+      "cast/dandy-man/walk-1.svg",
+      "cast/dandy-man/walk-2.svg"
+     ],
+     "x": 0.27,
+     "y": 0.78,
+     "height": 0.36,
+     "x_horizontal": 0.16,
+     "y_horizontal": 0.9,
+     "height_horizontal": 0.66
+    },
+    {
+     "name": "t1",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "notes",
+     "x": 0.14,
+     "y": 0.17,
+     "x_horizontal": 0.44,
+     "y_horizontal": 0.17,
+     "enter_at": 1.9,
+     "strike_at": 3.6,
+     "exit_at": 9.5
+    },
+    {
+     "name": "t2",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "markdown files",
+     "x": 0.14,
+     "y": 0.225,
+     "x_horizontal": 0.44,
+     "y_horizontal": 0.27,
+     "enter_at": 2.6,
+     "strike_at": 4.3,
+     "exit_at": 9.5
+    },
+    {
+     "name": "t3",
+     "type": "text",
+     "role": "caption",
+     "chalk": true,
+     "text": "planning tools",
+     "x": 0.14,
+     "y": 0.28,
+     "x_horizontal": 0.44,
+     "y_horizontal": 0.37,
+     "enter_at": 3.3,
+     "strike_at": 5.0,
+     "exit_at": 9.5
+    },
+    {
+     "name": "pc",
+     "type": "graph",
+     "chalk": true,
+     "x": 0.5,
+     "y": 0.36,
+     "width": 0.5,
+     "x_horizontal": 0.654,
+     "y_horizontal": 0.55,
+     "width_horizontal": 0.3,
+     "nodes": [
+      "Plan",
+      "Code"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ]
+     ],
+     "enter_at": 7.2,
+     "spread": {
+      "at": 8.0,
+      "ms": 900,
+      "px": 110
+     },
+     "broken_edge": 0,
+     "break_at": 8.7
+    },
+    {
+     "name": "cap",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "Plan \u2260 Code",
+     "x": 0.56,
+     "y": 0.5,
+     "x_horizontal": 0.46,
+     "y_horizontal": 0.76,
+     "enter_at": 8.8,
+     "exit_at": 9.6
+    }
+   ]
+  },
+  {
+   "id": "s4-state",
+   "duration": 6.0,
+   "enter": "cut",
+   "exit": "cut",
+   "floor": 0.78,
+   "floor_horizontal": 0.9,
+   "elements": [
+    {
+     "name": "board",
+     "type": "sprite",
+     "asset": "motifs/blackboard.svg",
+     "anchor": "topleft",
+     "background": true,
+     "x": 0.022,
+     "y": 0.12,
+     "height": 0.34,
+     "x_horizontal": 0.41,
+     "y_horizontal": 0.1,
+     "height_horizontal": 0.55,
+     "enter": "cut"
+    },
+    {
+     "name": "dm",
+     "type": "sprite",
+     "asset": "cast/dandy-man/idle.svg",
+     "anchor": "feet",
+     "enter": "cut",
+     "sequence": [
+      {
+       "asset": "cast/dandy-man/hat-tip.svg",
+       "at": 1.0
+      },
+      {
+       "asset": "cast/dandy-man/idle.svg",
+       "at": 2.6
+      }
+     ],
+     "x": 0.27,
+     "y": 0.78,
+     "height": 0.36,
+     "x_horizontal": 0.16,
+     "y_horizontal": 0.9,
+     "height_horizontal": 0.66
+    },
+    {
+     "name": "pc",
+     "type": "graph",
+     "chalk": true,
+     "enter": "cut",
+     "x": 0.5,
+     "y": 0.36,
+     "width": 0.5,
+     "x_horizontal": 0.654,
+     "y_horizontal": 0.5,
+     "width_horizontal": 0.3,
+     "nodes": [
+      "Plan",
+      "Code"
+     ],
+     "edges": [],
+     "enter_at": 0.0,
+     "spread": {
+      "at": 0.0,
+      "ms": 1,
+      "px": 110
+     },
+     "merge_at": 1.2,
+     "exit_at": 2.2
+    },
+    {
+     "name": "sl",
+     "type": "graph",
+     "chalk": true,
+     "gold": true,
+     "x": 0.5,
+     "y": 0.36,
+     "width": 0.34,
+     "x_horizontal": 0.654,
+     "y_horizontal": 0.5,
+     "width_horizontal": 0.22,
+     "nodes": [
+      "State layer"
+     ],
+     "edges": [],
+     "enter_at": 2.4,
+     "exit_at": 5.6,
+     "gold_node": 0
+    },
+    {
+     "name": "cap",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "One source of truth",
+     "x": 0.56,
+     "y": 0.5,
+     "x_horizontal": 0.46,
+     "y_horizontal": 0.76,
+     "enter_at": 3.0,
+     "exit_at": 5.6
+    }
+   ]
+  },
+  {
+   "id": "s5-how",
+   "duration": 12.0,
+   "enter": "cut",
+   "floor": 0.78,
+   "floor_horizontal": 0.9,
+   "elements": [
+    {
+     "name": "board",
+     "type": "sprite",
+     "asset": "motifs/blackboard.svg",
+     "anchor": "topleft",
+     "background": true,
+     "x": 0.022,
+     "y": 0.12,
+     "height": 0.34,
+     "x_horizontal": 0.41,
+     "y_horizontal": 0.1,
+     "height_horizontal": 0.55,
+     "enter": "cut"
+    },
+    {
+     "name": "dm",
+     "type": "sprite",
+     "asset": "cast/dandy-man/idle.svg",
+     "anchor": "feet",
+     "enter": "cut",
+     "sequence": [
+      {
+       "asset": "cast/dandy-man/pointing.svg",
+       "at": 8.7
+      }
+     ],
+     "x": 0.27,
+     "y": 0.78,
+     "height": 0.36,
+     "x_horizontal": 0.16,
+     "y_horizontal": 0.9,
+     "height_horizontal": 0.66
+    },
+    {
+     "name": "g",
+     "type": "graph",
+     "chalk": true,
+     "x": 0.5,
+     "y": 0.3,
+     "width": 0.8,
+     "x_horizontal": 0.654,
+     "y_horizontal": 0.4,
+     "width_horizontal": 0.44,
+     "nodes": [
+      "Ingest",
+      "Clean",
+      "Report"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "edge_labels": [
+      "schema",
+      "schema"
+     ],
+     "enter_at": 0.3,
+     "ripple_at": 9.0,
+     "gold_node": 0,
+     "gold": true
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee.svg",
+     "anchor": "feet",
+     "enter": "rise",
+     "x": 0.83,
+     "y": 0.78,
+     "height": 0.16,
+     "x_horizontal": 0.34,
+     "y_horizontal": 0.9,
+     "height_horizontal": 0.3,
+     "enter_at": 4.2
+    },
+    {
+     "name": "cap1",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "reads, writes back",
+     "x": 0.56,
+     "y": 0.5,
+     "x_horizontal": 0.46,
+     "y_horizontal": 0.76,
+     "enter_at": 4.6,
+     "exit_at": 8.6
+    },
+    {
+     "name": "cap2",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "flows downstream",
+     "x": 0.56,
+     "y": 0.5,
+     "x_horizontal": 0.46,
+     "y_horizontal": 0.76,
+     "enter_at": 9.2
+    }
+   ]
+  },
+  {
+   "id": "s6-fixed",
+   "duration": 4.3,
+   "floor": 0.74,
+   "floor_horizontal": 0.88,
+   "elements": [
+    {
+     "name": "clock",
+     "type": "sprite",
+     "asset": "motifs/clock-morning.svg",
+     "anchor": "center",
+     "x": 0.84,
+     "y": 0.17,
+     "height": 0.07,
+     "x_horizontal": 0.92,
+     "y_horizontal": 0.17,
+     "height_horizontal": 0.12,
+     "enter": "fade"
+    },
+    {
+     "name": "time",
+     "type": "text",
+     "role": "caption",
+     "text": "9:02 AM",
+     "x": 0.08,
+     "y": 0.155,
+     "y_horizontal": 0.14
+    },
+    {
+     "name": "line",
+     "type": "text",
+     "role": "headline",
+     "text": "Nothing lost.",
+     "x": 0.08,
+     "y": 0.22,
+     "width": 0.7,
+     "x_horizontal": 0.08,
+     "y_horizontal": 0.24,
+     "width_horizontal": 0.36,
+     "enter_at": 2.4
+    },
+    {
+     "name": "graph",
+     "type": "graph",
+     "panel": true,
+     "x": 0.5,
+     "y": 0.43,
+     "width": 0.7,
+     "x_horizontal": 0.67,
+     "y_horizontal": 0.33,
+     "width_horizontal": 0.32,
+     "nodes": [
+      "Schema",
+      "Decide",
+      "Build"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "enter_at": 0.4
+    },
+    {
+     "name": "desk",
+     "type": "sprite",
+     "asset": "cast/figures/builder.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.378,
+     "y": 0.74,
+     "height": 0.23,
+     "x_horizontal": 0.22,
+     "y_horizontal": 0.88,
+     "height_horizontal": 0.42,
+     "enter": "cut"
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee-thinking.svg",
+     "anchor": "feet",
+     "x": 0.81,
+     "y": 0.74,
+     "height": 0.22,
+     "x_horizontal": 0.47,
+     "y_horizontal": 0.88,
+     "height_horizontal": 0.42,
+     "enter": "cut"
+    }
+   ]
+  },
+  {
+   "id": "end",
+   "type": "end_card",
+   "duration": 5.0,
+   "push": 0
+  }
+ ],
+ "audio": {
+  "file": "videos/01-why-dandy/voiceover/charlie-take1.m4a",
+  "offset_s": 3.06,
+  "note": "offset_s = seconds trimmed from the start of the file so narration lines up with the scenes"
+ }
 }

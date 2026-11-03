@@ -599,8 +599,15 @@ def render_video(video_dir, canvas_name, preview=False):
         contact.append(composite(sc, sc["duration"] - 0.4))
     fps = FPS // 3 if preview else FPS
     mp4 = os.path.join(out_dir, f"{os.path.basename(os.path.normpath(video_dir))}-{canvas_name}.mp4")
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png"),
-                    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", mp4], check=True)
+    audio = spec.get("audio")
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png")]
+    if audio and not preview:
+        total = sum(sc["duration"] for sc in scenes)
+        cmd += ["-ss", str(audio.get("offset_s", 0)), "-i", os.path.join(ROOT, audio["file"]),
+                "-af", "highpass=f=80,afftdn=nf=-28,loudnorm=I=-16:TP=-1.5:LRA=11,apad",
+                "-t", str(total), "-c:a", "aac", "-b:a", "160k"]
+    cmd += ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", mp4]
+    subprocess.run(cmd, check=True)
     shutil.rmtree(tmp)
     th = 480
     thumbs = [im.resize((int(im.width * th / im.height), th)) for im in contact]

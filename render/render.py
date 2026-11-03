@@ -155,7 +155,7 @@ def background(W, H, floor_y=None):
         d = ImageDraw.Draw(bg)
         dark = tuple(int(c * 0.82) for c in base)
         d.rectangle((0, fy, W, H), fill=dark)
-        d.line([(0, fy), (W, fy)], fill=lift, width=3)
+        d.line([(0, fy), (W, fy)], fill=lift, width=3 * SUPERSAMPLE)
     _bg_cache[key] = bg
     return bg.copy()
 
@@ -165,7 +165,7 @@ def draw_shadow(frame, x0, y0, w, h):
     sw, sh = int(w * 0.75), max(10, int(h * 0.035))
     layer = Image.new("RGBA", (sw + 40, sh + 40), (0, 0, 0, 0))
     ImageDraw.Draw(layer).ellipse((20, 20, 20 + sw, 20 + sh), fill=(0, 0, 0, 110))
-    layer = layer.filter(ImageFilter.GaussianBlur(radius=8))
+    layer = layer.filter(ImageFilter.GaussianBlur(radius=8 * SUPERSAMPLE))
     frame.alpha_composite(layer, (int(x0 + w / 2 - sw / 2 - 20), int(y0 + h - sh / 2 - 20)))
 
 
@@ -340,7 +340,7 @@ def draw_text(frame, el, alpha, dx, dy, t_local):
         p = ease_out(t_local / RISE_S)
         bar_h = (lh * len(el["lines"]) - el["font"].size * 0.2) * p
         bx = first_lx + dx - CONTRACT["layout"]["spacing_unit_px"] - 2
-        d.rounded_rectangle((bx, el["y"] + dy, bx + 6, el["y"] + dy + bar_h), radius=3, fill=rgb(PAL["highlight"]) + (255,))
+        d.rounded_rectangle((bx, el["y"] + dy, bx + 6 * SUPERSAMPLE, el["y"] + dy + bar_h), radius=3 * SUPERSAMPLE, fill=rgb(PAL["highlight"]) + (255,))
     frame.alpha_composite(with_alpha(layer, alpha))
 
 
@@ -362,7 +362,7 @@ def draw_sprite(frame, el, t_local, alpha, dx, dy):
         if p < 1 and el["walk_frames"]:
             img = el["walk_frames"][int(t_local / 0.16) % len(el["walk_frames"])]
         elif p < 1:
-            dy -= abs(math.sin(t_local * 9)) * 10
+            dy -= abs(math.sin(t_local * 9)) * 10 * SUPERSAMPLE
         a = 1.0
     elif el["enter"] == "rise":
         p = ease_out(t_local / RISE_S)
@@ -373,7 +373,7 @@ def draw_sprite(frame, el, t_local, alpha, dx, dy):
     else:
         a = ease_out(t_local / TR)
     if el.get("idle") and not (el["enter"] == "walk" and t_local < 1.1):
-        dy += math.sin(t_local * 2 * math.pi / 3.2) * 3
+        dy += math.sin(t_local * 2 * math.pi / 3.2) * 3 * SUPERSAMPLE
     if el.get("shadow"):
         draw_shadow(frame, el["x"] + dx, el["y"], img.width, img.height) if a * alpha >= 0.99 else None
     paste_sprite(frame, img, el["x"] + dx, el["y"] + dy, a * alpha)
@@ -409,9 +409,9 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
         allb = (min(b[0] for b in boxes) - pp, min(b[1] for b in boxes) - pp - (el["label_font"].size * 1.6 + 12 if el.get("edge_labels") else 0),
                 max(b[2] for b in boxes) + pp, max(b[3] for b in boxes) + pp)
         glow = Image.new("RGBA", frame.size, (0, 0, 0, 0))
-        ImageDraw.Draw(glow).rounded_rectangle((allb[0] - 6, allb[1] - 6, allb[2] + 6, allb[3] + 6), radius=28, fill=hi + (70,))
-        layer.alpha_composite(glow.filter(ImageFilter.GaussianBlur(radius=18)))
-        rounded(d, allb, fill=lift + (255,), outline=hi + (255,), width=3, r=24)
+        ImageDraw.Draw(glow).rounded_rectangle((allb[0] - 6, allb[1] - 6, allb[2] + 6, allb[3] + 6), radius=28 * SUPERSAMPLE, fill=hi + (70,))
+        layer.alpha_composite(glow.filter(ImageFilter.GaussianBlur(radius=18 * SUPERSAMPLE)))
+        rounded(d, allb, fill=lift + (255,), outline=hi + (255,), width=3 * SUPERSAMPLE, r=24 * SUPERSAMPLE)
     # ripple: nodes light up in turn after ripple_at; first node stays gold
     lit = set()
     if el["ripple_at"] is not None and t_abs >= el["ripple_at"]:
@@ -433,7 +433,7 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
             box = (cxb - hw, cyb - hh, cxb + hw, cyb + hh)
         is_gold = (el.get("gold_node") == i and (el["ripple_at"] is None or t_abs >= el["ripple_at"])) or i in lit
         col = gold if is_gold else line_col
-        rounded(d, box, fill=fill, outline=col + (255,), width=4)
+        rounded(d, box, fill=fill, outline=col + (255,), width=4 * SUPERSAMPLE, r=16 * SUPERSAMPLE)
         lw = d.textlength(nd["label"], font=el["font"])
         d.text(((box[0] + box[2]) / 2 - lw / 2, box[1] + (box[3] - box[1]) / 2 - el["font"].size / 2),
                nd["label"], font=el["font"], fill=txt + (255,))
@@ -454,36 +454,36 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
         xe, ye = x1 + (x2 - x1) * p, y1 + (y2 - y1) * p
         broken = el.get("broken_edge") == k and (el["break_at"] is None or t_abs >= el["break_at"])
         col = warn if broken else line_col
-        w = 6
+        w = 6 * SUPERSAMPLE
         if broken:
             bp = 1.0 if el["break_at"] is None else ease_out((t_abs - el["break_at"]) / 0.4)
             xm = (x1 + x2) / 2
-            g = 14 * bp
-            d.line([(x1, y1), (xm - g, y1 + 6 * bp)], fill=col + (255,), width=w)
-            d.line([(xm + g, y1 - 6 * bp), (xe, ye)], fill=col + (255,), width=w)
+            g = 14 * bp * SUPERSAMPLE
+            d.line([(x1, y1), (xm - g, y1 + 6 * bp * SUPERSAMPLE)], fill=col + (255,), width=w)
+            d.line([(xm + g, y1 - 6 * bp * SUPERSAMPLE), (xe, ye)], fill=col + (255,), width=w)
         else:
             d.line([(x1, y1), (xe, ye)], fill=col + (255,), width=w)
             if p >= 1:
-                d.polygon([(x2, y2), (x2 - 18, y2 - 10), (x2 - 18, y2 + 10)], fill=col + (255,))
+                d.polygon([(x2, y2), (x2 - 18 * SUPERSAMPLE, y2 - 10 * SUPERSAMPLE), (x2 - 18 * SUPERSAMPLE, y2 + 10 * SUPERSAMPLE)], fill=col + (255,))
         if el.get("edge_labels") and p >= 1 and k < len(el["edge_labels"]):
             lab = el["edge_labels"][k]
             lf = el["label_font"]
             lw = d.textlength(lab, font=lf)
             cx = (x1 + x2) / 2
             top = ba[1]
-            pill = (cx - lw / 2 - 10, top - lf.size * 1.6 - 12, cx + lw / 2 + 10, top - 12)
-            rounded(d, pill, fill=lift + (255,), outline=line_col + (255,), width=2, r=lf.size)
-            d.text((cx - lw / 2, pill[1] + 6), lab, font=lf, fill=txt + (255,))
+            pill = (cx - lw / 2 - 10 * SUPERSAMPLE, top - lf.size * 1.6 - 12 * SUPERSAMPLE, cx + lw / 2 + 10 * SUPERSAMPLE, top - 12 * SUPERSAMPLE)
+            rounded(d, pill, fill=lift + (255,), outline=line_col + (255,), width=2 * SUPERSAMPLE, r=lf.size)
+            d.text((cx - lw / 2, pill[1] + 6 * SUPERSAMPLE), lab, font=lf, fill=txt + (255,))
     frame.alpha_composite(with_alpha(layer, alpha))
 
 
 def context_rot(frame, bbox, p, bg):
     x0, y0, x1, y1 = (int(v) for v in bbox)
-    pad = 40
+    pad = 40 * SUPERSAMPLE
     box = (max(0, x0 - pad), max(0, y0 - pad), min(frame.width, x1 + pad), min(frame.height, y1 + pad))
     region = frame.crop(box)
     region = ImageEnhance.Color(region).enhance(1 - 0.9 * p)
-    region = region.filter(ImageFilter.GaussianBlur(radius=12 * p))
+    region = region.filter(ImageFilter.GaussianBlur(radius=12 * p * SUPERSAMPLE))
     a = region.split()[3].point(lambda v: int(v * (1 - 0.6 * p)))
     region.putalpha(a)
     base = bg.crop(box).convert("RGBA")
@@ -578,8 +578,8 @@ def draw_captions(frame, captions, t_global, canvas_name):
     tw = d.textlength(cue["text"], font=fnt)
     y = captions.get(f"y_{canvas_name}", captions.get("y", 0.8)) * H
     x = W / 2 - tw / 2
-    pad = 18
-    d.rounded_rectangle((x - pad, y - pad * 0.6, x + tw + pad, y + fnt.size * 1.15 + pad * 0.4), radius=14,
+    pad = 18 * SUPERSAMPLE
+    d.rounded_rectangle((x - pad, y - pad * 0.6, x + tw + pad, y + fnt.size * 1.15 + pad * 0.4), radius=14 * SUPERSAMPLE,
                         fill=rgb(PAL["background"]) + (200,))
     d.text((x, y), cue["text"], font=fnt, fill=rgb(PAL["text"]) + (255,))
 

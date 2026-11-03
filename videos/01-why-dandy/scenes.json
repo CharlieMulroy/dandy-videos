@@ -11,7 +11,7 @@
        "nodes": ["Schema", "Decide", "Build"], "edges": [[0, 1], [1, 2]], "enter_at": 1.6},
       {"name": "desk", "type": "sprite", "asset": "cast/figures/builder.svg", "anchor": "feet", "idle": false,
        "x": 0.378, "y": 0.74, "height": 0.23, "x_horizontal": 0.22, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"},
-      {"name": "agent", "type": "sprite", "asset": "cast/figures/employee.svg", "anchor": "feet",
+      {"name": "agent", "type": "sprite", "asset": "cast/figures/employee-thinking.svg", "anchor": "feet",
        "x": 0.81, "y": 0.74, "height": 0.22, "x_horizontal": 0.47, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"}
     ]},
     {"id": "s2-morning", "duration": 5, "enter": "wipe", "floor": 0.74, "floor_horizontal": 0.88, "elements": [
@@ -24,7 +24,8 @@
        "nodes": ["Schema", "Decide", "Build"], "edges": [[0, 1], [1, 2]], "enter_at": 0.0, "rot_at": 1.2},
       {"name": "desk", "type": "sprite", "asset": "cast/figures/builder.svg", "anchor": "feet", "idle": false,
        "x": 0.378, "y": 0.74, "height": 0.23, "x_horizontal": 0.22, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"},
-      {"name": "agent", "type": "sprite", "asset": "cast/figures/employee-blank.svg", "anchor": "feet",
+      {"name": "agent", "type": "sprite", "asset": "cast/figures/employee-thinking.svg", "anchor": "feet",
+       "sequence": [{"asset": "cast/figures/employee-blank.svg", "at": 1.4}],
        "x": 0.81, "y": 0.74, "height": 0.22, "x_horizontal": 0.47, "y_horizontal": 0.88, "height_horizontal": 0.42, "enter": "cut"}
     ]},
     {"id": "s3-rot", "duration": 7, "exit": "cut", "floor": 0.78, "floor_horizontal": 0.9, "elements": [
@@ -59,7 +60,7 @@
        "sequence": [{"asset": "cast/dandy-man/pointing.svg", "at": 5.6}],
        "x": 0.27, "y": 0.78, "height": 0.36, "x_horizontal": 0.16, "y_horizontal": 0.9, "height_horizontal": 0.66},
       {"name": "g", "type": "graph", "chalk": true, "x": 0.5, "y": 0.3, "width": 0.8, "x_horizontal": 0.654, "y_horizontal": 0.4, "width_horizontal": 0.44,
-       "nodes": ["Ingest", "Clean", "Report"], "edges": [[0, 1], [1, 2]], "edge_labels": ["id, ts", "id, ts, ok"],
+       "nodes": ["Ingest", "Clean", "Report"], "edges": [[0, 1], [1, 2]], "edge_labels": ["schema", "schema"],
        "enter_at": 0.3, "ripple_at": 6.2, "gold_node": 0, "gold": true},
       {"name": "agent", "type": "sprite", "asset": "cast/figures/employee.svg", "anchor": "feet", "enter": "rise",
        "x": 0.83, "y": 0.78, "height": 0.16, "x_horizontal": 0.34, "y_horizontal": 0.9, "height_horizontal": 0.3, "enter_at": 2.6},

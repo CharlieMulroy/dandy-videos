@@ -27,7 +27,7 @@ def svg(viewbox, body):
 
 
 # ---------- Employee (stick figure, soft purple, cape) ----------
-def employee(cape="flutter", bubble=False):
+def employee(cape="flutter", bubble=False, bubble_graph=False):
     """viewBox 0 0 300 600, feet at y=600. Figure centred at x=130 so a bubble fits to the right."""
     cx = 130
     stroke = f'stroke="{SOFT}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"'
@@ -61,6 +61,13 @@ def employee(cape="flutter", bubble=False):
             f'<circle cx="{cx + 62}" cy="104" r="9" {ob}/>',
             f'<ellipse cx="{cx + 106}" cy="58" rx="60" ry="34" {ob}/>',
         ]
+        if bubble_graph:
+            # three tiny nodes and two edges inside the bubble: what the agent is holding in mind
+            gx = cx + 106 - 40
+            for i in range(3):
+                parts.append(f'<rect x="{gx + i * 30}" y="50" width="20" height="16" rx="4" fill="none" stroke="{HI}" stroke-width="3"/>')
+            for i in range(2):
+                parts.append(f'<line x1="{gx + 20 + i * 30}" y1="58" x2="{gx + 30 + i * 30}" y2="58" stroke="{HI}" stroke-width="3"/>')
     return svg("0 0 300 600", "\n".join("  " + p for p in parts))
 
 
@@ -151,6 +158,7 @@ def clock(hour, minute, night):
 FILES = {
     os.path.join(FIG, "employee.svg"): employee("flutter"),
     os.path.join(FIG, "employee-blank.svg"): employee("droop", bubble=True),
+    os.path.join(FIG, "employee-thinking.svg"): employee("flutter", bubble=True, bubble_graph=True),
     os.path.join(FIG, "builder.svg"): builder(),
     os.path.join(MOTIFS, "blackboard.svg"): blackboard(),
     os.path.join(MOTIFS, "clock-night.svg"): clock(11, 48, night=True),

@@ -288,13 +288,21 @@ def layout_scene(scene, canvas_name):
             fnt = font("caption", cap)
             node_h = cap * 2.2
             gap = CONTRACT["layout"]["spacing_unit_px"] * (4 if e.get("edge_labels") else 3) * sc
-            node_w = (gw - gap * (n - 1)) / n
-            x0 = snap(x - gw / 2)
-            y0 = snap(y - node_h / 2)
-            nodes = []
-            for i, label in enumerate(e["nodes"]):
-                nx = x0 + i * (node_w + gap)
-                nodes.append(dict(label=label, box=(nx, y0, nx + node_w, y0 + node_h)))
+            vertical = bool(e.get("vertical"))
+            if vertical:  # one column: width is the node width, nodes stack downward from y (the top)
+                node_w = gw
+                vgap = CONTRACT["layout"]["spacing_unit_px"] * 1.5 * sc
+                x0 = snap(x - gw / 2)
+                y0 = snap(y)
+                nodes = [dict(label=label, box=(x0, y0 + i * (node_h + vgap), x0 + gw, y0 + i * (node_h + vgap) + node_h)) for i, label in enumerate(e["nodes"])]
+            else:
+                node_w = (gw - gap * (n - 1)) / n
+                x0 = snap(x - gw / 2)
+                y0 = snap(y - node_h / 2)
+                nodes = []
+                for i, label in enumerate(e["nodes"]):
+                    nx = x0 + i * (node_w + gap)
+                    nodes.append(dict(label=label, box=(nx, y0, nx + node_w, y0 + node_h)))
             spread = e.get("spread")
             pad = spread["px"] if spread else 0
             title = e.get("title")
@@ -304,8 +312,8 @@ def layout_scene(scene, canvas_name):
             title_h = (title_font.size * 1.5 + 12 * SUPERSAMPLE) if title else 0
             label_h = cap * 1.4 if e.get("edge_labels") else 0
             laid.append(dict(common, type="graph", enter=e.get("enter", "fade"), nodes=nodes, edges=e.get("edges", []), font=fnt, chalk=bool(e.get("chalk")),
-                             bbox=(x0 - pad - ppad, y0 - label_h - title_h - ppad, x0 + gw + pad + ppad, y0 + node_h + ppad),
-                             panel=panel, ppad=ppad, title=title, title_font=title_font, title_h=title_h, label_h=label_h,
+                             bbox=(x0 - pad - ppad, y0 - label_h - title_h - ppad, x0 + gw + pad + ppad, nodes[-1]["box"][3] + ppad),
+                             panel=panel, vertical=vertical, ppad=ppad, title=title, title_font=title_font, title_h=title_h, label_h=label_h,
                              unfinished=e.get("unfinished", []), complete_at=e.get("complete_at"),
                              tick_at=e.get("tick_at"), tick_style=e.get("tick_style", "highlight"), redraw_at=e.get("redraw_at"),
                              broken_edge=e.get("broken_edge"), break_at=e.get("break_at"), gold_node=e.get("gold_node"),
@@ -470,9 +478,12 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
         allb = (min(b[0] for b in boxes) - pp, min(b[1] for b in boxes) - pp - el.get("label_h", 0) - el.get("title_h", 0),
                 max(b[2] for b in boxes) + pp, max(b[3] for b in boxes) + pp)
         glow = Image.new("RGBA", frame.size, (0, 0, 0, 0))
-        ImageDraw.Draw(glow).rounded_rectangle((allb[0] - 6, allb[1] - 6, allb[2] + 6, allb[3] + 6), radius=28 * SUPERSAMPLE, fill=hi + (70,))
+        ImageDraw.Draw(glow).rounded_rectangle((allb[0] - 6, allb[1] - 6, allb[2] + 6, allb[3] + 6), radius=28 * SUPERSAMPLE, fill=(gold if el["chalk"] and el.get("gold") else hi) + (70,))
         layer.alpha_composite(glow.filter(ImageFilter.GaussianBlur(radius=18 * SUPERSAMPLE)))
-        rounded(d, allb, fill=lift + (255,), outline=hi + (255,), width=3 * SUPERSAMPLE, r=24 * SUPERSAMPLE)
+        if el["chalk"]:
+            rounded(d, allb, fill=(0, 0, 0, 0), outline=(gold if el.get("gold") else soft) + (255,), width=4 * SUPERSAMPLE, r=24 * SUPERSAMPLE)
+        else:
+            rounded(d, allb, fill=lift + (255,), outline=hi + (255,), width=3 * SUPERSAMPLE, r=24 * SUPERSAMPLE)
         if el.get("title"):
             tf = el["title_font"]
             d.text((allb[0] + pp, allb[1] + pp * 0.55), el["title"], font=tf, fill=(gold if el.get("gold") else soft) + (255,))
@@ -536,8 +547,12 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
         if p <= 0:
             continue
         ba, bb = boxes[a], boxes[b]
-        x1, y1 = ba[2], (ba[1] + ba[3]) / 2
-        x2, y2 = bb[0], (bb[1] + bb[3]) / 2
+        if el.get("vertical"):
+            x1, y1 = (ba[0] + ba[2]) / 2, ba[3]
+            x2, y2 = (bb[0] + bb[2]) / 2, bb[1]
+        else:
+            x1, y1 = ba[2], (ba[1] + ba[3]) / 2
+            x2, y2 = bb[0], (bb[1] + bb[3]) / 2
         xe, ye = x1 + (x2 - x1) * p, y1 + (y2 - y1) * p
         broken = el.get("broken_edge") == k and (el["break_at"] is None or t_abs >= el["break_at"]) and not redrawn
         col = warn if broken else line_col
@@ -553,7 +568,9 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
             d.line([(xm + g, y1 - 6 * bp * SUPERSAMPLE), (xe, ye)], fill=col + (255,), width=w)
         else:
             d.line([(x1, y1), (xe, ye)], fill=col + (255,), width=w)
-            if p >= 1:
+            if p >= 1 and el.get("vertical"):
+                d.polygon([(x2, y2), (x2 - 10 * SUPERSAMPLE, y2 - 18 * SUPERSAMPLE), (x2 + 10 * SUPERSAMPLE, y2 - 18 * SUPERSAMPLE)], fill=col + (255,))
+            elif p >= 1:
                 d.polygon([(x2, y2), (x2 - 18 * SUPERSAMPLE, y2 - 10 * SUPERSAMPLE), (x2 - 18 * SUPERSAMPLE, y2 + 10 * SUPERSAMPLE)], fill=col + (255,))
         if el.get("edge_labels") and p >= 1 and k < len(el["edge_labels"]):
             lab = el["edge_labels"][k]

@@ -29,12 +29,17 @@ def check_layout(scenes, canvas, contract):
                 if b[0] < 0 or b[1] < 0 or b[2] > W or b[3] > H:
                     out.append((sc["id"], f"{e['name']} (background) leaves the canvas: bbox={tuple(int(v) for v in b)}"))
         boxes = [(e["name"], e["bbox"]) for e in sc["laid_out"] if e.get("bbox") and not e.get("background")]
+        spans = {e["name"]: (e.get("enter_at", 0), e.get("exit_at") if e.get("exit_at") is not None else sc["duration"])
+                 for e in sc["laid_out"]}
         for name, b in boxes:
             if b[0] < safe[0] or b[1] < safe[1] or b[2] > safe[2] or b[3] > safe[3]:
                 out.append((sc["id"], f"{name} leaves the safe zone {safe}: bbox={tuple(int(v) for v in b)}"))
         for i in range(len(boxes)):
             for j in range(i + 1, len(boxes)):
                 (na, a), (nb, b) = boxes[i], boxes[j]
+                sa, sb = spans[na], spans[nb]
+                if sa[1] <= sb[0] or sb[1] <= sa[0]:
+                    continue  # never on screen together
                 g = _gap(a, b)
                 if g < min_gap:
                     verb = "overlaps" if g < 0 else f"is only {int(g)}px from"

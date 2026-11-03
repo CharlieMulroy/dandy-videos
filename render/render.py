@@ -209,7 +209,7 @@ def layout_scene(scene, canvas_name):
                 nodes.append(dict(label=label, box=(nx, y0, nx + node_w, y0 + node_h)))
             spread = e.get("spread")
             pad = spread["px"] if spread else 0
-            laid.append(dict(common, type="graph", nodes=nodes, edges=e.get("edges", []), font=fnt, chalk=bool(e.get("chalk")),
+            laid.append(dict(common, type="graph", enter=e.get("enter", "fade"), nodes=nodes, edges=e.get("edges", []), font=fnt, chalk=bool(e.get("chalk")),
                              bbox=(x0 - pad, y0 - (sizes["caption"] * 1.4 if e.get("edge_labels") else 0), x0 + gw + pad, y0 + node_h),
                              broken_edge=e.get("broken_edge"), break_at=e.get("break_at"), gold_node=e.get("gold_node"),
                              spread=spread, merge_at=e.get("merge_at"), ripple_at=e.get("ripple_at"),
@@ -346,7 +346,8 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
             lf = el["label_font"]
             lw = d.textlength(lab, font=lf)
             cx = (x1 + x2) / 2
-            pill = (cx - lw / 2 - 10, y1 - lf.size * 1.6 - 8, cx + lw / 2 + 10, y1 - 8)
+            top = ba[1]
+            pill = (cx - lw / 2 - 10, top - lf.size * 1.6 - 12, cx + lw / 2 + 10, top - 12)
             rounded(d, pill, fill=lift + (255,), outline=line_col + (255,), width=2, r=lf.size)
             d.text((cx - lw / 2, pill[1] + 6), lab, font=lf, fill=txt + (255,))
     frame.alpha_composite(with_alpha(layer, alpha))
@@ -397,7 +398,7 @@ def render_frame(scene, t):
         elif el["type"] == "sprite":
             draw_sprite(frame, el, t_local, alpha, dx, dy)
         elif el["type"] == "graph":
-            p = ease_out(t_local / TR)
+            p = 1.0 if el.get("enter") == "cut" else ease_out(t_local / TR)
             draw_graph(frame, el, t_local, p * alpha, dx, dy)
         if el.get("rot_at") is not None and t >= el["rot_at"]:
             rp = ease_out((t - el["rot_at"]) / (M["context_rot_ms"] / 1000))

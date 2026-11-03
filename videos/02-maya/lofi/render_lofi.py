@@ -213,7 +213,7 @@ def draw_screen(canvas, msgs, t, dandy=None, typing=None):
         y += bh + S(8)
     sent_at = min((m[2] for m in msgs if m[0] == "maya"), default=None)
     if typing and t >= typing[0] and (sent_at is None or t < sent_at):
-        n = int((t - typing[0]) / 0.06)
+        n = int((t - typing[0]) / 0.035)
         shown = typing[1][:n]
         bx0 = S(12)
         d.rounded_rectangle((bx0, sh - S(34), chat_w - S(12), sh - S(10)), radius=S(8), fill=rgb(PAL["background_lift"]) + (255,), outline=rgb(PAL["soft"]) + (160,), width=S(1))
@@ -399,12 +399,16 @@ def draw_cue(frame, cues, t_global):
     sizes = CONTRACT["type"]["vertical"]
     fnt = font("Inter-Bold.otf", int(sizes["body"] * 0.95))
     d = ImageDraw.Draw(frame)
-    tw = d.textlength(cue["text"], font=fnt)
+    lines = wrap(cue["text"], fnt, SAFE[2] - SAFE[0], d)
+    lh = fnt.size * 1.15
     y = 0.80 * H
-    x = W / 2 - tw / 2
     pad = 18
-    d.rounded_rectangle((x - pad, y - pad * 0.6, x + tw + pad, y + fnt.size * 1.15 + pad * 0.4), radius=14, fill=rgb(PAL["background"]) + (200,))
-    d.text((x, y), cue["text"], font=fnt, fill=rgb(PAL["text"]) + (255,))
+    for i, line in enumerate(lines):
+        tw = d.textlength(line, font=fnt)
+        x = W / 2 - tw / 2
+        yy = y + i * (lh + pad * 0.8)
+        d.rounded_rectangle((x - pad, yy - pad * 0.6, x + tw + pad, yy + lh + pad * 0.4), radius=14, fill=rgb(PAL["background"]) + (200,))
+        d.text((x, yy), line, font=fnt, fill=rgb(PAL["text"]) + (255,))
 
 
 def end_card(frame_room, t, dur):
@@ -442,38 +446,38 @@ BOARD_CAM = (330, 560, 1.9)
 SCREEN_CAM = (640, 1030, 1.75)
 CHAT_INTRO = [("maya", "build me a budget tracker: income, spending, a chart", 0.0),
               ("agent", "Done. Income and spending are in. Want the chart next?", 1.4)]
-CHAT_FORGOT = [("maya", "add the chart to the budget tracker", 1.6),
-               ("agent", "Which budget tracker? I have no context on that.", 3.4)]
-CHAT_DANDY = [("agent", "Reading Dandy. Budget tracker: income and spending done, chart is next. Starting there.", 2.6),
-              ("maya", "yes", 5.2),
-              ("agent", "Chart added. Writing it back to Dandy.", 6.0)]
-DANDY_PANEL = (1.2, "Budget tracker", [("Income", "done"), ("Spend", "done"), ("Chart", "next")])
-NOTES = [("where was I?", 2.6, None), ("rebuilt it. again.", 3.4, None), ("explained it 4 times", 4.2, None)]
-NOTES_PEEL = [("where was I?", 0.0, 1.4), ("rebuilt it. again.", 0.0, 2.6), ("explained it 4 times", 0.0, 3.8)]
+CHAT_FORGOT = [("maya", "add the chart to the budget tracker", 1.5),
+               ("agent", "Which budget tracker? I have no context on that.", 2.2)]
+CHAT_DANDY = [("agent", "Reading Dandy. Budget tracker: income and spending done, chart is next. Starting there.", 0.9),
+              ("maya", "yes", 3.3),
+              ("agent", "Chart added. Writing it back to Dandy.", 4.4)]
+DANDY_PANEL = (0.0, "Budget tracker", [("Income", "done"), ("Spend", "done"), ("Chart", "next")])
+NOTES = [("where was I?", 1.4, None), ("rebuilt it. again.", 1.9, None), ("explained it 4 times", 2.4, None)]
+NOTES_PEEL = [("where was I?", 0.0, 0.2), ("rebuilt it. again.", 0.0, 0.9), ("explained it 4 times", 0.0, 1.6)]
 
 SCENES = [
     # id, duration, narration (for captions.json later), frame function
-    dict(id="s1-room", dur=6.0, lines="Maya isn't a coder. She builds things with Claude Code anyway.",
-         frame=lambda t: room_frame(t, "typing", 0.0, 1.0, 1.0, dict(msgs=CHAT_INTRO), dict(cards_at=[0, 0, 0]), WIDE, zoom_to=(1.1, 6.0))),
-    dict(id="s2-board", dur=7.0, lines="Three projects. None finished.",
-         frame=lambda t: room_frame(t, "typing", 0.0, 1.0, 0.8, dict(msgs=CHAT_INTRO), dict(cards_at=[0.4, 0.9, 1.4], notes=NOTES), BOARD_CAM)),
-    dict(id="s3-forgot", dur=7.0, lines="",
-         frame=lambda t: room_frame(t, "typing" if t < 4.6 else "slumped", 0.0, 1.0, 0.6, dict(msgs=CHAT_FORGOT, typing=(0.3, "add the chart to the budget tracker")), dict(cards_at=[0, 0, 0], notes=[(n[0], 0, None) for n in NOTES]), SCREEN_CAM)),
-    dict(id="s4-dandy", dur=9.0, lines="Then she put them in Dandy. Now every session starts from what's actually true.",
-         frame=lambda t: room_frame(t, "slumped" if t < 1.0 else ("up" if t < 4.8 else "typing"), 0.02, 0.6, 0.4, dict(msgs=CHAT_DANDY, dandy=DANDY_PANEL), dict(cards_at=[0, 0, 0], notes=[(n[0], 0, None) for n in NOTES]), SCREEN_CAM)),
-    dict(id="s5-weeks", dur=6.0, lines="Three weeks later.",
-         frame=lambda t: room_frame(t, "typing", (t / 6.0) * 3.0 % 1.0, max(0.0, 1 - t / 2), 0.8, dict(msgs=CHAT_DANDY, dandy=DANDY_PANEL), dict(cards_at=[0, 0, 0], notes=[(n[0], 0, None) for n in NOTES]), WIDE, zoom_to=(1.08, 6.0))),
-    dict(id="s6-done", dur=7.0, lines="Same Maya. Same agent.",
+    dict(id="s1-room", dur=5.3, lines="Maya isn't a coder. She builds things with Claude Code anyway.",
+         frame=lambda t: room_frame(t, "typing", 0.0, 1.0, 1.0, dict(msgs=CHAT_INTRO), dict(cards_at=[0, 0, 0]), WIDE, zoom_to=(1.1, 5.3))),
+    dict(id="s2-board", dur=4.4, lines="Three projects. None finished.",
+         frame=lambda t: room_frame(t, "typing", 0.0, 1.0, 0.8, dict(msgs=CHAT_INTRO), dict(cards_at=[0.3, 0.7, 1.1], notes=NOTES), BOARD_CAM)),
+    dict(id="s3-forgot", dur=3.6, lines="",
+         frame=lambda t: room_frame(t, "typing" if t < 2.8 else "slumped", 0.0, 1.0, 0.6, dict(msgs=CHAT_FORGOT, typing=(0.2, "add the chart to the budget tracker")), dict(cards_at=[0, 0, 0], notes=[(n[0], 0, None) for n in NOTES]), SCREEN_CAM)),
+    dict(id="s4-dandy", dur=6.0, lines="Then she put them in Dandy. Now every session starts from what's actually true.",
+         frame=lambda t: room_frame(t, "slumped" if t < 0.6 else ("up" if t < 2.6 else "typing"), 0.02, 0.6, 0.4, dict(msgs=CHAT_DANDY, dandy=DANDY_PANEL), dict(cards_at=[0, 0, 0], notes=[(n[0], 0, None) for n in NOTES]), SCREEN_CAM)),
+    dict(id="s5-weeks", dur=2.0, lines="Three weeks later.",
+         frame=lambda t: room_frame(t, "typing", (t / 2.0) % 1.0, max(0.0, 1 - t / 0.8), 0.8, dict(msgs=CHAT_DANDY, dandy=DANDY_PANEL), dict(cards_at=[0, 0, 0], notes=[(n[0], 0, None) for n in NOTES]), WIDE, zoom_to=(1.08, 2.0))),
+    dict(id="s6-done", dur=4.5, lines="Same Maya. Same agent.",
          frame=lambda t: room_frame(t, "typing", 0.0, 0.0, 1.0, dict(msgs=CHAT_DANDY, dandy=DANDY_PANEL),
-                                    dict(cards_at=[0, 0, 0], notes=NOTES_PEEL, done=[2.2, 3.4, 4.6], progress_to=[(1.2, 1.0), (2.4, 1.0), (3.6, 1.0)]), BOARD_CAM)),
+                                    dict(cards_at=[0, 0, 0], notes=NOTES_PEEL, done=[1.0, 1.8, 2.6], progress_to=[(0.6, 1.0), (1.4, 1.0), (2.2, 1.0)]), BOARD_CAM)),
     dict(id="end", dur=4.5, lines="Finish what you started.", end=True),
 ]
 CAPTIONS = [  # on-screen text, drawn in output coords; (scene id, text, at, y, role, align, exit_at)
-    ("s1-room", "Maya. Not a coder.", 1.2, 0.74, "headline", "left", 4.4),
-    ("s2-board", "Started 3. Finished 0.", 5.2, 0.745, "body", "left", None),
-    ("s5-weeks", "3 weeks later", 0.8, 0.74, "headline", "left", 4.5),
-    ("s6-done", "Finished 3.", 5.3, 0.745, "body", "left", None),
-    ("end", "Finish what you started.", 2.2, 0.74, "body", "center", None),
+    ("s1-room", "Maya. Not a coder.", 1.0, 0.74, "headline", "left", 4.6),
+    ("s2-board", "Started 3. Finished 0.", 2.6, 0.745, "body", "left", None),
+    ("s5-weeks", "3 weeks later", 0.2, 0.74, "headline", "left", None),
+    ("s6-done", "Finished 3.", 3.2, 0.745, "body", "left", None),
+    ("end", "Finish what you started.", 1.0, 0.74, "body", "center", None),
 ]
 
 
@@ -539,7 +543,7 @@ def render(preview=False, final=False, stills=False):
                 fr = sc["frame"](t)
                 last_room = fr
             for cid, text, at, y, role, align, exit_at in CAPTIONS:
-                if cid == sc["id"]:
+                if cid == sc["id"] and not cues:  # on-screen titles only when there is no narration track
                     caption(fr, text, t - at, y=y, role=role, align=align, exit_at=exit_at, t_abs=t)
             if cues:
                 draw_cue(fr, cues, offset + t)

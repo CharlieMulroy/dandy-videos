@@ -1,0 +1,65 @@
+{
+ "y": 0.8,
+ "cues": [
+  {
+   "start": 0.78,
+   "end": 2.11,
+   "text": "Maya isn't a coder."
+  },
+  {
+   "start": 2.68,
+   "end": 4.62,
+   "text": "She builds things with Claude Code anyway."
+  },
+  {
+   "start": 5.3,
+   "end": 6.16,
+   "text": "All started."
+  },
+  {
+   "start": 6.66,
+   "end": 7.33,
+   "text": "None finished."
+  },
+  {
+   "start": 8.31,
+   "end": 9.7,
+   "text": "The projects weren't dead."
+  },
+  {
+   "start": 9.7,
+   "end": 11.22,
+   "text": "The agent just couldn't see them."
+  },
+  {
+   "start": 12.13,
+   "end": 13.31,
+   "text": "So she put them in Dandy."
+  },
+  {
+   "start": 14.08,
+   "end": 16.3,
+   "text": "Now the agent reads the state before it starts,"
+  },
+  {
+   "start": 16.3,
+   "end": 18.46,
+   "text": "and writes back what it changed."
+  },
+  {
+   "start": 19.43,
+   "end": 20.5,
+   "text": "Three weeks later."
+  },
+  {
+   "start": 20.5,
+   "end": 22.1,
+   "text": "Same Maya. Same agent."
+  },
+  {
+   "start": 25.91,
+   "end": 27.7,
+   "text": "Finish what you started."
+  }
+ ]
+}

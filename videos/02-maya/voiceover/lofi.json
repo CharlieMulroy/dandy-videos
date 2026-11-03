@@ -1,0 +1,14 @@
+{
+ "file": "videos/02-maya/voiceover/charlie-take1-padded.m4a",
+ "offset_s": 0.0,
+ "note": "take 1 (headset), 27.1 s; 2.4 s of silence inserted at 22.8 so the last line lands on the end card",
+ "durations": {
+  "s1-room": 5.3,
+  "s2-board": 4.4,
+  "s3-forgot": 3.6,
+  "s4-dandy": 6.0,
+  "s5-weeks": 2.0,
+  "s6-done": 4.5,
+  "end": 4.5
+ }
+}

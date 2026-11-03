@@ -550,7 +550,24 @@ def qa(video_dir, canvas_name, spec, scenes):
     return True
 
 
-def composite(scene, t):
+def draw_captions(frame, captions, t_global, canvas_name):
+    cue = next((c for c in captions["cues"] if c["start"] <= t_global < c["end"]), None)
+    if cue is None:
+        return
+    W, H = frame.size
+    sizes = CONTRACT["type"][canvas_name]
+    fnt = font("headline", int(sizes["body"] * 0.95))
+    d = ImageDraw.Draw(frame)
+    tw = d.textlength(cue["text"], font=fnt)
+    y = captions.get(f"y_{canvas_name}", captions.get("y", 0.8)) * H
+    x = W / 2 - tw / 2
+    pad = 18
+    d.rounded_rectangle((x - pad, y - pad * 0.6, x + tw + pad, y + fnt.size * 1.15 + pad * 0.4), radius=14,
+                        fill=rgb(PAL["background"]) + (200,))
+    d.text((x, y), cue["text"], font=fnt, fill=rgb(PAL["text"]) + (255,))
+
+
+def composite(scene, t, captions=None, t_global=0.0, canvas_name="vertical"):
     frame = render_frame(scene, t)
     push = scene.get("push", 0)
     if push:
@@ -563,6 +580,8 @@ def composite(scene, t):
     if a < 1:
         bg = Image.new("RGBA", frame.size, rgb(PAL["background"]) + (255,))
         frame = Image.blend(bg, frame, a)
+    if captions:
+        draw_captions(frame, captions, t_global, canvas_name)
     return frame.convert("RGB")
 
 
@@ -587,16 +606,23 @@ def render_video(video_dir, canvas_name, preview=False):
     contact = []
     n = 0
     step = 1.0 / FPS
+    captions = None
+    cap_path = os.path.join(video_dir, "captions.json")
+    if os.path.exists(cap_path) and not preview:
+        with open(cap_path) as f:
+            captions = json.load(f)
+    offset = 0.0
     for sc in scenes:
         frames_in_scene = int(sc["duration"] * FPS)
         for i in range(frames_in_scene):
             if preview and i % 3:
                 continue
             t = i * step
-            frame = composite(sc, t)
+            frame = composite(sc, t, captions, offset + t, canvas_name)
             frame.save(os.path.join(tmp, f"f{n:06d}.png"), compress_level=1)
             n += 1
-        contact.append(composite(sc, sc["duration"] - 0.4))
+        contact.append(composite(sc, sc["duration"] - 0.4, captions, offset + sc["duration"] - 0.4, canvas_name))
+        offset += sc["duration"]
     fps = FPS // 3 if preview else FPS
     mp4 = os.path.join(out_dir, f"{os.path.basename(os.path.normpath(video_dir))}-{canvas_name}.mp4")
     audio = spec.get("audio")

@@ -1,0 +1,28 @@
+{
+  "takeaway": "Render pipeline smoke test: text, graph, context rot, Dandy Man walk-in, end card.",
+  "scenes": [
+    {"id": "s1", "duration": 4, "elements": [
+      {"name": "h1", "type": "text", "role": "headline", "text": "Every morning, your agent forgets.",
+       "x": 0.08, "y": 0.22, "width": 0.84, "enter_at": 0.0},
+      {"name": "g1", "type": "graph", "x": 0.5, "y": 0.5, "width": 0.78,
+       "nodes": ["Ingest", "Clean", "Report"], "edges": [[0,1],[1,2]], "enter_at": 0.6, "rot_at": 2.6}
+    ]},
+    {"id": "s2", "duration": 4, "elements": [
+      {"name": "h2", "type": "text", "role": "headline", "text": "Yesterday's decisions, gone.",
+       "x": 0.08, "y": 0.22, "width": 0.84, "enter_at": 0.0},
+      {"name": "g2", "type": "graph", "x": 0.5, "y": 0.5, "width": 0.78,
+       "nodes": ["Ingest", "Clean", "Report"], "edges": [[0,1],[1,2]], "enter_at": 0.2, "broken_edge": 1},
+      {"name": "b2", "type": "text", "role": "body", "text": "Plan and code drift apart.",
+       "x": 0.08, "y": 0.62, "width": 0.84, "enter_at": 1.2}
+    ]},
+    {"id": "s3", "duration": 5, "elements": [
+      {"name": "h3", "type": "text", "role": "headline", "text": "Dandy remembers.",
+       "x": 0.08, "y": 0.22, "width": 0.84, "enter_at": 1.4},
+      {"name": "dm", "type": "sprite", "asset": "cast/dandy-man/candidates/c.svg",
+       "x": 0.28, "y": 0.78, "height": 0.36, "height_horizontal": 0.7, "anchor": "feet", "enter": "walk", "enter_at": 0.0},
+      {"name": "g3", "type": "graph", "x": 0.72, "y": 0.5, "width": 0.38,
+       "nodes": ["Ingest", "Clean"], "edges": [[0,1]], "enter_at": 1.8, "gold_node": 1, "gold": true}
+    ]},
+    {"id": "end", "type": "end_card", "duration": 3}
+  ]
+}

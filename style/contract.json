@@ -12,16 +12,42 @@
   },
   "palette_rules": {
     "max_gold_elements_per_frame": 1,
-    "warning_only_for": ["context_rot", "broken_edge", "forgetting"]
+    "warning_only_for": [
+      "context_rot",
+      "broken_edge",
+      "forgetting"
+    ]
   },
   "canvases": {
-    "vertical": {"w": 1080, "h": 1920, "platforms": ["instagram", "tiktok"]},
-    "horizontal": {"w": 1920, "h": 1080, "platforms": ["linkedin", "youtube"]}
+    "vertical": {
+      "w": 1080,
+      "h": 1920,
+      "platforms": [
+        "instagram",
+        "tiktok"
+      ]
+    },
+    "horizontal": {
+      "w": 1920,
+      "h": 1080,
+      "platforms": [
+        "linkedin",
+        "youtube"
+      ]
+    }
   },
   "type": {
     "font": "Inter",
-    "vertical": {"headline": 96, "body": 56, "caption": 40},
-    "horizontal": {"headline": 80, "body": 44, "caption": 32},
+    "vertical": {
+      "headline": 96,
+      "body": 56,
+      "caption": 40
+    },
+    "horizontal": {
+      "headline": 80,
+      "body": 44,
+      "caption": 32
+    },
     "max_headline_lines": 2,
     "max_body_lines": 3,
     "max_words_on_screen": 12
@@ -32,23 +58,51 @@
     "vertical_safe_bottom_px": 400,
     "spacing_unit_px": 24,
     "min_gap_px": 48,
-    "alignment": ["left", "center"]
+    "alignment": [
+      "left",
+      "center"
+    ]
   },
   "motion": {
     "fps": 30,
-    "scene_seconds": {"min": 3, "max": 6},
+    "scene_seconds": {
+      "min": 3,
+      "max": 6
+    },
     "text_hold_seconds_min": 2.5,
     "transition_ms": 300,
     "easing": "ease-out",
-    "text_entry": {"rise_px": 20, "ms": 400, "one_line_at_a_time": true},
+    "text_entry": {
+      "rise_px": 20,
+      "ms": 400,
+      "one_line_at_a_time": true
+    },
     "dandy_man_enters_from": "left",
     "edge_draw_ms": 600,
     "context_rot_ms": 800
   },
   "copy_rules": {
-    "banned_characters": ["—", "–"],
-    "banned_phrases": ["project management tool", "jira", "asana", "agent harness", "framework", "revolutionary", "game-changing", "10x"],
+    "banned_characters": [
+      "\u2014",
+      "\u2013"
+    ],
+    "banned_phrases": [
+      "project management tool",
+      "jira",
+      "asana",
+      "agent harness",
+      "framework",
+      "revolutionary",
+      "game-changing",
+      "10x"
+    ],
     "required_end_card": "motifs/end-card.svg",
-    "end_card_lines": ["dandylabs.dev", "14-day free trial"]
+    "end_card_lines": [
+      "dandylabs.dev",
+      "14-day free trial"
+    ]
+  },
+  "cast": {
+    "dandy_man_idle": "cast/dandy-man/candidates/b.svg"
   }
 }

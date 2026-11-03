@@ -26,8 +26,15 @@ x, y, width, height may be overridden per canvas with a suffix: x_horizontal, he
         "nodes": ["Ingest", "Clean", "Report"], "edges": [[0,1],[1,2]], "edge_labels": ["rows", "rows"],
         "enter_at": 0.3, "chalk": false, "rot_at": null, "break_at": null, "broken_edge": 1,
         "spread": {"at": 1.0, "ms": 800, "px": 120}, "merge_at": 3.0,
-        "ripple_at": 4.0, "gold_node": 0}
+        "ripple_at": 4.0, "gold_node": 0,
+        "title": "Budget tracker" (draws a panel with a title; "gold": true makes the title gold),
+        "scale": 0.8 (shrinks type and spacing for small project panels),
+        "unfinished": [2] (dashed, dim nodes; edges into them faint), "complete_at": 3.0 (they fill in),
+        "tick_at": 2.0, "tick_style": "highlight|soft" (tick at the right of the title row),
+        "redraw_at": 2.3 (fade out, then every node pops in again: rebuilt from scratch)}
      ]},
+   Any element may set "rot_until" to end a "rot_at" context rot. A text element may set
+   "bubble": true with "tail": "left|right" to draw as a speech bubble.
     {"id": "end", "type": "end_card", "duration": 3}
   ]
 }
@@ -226,8 +233,8 @@ def layout_scene(scene, canvas_name):
         x = pick(e, "x") * W
         y = pick(e, "y") * H
         common = dict(name=e["name"], enter_at=e.get("enter_at", 0), exit_at=e.get("exit_at"),
-                      gold=bool(e.get("gold")), rot_at=e.get("rot_at"), background=bool(e.get("background")),
-                      move=e.get("move"))
+                      gold=bool(e.get("gold")), rot_at=e.get("rot_at"), rot_until=e.get("rot_until"),
+                      background=bool(e.get("background")), move=e.get("move"))
         if t == "text":
             role = e.get("role", "body")
             fnt = font(role, sizes[role])
@@ -244,9 +251,15 @@ def layout_scene(scene, canvas_name):
                 color = PAL[e["color"]]
             lt = bool(e.get("lower_third"))
             bx0 = x0 - (CONTRACT["layout"]["spacing_unit_px"] + 8) if lt else x0
+            bbox = (bx0, y0, x0 + bw, y0 + bh)
+            bubble = bool(e.get("bubble"))
+            if bubble:  # speech bubble: padded box with a tail pointing down toward the speaker
+                bp = CONTRACT["layout"]["spacing_unit_px"]
+                bbox = (x0 - bp, y0 - bp * 0.7, x0 + bw + bp, y0 + bh + bp * 0.7 + 26 * SUPERSAMPLE)
             laid.append(dict(common, type="text", role=role, text=e["text"], lines=lines, font=fnt, color=color,
-                             x=x0, y=y0, align=align, bbox=(bx0, y0, x0 + bw, y0 + bh), strike_at=e.get("strike_at"),
-                             chalk=bool(e.get("chalk")), lower_third=lt))
+                             x=x0, y=y0, align=align, bbox=bbox, strike_at=e.get("strike_at"),
+                             chalk=bool(e.get("chalk")), lower_third=lt, bubble=bubble, tail=e.get("tail", "right"),
+                             text_w=bw, text_h=bh))
         elif t == "sprite":
             h = int(pick(e, "height", 0.4) * H)
             flip = bool(e.get("flip"))
@@ -270,9 +283,11 @@ def layout_scene(scene, canvas_name):
         elif t == "graph":
             gw = pick(e, "width", 0.7) * W
             n = len(e["nodes"])
-            fnt = font("caption", sizes["caption"])
-            node_h = sizes["caption"] * 2.2
-            gap = CONTRACT["layout"]["spacing_unit_px"] * (4 if e.get("edge_labels") else 3)
+            sc = e.get("scale", 1.0)  # shrink the whole graph (type and spacing) for small project panels
+            cap = int(sizes["caption"] * sc)
+            fnt = font("caption", cap)
+            node_h = cap * 2.2
+            gap = CONTRACT["layout"]["spacing_unit_px"] * (4 if e.get("edge_labels") else 3) * sc
             node_w = (gw - gap * (n - 1)) / n
             x0 = snap(x - gw / 2)
             y0 = snap(y - node_h / 2)
@@ -282,14 +297,20 @@ def layout_scene(scene, canvas_name):
                 nodes.append(dict(label=label, box=(nx, y0, nx + node_w, y0 + node_h)))
             spread = e.get("spread")
             pad = spread["px"] if spread else 0
-            panel = bool(e.get("panel"))
-            ppad = CONTRACT["layout"]["spacing_unit_px"] * 2 if panel else 0
+            title = e.get("title")
+            panel = bool(e.get("panel") or title)
+            ppad = CONTRACT["layout"]["spacing_unit_px"] * 2 * sc if panel else 0
+            title_font = font("caption", int(cap * 0.85))
+            title_h = (title_font.size * 1.5 + 12 * SUPERSAMPLE) if title else 0
+            label_h = cap * 1.4 if e.get("edge_labels") else 0
             laid.append(dict(common, type="graph", enter=e.get("enter", "fade"), nodes=nodes, edges=e.get("edges", []), font=fnt, chalk=bool(e.get("chalk")),
-                             bbox=(x0 - pad - ppad, y0 - (sizes["caption"] * 1.4 if e.get("edge_labels") else 0) - ppad, x0 + gw + pad + ppad, y0 + node_h + ppad),
-                             panel=panel,
+                             bbox=(x0 - pad - ppad, y0 - label_h - title_h - ppad, x0 + gw + pad + ppad, y0 + node_h + ppad),
+                             panel=panel, ppad=ppad, title=title, title_font=title_font, title_h=title_h, label_h=label_h,
+                             unfinished=e.get("unfinished", []), complete_at=e.get("complete_at"),
+                             tick_at=e.get("tick_at"), tick_style=e.get("tick_style", "highlight"), redraw_at=e.get("redraw_at"),
                              broken_edge=e.get("broken_edge"), break_at=e.get("break_at"), gold_node=e.get("gold_node"),
                              spread=spread, merge_at=e.get("merge_at"), ripple_at=e.get("ripple_at"),
-                             edge_labels=e.get("edge_labels"), label_font=font("caption", int(sizes["caption"] * 0.7))))
+                             edge_labels=e.get("edge_labels"), label_font=font("caption", int(cap * 0.7))))
         else:
             raise ValueError(f"unknown element type {t}")
     return dict(base, laid_out=laid)
@@ -310,6 +331,17 @@ def draw_text(frame, el, alpha, dx, dy, t_local):
     chalk = el.get("chalk")
     write_s = 0.55  # seconds to write one chalk line
     first_lx = None
+    if el.get("bubble"):
+        bp = ease_out(t_local / RISE_S)
+        b = el["bbox"]
+        tail_h = 26 * SUPERSAMPLE
+        box = (b[0] + dx, b[1] + dy + (1 - bp) * RISE_PX, b[2] + dx, b[3] + dy - tail_h + (1 - bp) * RISE_PX)
+        lift, soft = rgb(PAL["background_lift"]), rgb(PAL["soft"])
+        d.rounded_rectangle(box, radius=22 * SUPERSAMPLE, fill=lift + (int(255 * bp),), outline=soft + (int(255 * bp),), width=3 * SUPERSAMPLE)
+        tx = box[2] - 70 * SUPERSAMPLE if el.get("tail") == "right" else box[0] + 70 * SUPERSAMPLE
+        tip = tx + (22 if el.get("tail") == "right" else -22) * SUPERSAMPLE
+        d.polygon([(tx - 16 * SUPERSAMPLE, box[3] - 2), (tx + 16 * SUPERSAMPLE, box[3] - 2), (tip, box[3] + tail_h)], fill=lift + (int(255 * bp),))
+        d.line([(tx - 16 * SUPERSAMPLE, box[3] - 1), (tip, box[3] + tail_h), (tx + 16 * SUPERSAMPLE, box[3] - 1)], fill=soft + (int(255 * bp),), width=3 * SUPERSAMPLE)
     for i, line in enumerate(el["lines"]):
         lw = d.textlength(line, font=el["font"])
         lx = el["x"] if el["align"] == "left" else el["bbox"][0] + (el["bbox"][2] - el["bbox"][0] - lw) / 2
@@ -383,6 +415,22 @@ def rounded(d, box, fill, outline=None, width=0, r=16):
     d.rounded_rectangle(box, radius=r, fill=fill, outline=outline, width=width)
 
 
+def dashed_rounded(d, box, col, width, r):
+    """Rounded rectangle outline drawn as dashes: an unfinished node."""
+    x0, y0, x1, y1 = box
+    dash, gap = 14 * SUPERSAMPLE, 10 * SUPERSAMPLE
+    for (ax, ay, bx, by) in ((x0 + r, y0, x1 - r, y0), (x0 + r, y1, x1 - r, y1), (x0, y0 + r, x0, y1 - r), (x1, y0 + r, x1, y1 - r)):
+        length = math.hypot(bx - ax, by - ay)
+        ux, uy = (bx - ax) / length, (by - ay) / length
+        s = 0.0
+        while s < length:
+            e = min(length, s + dash)
+            d.line([(ax + ux * s, ay + uy * s), (ax + ux * e, ay + uy * e)], fill=col, width=width)
+            s = e + gap
+    for (cx, cy, a0) in ((x0 + r, y0 + r, 180), (x1 - r, y0 + r, 270), (x1 - r, y1 - r, 0), (x0 + r, y1 - r, 90)):
+        d.arc((cx - r, cy - r, cx + r, cy + r), a0, a0 + 90, fill=col, width=width)
+
+
 def draw_graph(frame, el, t_local, alpha, dx, dy):
     layer = Image.new("RGBA", frame.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
@@ -392,6 +440,19 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
     line_col = soft if el["chalk"] else hi
     fill = (0, 0, 0, 0) if el["chalk"] else lift + (255,)
     n = len(el["nodes"])
+    enter_mode = el.get("enter")
+    redrawn = False
+    if el.get("redraw_at") is not None and t_abs >= el["redraw_at"]:
+        # the agent rebuilds it from scratch: fade out, then pop every node in again
+        t2 = t_abs - el["redraw_at"]
+        if t2 < 0.4:
+            alpha *= 1 - t2 / 0.4
+        else:
+            t_local = t2 - 0.4
+            enter_mode = "fade"
+            redrawn = True
+    unfinished = set(el.get("unfinished") or [])
+    completing = el.get("complete_at") is not None and t_abs >= el["complete_at"]
     # per-node x offsets: spread apart, then merge back
     offs = [0.0] * n
     if el["spread"] and t_abs >= el["spread"]["at"]:
@@ -405,41 +466,67 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
         b = nd["box"]
         boxes.append((b[0] + offs[i] + dx, b[1] + dy, b[2] + offs[i] + dx, b[3] + dy))
     if el.get("panel"):
-        pp = CONTRACT["layout"]["spacing_unit_px"] * 2
-        allb = (min(b[0] for b in boxes) - pp, min(b[1] for b in boxes) - pp - (el["label_font"].size * 1.6 + 12 if el.get("edge_labels") else 0),
+        pp = el.get("ppad") or CONTRACT["layout"]["spacing_unit_px"] * 2
+        allb = (min(b[0] for b in boxes) - pp, min(b[1] for b in boxes) - pp - el.get("label_h", 0) - el.get("title_h", 0),
                 max(b[2] for b in boxes) + pp, max(b[3] for b in boxes) + pp)
         glow = Image.new("RGBA", frame.size, (0, 0, 0, 0))
         ImageDraw.Draw(glow).rounded_rectangle((allb[0] - 6, allb[1] - 6, allb[2] + 6, allb[3] + 6), radius=28 * SUPERSAMPLE, fill=hi + (70,))
         layer.alpha_composite(glow.filter(ImageFilter.GaussianBlur(radius=18 * SUPERSAMPLE)))
         rounded(d, allb, fill=lift + (255,), outline=hi + (255,), width=3 * SUPERSAMPLE, r=24 * SUPERSAMPLE)
+        if el.get("title"):
+            tf = el["title_font"]
+            d.text((allb[0] + pp, allb[1] + pp * 0.55), el["title"], font=tf, fill=(gold if el.get("gold") else soft) + (255,))
+            if el.get("tick_at") is not None and t_abs >= el["tick_at"]:
+                # a tick lands at the right end of the title row: started (soft) or finished (highlight)
+                q = ease_out((t_abs - el["tick_at"]) / 0.35)
+                r = tf.size * 0.62 * (0.6 + 0.4 * q)
+                cx, cy = allb[2] - pp - tf.size * 0.62, allb[1] + pp * 0.55 + tf.size * 0.55
+                tc = soft if el.get("tick_style") == "soft" else hi
+                d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=tc + (int(255 * q),))
+                d.line([(cx - r * 0.45, cy), (cx - r * 0.1, cy + r * 0.38), (cx + r * 0.5, cy - r * 0.4)],
+                       fill=lift + (int(255 * q),), width=max(2, int(tf.size * 0.14)), joint="curve")
     # ripple: nodes light up in turn after ripple_at; first node stays gold
     lit = set()
     if el["ripple_at"] is not None and t_abs >= el["ripple_at"]:
         k = int((t_abs - el["ripple_at"]) / 0.45)
         lit = {min(k, n - 1)}
+    shown = set()
     for i, nd in enumerate(el["nodes"]):
         box = boxes[i]
         # pop-in: scale 0.7 -> 1.06 -> 1.0 over 380 ms, staggered per node (skipped on cut entry)
         pop = 1.0
-        if el.get("enter") != "cut":
+        if enter_mode != "cut":
             q = (t_local - 0.12 * i) / 0.38
             if q <= 0:
                 continue
             if q < 1:
                 pop = 0.7 + 0.36 * ease_out(q) - 0.06 * ease_out(max(0, (q - 0.6) / 0.4))
+        dashed = i in unfinished and not completing
+        if i in unfinished and completing:  # the unfinished nodes fill in, one after another
+            q = (t_abs - el["complete_at"] - 0.25 * sorted(unfinished).index(i)) / 0.38
+            if q < 1:
+                pop = 0.7 + 0.36 * ease_out(max(0, q)) - 0.06 * ease_out(max(0, (q - 0.6) / 0.4))
         if pop != 1.0:
             cxb, cyb = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
             hw, hh = (box[2] - box[0]) / 2 * pop, (box[3] - box[1]) / 2 * pop
             box = (cxb - hw, cyb - hh, cxb + hw, cyb + hh)
+        shown.add(i)
         is_gold = (el.get("gold_node") == i and (el["ripple_at"] is None or t_abs >= el["ripple_at"])) or i in lit
         col = gold if is_gold else line_col
-        rounded(d, box, fill=fill, outline=col + (255,), width=4 * SUPERSAMPLE, r=16 * SUPERSAMPLE)
         lw = d.textlength(nd["label"], font=el["font"])
-        d.text(((box[0] + box[2]) / 2 - lw / 2, box[1] + (box[3] - box[1]) / 2 - el["font"].size / 2),
-               nd["label"], font=el["font"], fill=txt + (255,))
+        tpos = ((box[0] + box[2]) / 2 - lw / 2, box[1] + (box[3] - box[1]) / 2 - el["font"].size / 2)
+        if dashed:
+            dashed_rounded(d, box, soft + (150,), 3 * SUPERSAMPLE, 16 * SUPERSAMPLE)
+            d.text(tpos, nd["label"], font=el["font"], fill=soft + (120,))
+        else:
+            rounded(d, box, fill=fill, outline=col + (255,), width=4 * SUPERSAMPLE, r=16 * SUPERSAMPLE)
+            d.text(tpos, nd["label"], font=el["font"], fill=txt + (255,))
     for k, (a, b) in enumerate(el["edges"]):
+        if a not in shown or b not in shown:
+            continue
+        faint = (a in unfinished or b in unfinished) and not completing
         start = k * edge_s
-        if el.get("enter") != "cut":
+        if enter_mode != "cut":
             start = max(start, 0.12 * max(a, b) + 0.3)  # wait for the target node to pop in
         if el["ripple_at"] is not None and t_abs >= el["ripple_at"]:
             start = el["ripple_at"] - el["enter_at"] + k * 0.45
@@ -452,9 +539,12 @@ def draw_graph(frame, el, t_local, alpha, dx, dy):
         x1, y1 = ba[2], (ba[1] + ba[3]) / 2
         x2, y2 = bb[0], (bb[1] + bb[3]) / 2
         xe, ye = x1 + (x2 - x1) * p, y1 + (y2 - y1) * p
-        broken = el.get("broken_edge") == k and (el["break_at"] is None or t_abs >= el["break_at"])
+        broken = el.get("broken_edge") == k and (el["break_at"] is None or t_abs >= el["break_at"]) and not redrawn
         col = warn if broken else line_col
         w = 6 * SUPERSAMPLE
+        if faint:
+            d.line([(x1, y1), (xe, ye)], fill=soft + (110,), width=3 * SUPERSAMPLE)
+            continue
         if broken:
             bp = 1.0 if el["break_at"] is None else ease_out((t_abs - el["break_at"]) / 0.4)
             xm = (x1 + x2) / 2
@@ -525,7 +615,7 @@ def render_frame(scene, t):
         elif el["type"] == "graph":
             p = 1.0 if el.get("enter") == "cut" else ease_out(t_local / TR)
             draw_graph(frame, el, t_local, p * alpha, dx, dy)
-        if el.get("rot_at") is not None and t >= el["rot_at"]:
+        if el.get("rot_at") is not None and t >= el["rot_at"] and (el.get("rot_until") is None or t < el["rot_until"]):
             rp = ease_out((t - el["rot_at"]) / (M["context_rot_ms"] / 1000))
             context_rot(frame, el["bbox"], rp, bg)
     return frame

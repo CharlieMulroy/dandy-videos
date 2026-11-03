@@ -108,6 +108,78 @@ def builder():
     return svg("0 0 700 500", "\n".join("  " + p for p in parts))
 
 
+# ---------- Maya at a desk, side view (video 02) ----------
+def maya(pose="typing"):
+    """viewBox 0 -80 700 580 (80 units of headroom for the thought bubble), floor at y=500. Same desk as the builder, distinct person: bun and ponytail,
+    soft-purple top. Poses: typing, explaining (arm up, thought bubble full of lines), slumped."""
+    stroke = f'stroke="{TEXT}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"'
+    top = f'stroke="{SOFT}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"'
+    bx = 230
+    parts = [
+        f'<rect x="300" y="300" width="360" height="22" rx="6" fill="{LIFT}"/>',
+        f'<rect x="320" y="322" width="18" height="178" fill="{LIFT}"/>',
+        f'<rect x="622" y="322" width="18" height="178" fill="{LIFT}"/>',
+        f'<rect x="470" y="262" width="16" height="40" fill="{LIFT}"/>',
+        f'<rect x="440" y="290" width="76" height="12" rx="4" fill="{LIFT}"/>',
+        f'<rect x="380" y="120" width="196" height="146" rx="10" fill="{LIFT}"/>',
+        f'<rect x="394" y="134" width="168" height="118" rx="6" fill="{HI}" opacity="0.55"/>',
+        # a chat window on screen instead of a graph: two message bars
+        f'<rect x="410" y="160" width="100" height="18" rx="6" fill="{TEXT}" opacity="0.8"/>',
+        f'<rect x="446" y="190" width="100" height="18" rx="6" fill="{SOFT}" opacity="0.9"/>',
+        f'<rect x="410" y="220" width="70" height="18" rx="6" fill="{TEXT}" opacity="0.8"/>',
+        # chair
+        f'<rect x="{bx - 70}" y="330" width="120" height="16" rx="6" fill="{LIFT}"/>',
+        f'<rect x="{bx - 80}" y="210" width="16" height="130" rx="6" fill="{LIFT}"/>',
+        f'<rect x="{bx - 18}" y="346" width="16" height="154" fill="{LIFT}"/>',
+        # legs (same in every pose)
+        f'<path d="M{bx - 20} 330 L{bx + 60} 330 L{bx + 60} 494" {stroke}/>',
+        # keyboard
+        f'<rect x="{bx + 80}" y="286" width="110" height="12" rx="4" fill="{SOFT}"/>',
+    ]
+    if pose == "slumped":
+        hx, hy = bx + 70, 232  # head down near the desk
+        parts += [
+            f'<path d="M{bx - 20} 330 Q{bx + 20} 250 {hx - 20} 250" {top}/>',       # torso bent forward
+            f'<path d="M{bx + 10} 290 L{bx + 110} 296" {stroke}/>',                  # arm flat on desk
+        ]
+    else:
+        hx, hy = bx + 8, 160
+        parts += [f'<path d="M{bx - 20} 330 L{bx} 200" {top}/>']                     # torso
+        if pose == "explaining":
+            parts += [f'<path d="M{bx - 6} 240 L{bx + 70} 150" {stroke}/>']          # arm raised
+        else:
+            parts += [f'<path d="M{bx - 6} 240 L{bx + 90} 290" {stroke}/>']          # arm to keyboard
+    parts += [
+        # ponytail then head then bun, so the tail sits behind
+        f'<path d="M{hx - 26} {hy - 6} Q{hx - 70} {hy + 30} {hx - 52} {hy + 80}" {stroke}/>',
+        f'<circle cx="{hx}" cy="{hy}" r="34" fill="{TEXT}"/>',
+        f'<circle cx="{hx - 22}" cy="{hy - 30}" r="14" fill="{TEXT}"/>',
+        f'<circle cx="{hx + 14}" cy="{hy - 4}" r="4" fill="{BG}"/>',
+    ]
+    if pose == "explaining":
+        ob = f'stroke="{TEXT}" stroke-width="5" fill="none"'
+        parts += [
+            f'<circle cx="{hx + 40}" cy="{hy - 46}" r="7" {ob}/>',
+            f'<circle cx="{hx + 60}" cy="{hy - 72}" r="11" {ob}/>',
+            f'<ellipse cx="{hx + 120}" cy="{hy - 124}" rx="92" ry="48" {ob}/>',
+        ]
+        # the explanation: lines and lines of it
+        for i, w in enumerate((120, 100, 130, 80)):
+            parts.append(f'<rect x="{hx + 120 - w / 2:.0f}" y="{hy - 150 + i * 14}" width="{w}" height="6" rx="3" fill="{SOFT}"/>')
+    return svg("0 -80 700 580", "\n".join("  " + p for p in parts))
+
+
+# ---------- Arrows (read / write between the graph and the agent) ----------
+def arrow(direction="down"):
+    """viewBox 0 0 120 240, highlight colour, head at the bottom (down) or the top (up)."""
+    s = f'stroke="{HI}" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"'
+    if direction == "down":
+        parts = [f'<line x1="60" y1="20" x2="60" y2="210" {s}/>', f'<path d="M24 174 L60 216 L96 174" {s}/>']
+    else:
+        parts = [f'<line x1="60" y1="220" x2="60" y2="30" {s}/>', f'<path d="M24 66 L60 24 L96 66" {s}/>']
+    return svg("0 0 120 240", "\n".join("  " + p for p in parts))
+
+
 # ---------- Blackboard ----------
 def blackboard():
     parts = [
@@ -160,6 +232,11 @@ FILES = {
     os.path.join(FIG, "employee-blank.svg"): employee("droop", bubble=True),
     os.path.join(FIG, "employee-thinking.svg"): employee("flutter", bubble=True, bubble_graph=True),
     os.path.join(FIG, "builder.svg"): builder(),
+    os.path.join(FIG, "maya.svg"): maya("typing"),
+    os.path.join(FIG, "maya-explaining.svg"): maya("explaining"),
+    os.path.join(FIG, "maya-slumped.svg"): maya("slumped"),
+    os.path.join(MOTIFS, "arrow-down.svg"): arrow("down"),
+    os.path.join(MOTIFS, "arrow-up.svg"): arrow("up"),
     os.path.join(MOTIFS, "blackboard.svg"): blackboard(),
     os.path.join(MOTIFS, "clock-night.svg"): clock(11, 48, night=True),
     os.path.join(MOTIFS, "clock-morning.svg"): clock(9, 2, night=False),

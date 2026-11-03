@@ -1,0 +1,991 @@
+{
+ "takeaway": "Non-coders building with agents don't fail for lack of skill; they fail because every new session starts from zero. Give the agent the state and the projects get finished.",
+ "scenes": [
+  {
+   "id": "s1-meet",
+   "duration": 5.0,
+   "exit": "cut",
+   "floor": 0.79,
+   "elements": [
+    {
+     "name": "h",
+     "type": "text",
+     "role": "headline",
+     "text": "Maya. Not a coder.",
+     "x": 0.5,
+     "y": 0.26,
+     "align": "center",
+     "width": 0.84,
+     "exit_at": 2.2
+    },
+    {
+     "name": "p-budget",
+     "type": "graph",
+     "title": "Budget tracker",
+     "nodes": [
+      "Income",
+      "Spend",
+      "Chart"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.2,
+     "width": 0.62,
+     "enter_at": 2.5
+    },
+    {
+     "name": "p-workout",
+     "type": "graph",
+     "title": "Workout log",
+     "nodes": [
+      "Log",
+      "Stats",
+      "Goals"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.344,
+     "width": 0.62,
+     "enter_at": 3.1
+    },
+    {
+     "name": "p-site",
+     "type": "graph",
+     "title": "Side business site",
+     "nodes": [
+      "Pages",
+      "Shop",
+      "Launch"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.4785,
+     "width": 0.62,
+     "enter_at": 3.7
+    },
+    {
+     "name": "maya",
+     "type": "sprite",
+     "asset": "cast/figures/maya.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.37,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee-thinking.svg",
+     "anchor": "feet",
+     "x": 0.81,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    }
+   ]
+  },
+  {
+   "id": "s2-tally",
+   "duration": 4.0,
+   "enter": "cut",
+   "exit": "cut",
+   "floor": 0.79,
+   "elements": [
+    {
+     "name": "p-budget",
+     "type": "graph",
+     "title": "Budget tracker",
+     "nodes": [
+      "Income",
+      "Spend",
+      "Chart"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.2,
+     "width": 0.62,
+     "enter": "cut",
+     "tick_at": 0.6,
+     "tick_style": "soft"
+    },
+    {
+     "name": "p-workout",
+     "type": "graph",
+     "title": "Workout log",
+     "nodes": [
+      "Log",
+      "Stats",
+      "Goals"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.344,
+     "width": 0.62,
+     "enter": "cut",
+     "tick_at": 1.1,
+     "tick_style": "soft"
+    },
+    {
+     "name": "p-site",
+     "type": "graph",
+     "title": "Side business site",
+     "nodes": [
+      "Pages",
+      "Shop",
+      "Launch"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.4785,
+     "width": 0.62,
+     "enter": "cut",
+     "tick_at": 1.6,
+     "tick_style": "soft"
+    },
+    {
+     "name": "tally",
+     "type": "text",
+     "role": "caption",
+     "text": "Started 3. Finished 0.",
+     "x": 0.08,
+     "y": 0.545,
+     "enter_at": 2.0
+    },
+    {
+     "name": "maya",
+     "type": "sprite",
+     "asset": "cast/figures/maya.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.37,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee-thinking.svg",
+     "anchor": "feet",
+     "x": 0.81,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    }
+   ]
+  },
+  {
+   "id": "s3-forgot",
+   "duration": 5.0,
+   "enter": "wipe",
+   "exit": "cut",
+   "floor": 0.79,
+   "elements": [
+    {
+     "name": "p-budget",
+     "type": "graph",
+     "title": "Budget tracker",
+     "nodes": [
+      "Income",
+      "Spend",
+      "Chart"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.2,
+     "width": 0.62,
+     "enter": "cut",
+     "rot_at": 1.0
+    },
+    {
+     "name": "p-workout",
+     "type": "graph",
+     "title": "Workout log",
+     "nodes": [
+      "Log",
+      "Stats",
+      "Goals"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.344,
+     "width": 0.62,
+     "enter": "cut"
+    },
+    {
+     "name": "p-site",
+     "type": "graph",
+     "title": "Side business site",
+     "nodes": [
+      "Pages",
+      "Shop",
+      "Launch"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.4785,
+     "width": 0.62,
+     "enter": "cut"
+    },
+    {
+     "name": "bubble",
+     "type": "text",
+     "role": "caption",
+     "text": "What budget tracker?",
+     "bubble": true,
+     "tail": "right",
+     "x": 0.7,
+     "y": 0.557,
+     "align": "center",
+     "enter_at": 1.8
+    },
+    {
+     "name": "maya",
+     "type": "sprite",
+     "asset": "cast/figures/maya.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.37,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee-thinking.svg",
+     "anchor": "feet",
+     "x": 0.81,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut",
+     "sequence": [
+      {
+       "asset": "cast/figures/employee-blank.svg",
+       "at": 0.6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4-rebuilt",
+   "duration": 5.0,
+   "enter": "wipe",
+   "exit": "cut",
+   "floor": 0.79,
+   "elements": [
+    {
+     "name": "p-budget",
+     "type": "graph",
+     "title": "Budget tracker",
+     "nodes": [
+      "Income",
+      "Spend",
+      "Chart"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.2,
+     "width": 0.62,
+     "enter": "cut",
+     "rot_at": 0.0
+    },
+    {
+     "name": "p-workout",
+     "type": "graph",
+     "title": "Workout log",
+     "nodes": [
+      "Log",
+      "Stats",
+      "Goals"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.344,
+     "width": 0.62,
+     "enter": "cut",
+     "broken_edge": 0,
+     "break_at": 0.7,
+     "rot_at": 1.0,
+     "rot_until": 2.3,
+     "redraw_at": 2.3
+    },
+    {
+     "name": "p-site",
+     "type": "graph",
+     "title": "Side business site",
+     "nodes": [
+      "Pages",
+      "Shop",
+      "Launch"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.4785,
+     "width": 0.62,
+     "enter": "cut"
+    },
+    {
+     "name": "cap",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "rebuilt from scratch",
+     "x": 0.11,
+     "y": 0.545,
+     "enter_at": 2.8
+    },
+    {
+     "name": "maya",
+     "type": "sprite",
+     "asset": "cast/figures/maya.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.37,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee-blank.svg",
+     "anchor": "feet",
+     "x": 0.81,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    }
+   ]
+  },
+  {
+   "id": "s5-reexplain",
+   "duration": 5.0,
+   "enter": "wipe",
+   "exit": "cut",
+   "floor": 0.79,
+   "elements": [
+    {
+     "name": "p-budget",
+     "type": "graph",
+     "title": "Budget tracker",
+     "nodes": [
+      "Income",
+      "Spend",
+      "Chart"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.2,
+     "width": 0.62,
+     "enter": "cut",
+     "rot_at": 0.0
+    },
+    {
+     "name": "p-workout",
+     "type": "graph",
+     "title": "Workout log",
+     "nodes": [
+      "Log",
+      "Stats",
+      "Goals"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.344,
+     "width": 0.62,
+     "enter": "cut",
+     "rot_at": 0.0
+    },
+    {
+     "name": "p-site",
+     "type": "graph",
+     "title": "Side business site",
+     "nodes": [
+      "Pages",
+      "Shop",
+      "Launch"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.4785,
+     "width": 0.62,
+     "enter": "cut",
+     "rot_at": 2.2
+    },
+    {
+     "name": "cap",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "re-explaining it, again",
+     "x": 0.11,
+     "y": 0.545,
+     "enter_at": 1.0
+    },
+    {
+     "name": "maya",
+     "type": "sprite",
+     "asset": "cast/figures/maya-explaining.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.37,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut",
+     "sequence": [
+      {
+       "asset": "cast/figures/maya-slumped.svg",
+       "at": 3.0
+      }
+     ]
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee-blank.svg",
+     "anchor": "feet",
+     "x": 0.81,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    }
+   ]
+  },
+  {
+   "id": "s6-dandy",
+   "duration": 9.0,
+   "enter": "cut",
+   "exit": "cut",
+   "floor": 0.79,
+   "elements": [
+    {
+     "name": "p-budget",
+     "type": "graph",
+     "title": "Budget tracker",
+     "nodes": [
+      "Income",
+      "Spend",
+      "Chart"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.2,
+     "width": 0.62,
+     "enter": "cut",
+     "rot_at": 0.0,
+     "exit_at": 0.5
+    },
+    {
+     "name": "p-workout",
+     "type": "graph",
+     "title": "Workout log",
+     "nodes": [
+      "Log",
+      "Stats",
+      "Goals"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.344,
+     "width": 0.62,
+     "enter": "cut",
+     "rot_at": 0.0,
+     "exit_at": 0.5
+    },
+    {
+     "name": "p-site",
+     "type": "graph",
+     "title": "Side business site",
+     "nodes": [
+      "Pages",
+      "Shop",
+      "Launch"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [
+      2
+     ],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.4785,
+     "width": 0.62,
+     "enter": "cut",
+     "rot_at": 0.0,
+     "exit_at": 0.5
+    },
+    {
+     "name": "dandy",
+     "type": "graph",
+     "title": "Dandy",
+     "gold": true,
+     "nodes": [
+      "Budget",
+      "Workout",
+      "Site"
+     ],
+     "edges": [],
+     "unfinished": [],
+     "scale": 0.85,
+     "x": 0.5,
+     "y": 0.3,
+     "width": 0.72,
+     "enter_at": 1.0
+    },
+    {
+     "name": "what",
+     "type": "text",
+     "role": "caption",
+     "text": "what exists, what's connected, what's next",
+     "x": 0.5,
+     "y": 0.37,
+     "align": "center",
+     "width": 0.84,
+     "enter_at": 1.6,
+     "exit_at": 8.6
+    },
+    {
+     "name": "arr-read",
+     "type": "sprite",
+     "asset": "motifs/arrow-down.svg",
+     "anchor": "center",
+     "x": 0.82,
+     "y": 0.555,
+     "height": 0.07,
+     "enter": "rise",
+     "enter_at": 3.6,
+     "exit_at": 6.0
+    },
+    {
+     "name": "cap-read",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "reads first",
+     "x": 0.11,
+     "y": 0.545,
+     "enter_at": 3.6,
+     "exit_at": 6.0
+    },
+    {
+     "name": "arr-write",
+     "type": "sprite",
+     "asset": "motifs/arrow-up.svg",
+     "anchor": "center",
+     "x": 0.82,
+     "y": 0.555,
+     "height": 0.07,
+     "enter": "rise",
+     "enter_at": 6.2
+    },
+    {
+     "name": "cap-write",
+     "type": "text",
+     "role": "caption",
+     "lower_third": true,
+     "text": "writes back",
+     "x": 0.11,
+     "y": 0.545,
+     "enter_at": 6.2
+    },
+    {
+     "name": "maya",
+     "type": "sprite",
+     "asset": "cast/figures/maya.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.37,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee.svg",
+     "anchor": "feet",
+     "x": 0.81,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut",
+     "sequence": [
+      {
+       "asset": "cast/figures/employee-thinking.svg",
+       "at": 6.6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s7-later",
+   "duration": 7.0,
+   "enter": "wipe",
+   "floor": 0.79,
+   "elements": [
+    {
+     "name": "h",
+     "type": "text",
+     "role": "headline",
+     "text": "3 weeks later",
+     "x": 0.5,
+     "y": 0.26,
+     "align": "center",
+     "width": 0.84,
+     "exit_at": 1.6
+    },
+    {
+     "name": "p-budget",
+     "type": "graph",
+     "title": "Budget tracker",
+     "nodes": [
+      "Income",
+      "Spend",
+      "Chart"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.2,
+     "width": 0.62,
+     "enter_at": 1.9,
+     "tick_at": 3.4
+    },
+    {
+     "name": "p-workout",
+     "type": "graph",
+     "title": "Workout log",
+     "nodes": [
+      "Log",
+      "Stats",
+      "Goals"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.344,
+     "width": 0.62,
+     "enter_at": 2.2,
+     "tick_at": 3.9
+    },
+    {
+     "name": "p-site",
+     "type": "graph",
+     "title": "Side business site",
+     "nodes": [
+      "Pages",
+      "Shop",
+      "Launch"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "unfinished": [],
+     "scale": 0.8,
+     "x": 0.5,
+     "y": 0.4785,
+     "width": 0.62,
+     "enter_at": 2.5,
+     "tick_at": 4.4
+    },
+    {
+     "name": "tally",
+     "type": "text",
+     "role": "caption",
+     "text": "Finished 3.",
+     "gold": true,
+     "x": 0.08,
+     "y": 0.545,
+     "enter_at": 5.0
+    },
+    {
+     "name": "maya",
+     "type": "sprite",
+     "asset": "cast/figures/maya.svg",
+     "anchor": "feet",
+     "idle": false,
+     "x": 0.37,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    },
+    {
+     "name": "agent",
+     "type": "sprite",
+     "asset": "cast/figures/employee-thinking.svg",
+     "anchor": "feet",
+     "x": 0.81,
+     "y": 0.785,
+     "height": 0.15,
+     "enter": "cut"
+    }
+   ]
+  },
+  {
+   "id": "end",
+   "type": "end_card",
+   "duration": 4.5,
+   "push": 0
+  }
+ ]
+}

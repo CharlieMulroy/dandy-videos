@@ -55,6 +55,23 @@ FONTS = {"headline": "Inter-Bold.otf", "body": "Inter-Regular.otf", "caption": "
 
 with open(os.path.join(ROOT, "style", "contract.json")) as f:
     CONTRACT = json.load(f)
+SUPERSAMPLE = 1
+
+
+def scale_contract(k):
+    """Render at k x the canvas (final quality); every px value in the contract scales with it."""
+    global SUPERSAMPLE, RISE_PX
+    SUPERSAMPLE = k
+    for cv in CONTRACT["canvases"].values():
+        cv["w"] = int(cv["w"] * k)
+        cv["h"] = int(cv["h"] * k)
+    for key in ("vertical", "horizontal"):
+        CONTRACT["type"][key] = {n: int(v * k) for n, v in CONTRACT["type"][key].items()}
+    lay = CONTRACT["layout"]
+    for key in ("vertical_safe_top_px", "vertical_safe_bottom_px", "spacing_unit_px", "min_gap_px"):
+        lay[key] = int(lay[key] * k)
+    CONTRACT["motion"]["text_entry"]["rise_px"] = int(CONTRACT["motion"]["text_entry"]["rise_px"] * k)
+    RISE_PX = CONTRACT["motion"]["text_entry"]["rise_px"]
 PAL = CONTRACT["palette"]
 FPS = CONTRACT["motion"]["fps"]
 M = CONTRACT["motion"]
@@ -597,7 +614,7 @@ def stills(video_dir, canvas_name, times):
     print("stills in", out)
 
 
-def render_video(video_dir, canvas_name, preview=False):
+def render_video(video_dir, canvas_name, preview=False, final=False):
     spec, scenes = load_scenes(video_dir, canvas_name)
     if not qa(video_dir, canvas_name, spec, scenes):
         return False
@@ -619,12 +636,15 @@ def render_video(video_dir, canvas_name, preview=False):
                 continue
             t = i * step
             frame = composite(sc, t, captions, offset + t, canvas_name)
+            if SUPERSAMPLE > 1:
+                frame = frame.resize((frame.width // SUPERSAMPLE, frame.height // SUPERSAMPLE), Image.LANCZOS)
             frame.save(os.path.join(tmp, f"f{n:06d}.png"), compress_level=1)
             n += 1
         contact.append(composite(sc, sc["duration"] - 0.4, captions, offset + sc["duration"] - 0.4, canvas_name))
         offset += sc["duration"]
     fps = FPS // 3 if preview else FPS
-    mp4 = os.path.join(out_dir, f"{os.path.basename(os.path.normpath(video_dir))}-{canvas_name}.mp4")
+    stem = os.path.basename(os.path.normpath(video_dir))
+    mp4 = os.path.join(out_dir, f"{stem}-{canvas_name}{'-final' if final else ''}.mp4")
     audio = spec.get("audio")
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png")]
     if audio and not preview:
@@ -632,7 +652,10 @@ def render_video(video_dir, canvas_name, preview=False):
         cmd += ["-ss", str(audio.get("offset_s", 0)), "-i", os.path.join(ROOT, audio["file"]),
                 "-af", "highpass=f=80,afftdn=nf=-28,loudnorm=I=-16:TP=-1.5:LRA=11,apad",
                 "-t", str(total), "-c:a", "aac", "-b:a", "160k"]
-    cmd += ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", mp4]
+    if final:
+        cmd += ["-c:v", "libx264", "-preset", "slow", "-pix_fmt", "yuv420p", "-crf", "17", "-movflags", "+faststart", mp4]
+    else:
+        cmd += ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", mp4]
     subprocess.run(cmd, check=True)
     shutil.rmtree(tmp)
     th = 480
@@ -654,7 +677,10 @@ def main():
     ap.add_argument("--canvas", default="both")
     ap.add_argument("--preview", action="store_true", help="10 fps, faster")
     ap.add_argument("--stills", default=None, help="comma-separated seconds; write stills instead of a video")
+    ap.add_argument("--final", action="store_true", help="2x supersampled frames, crf 17, slow preset")
     a = ap.parse_args()
+    if a.final:
+        scale_contract(2)
     names = ["vertical", "horizontal"] if a.canvas == "both" else [a.canvas]
     if a.stills:
         times = [float(x) for x in a.stills.split(",")]
@@ -663,7 +689,7 @@ def main():
             qa(a.video_dir, c, spec, scenes)
             stills(a.video_dir, c, times)
         return
-    ok = all(render_video(a.video_dir, c, a.preview) for c in names)
+    ok = all(render_video(a.video_dir, c, a.preview, a.final) for c in names)
     sys.exit(0 if ok else 1)
 
 

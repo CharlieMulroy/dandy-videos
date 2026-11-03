@@ -306,7 +306,7 @@
   {
    "id": "s3-gap",
    "duration": 8.0,
-   "enter": "wipe",
+   "enter": "cut",
    "exit": "cut",
    "floor": 0.78,
    "elements": [
@@ -1032,7 +1032,7 @@
   {
    "id": "s6-benefits",
    "duration": 10.0,
-   "enter": "fade",
+   "enter": "cut",
    "floor": 0.78,
    "elements": [
     {
@@ -1061,6 +1061,178 @@
        "at": 1.0
       }
      ]
+    },
+    {
+     "name": "tw-cc",
+     "type": "graph",
+     "chalk": true,
+     "vertical": true,
+     "nodes": [
+      "Claude Code",
+      "Agents",
+      "Skills",
+      "Tools"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       3
+      ]
+     ],
+     "x": 0.235,
+     "y": 0.14,
+     "width": 0.215,
+     "scale": 0.6,
+     "enter": "cut",
+     "enter_at": 0,
+     "exit_at": 0.4
+    },
+    {
+     "name": "tw-cu",
+     "type": "graph",
+     "chalk": true,
+     "vertical": true,
+     "nodes": [
+      "Cursor",
+      "Agents",
+      "Skills",
+      "Tools"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       3
+      ]
+     ],
+     "x": 0.5,
+     "y": 0.14,
+     "width": 0.215,
+     "scale": 0.6,
+     "enter": "cut",
+     "enter_at": 0,
+     "exit_at": 0.4
+    },
+    {
+     "name": "tw-cx",
+     "type": "graph",
+     "chalk": true,
+     "vertical": true,
+     "nodes": [
+      "Codex",
+      "Agents",
+      "Skills",
+      "Tools"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       3
+      ]
+     ],
+     "x": 0.765,
+     "y": 0.14,
+     "width": 0.215,
+     "scale": 0.6,
+     "enter": "cut",
+     "enter_at": 0,
+     "exit_at": 0.4
+    },
+    {
+     "name": "dandy",
+     "type": "graph",
+     "chalk": true,
+     "background": true,
+     "panel": true,
+     "title": "Dandy, the state layer",
+     "nodes": [
+      "Plan",
+      "Build",
+      "Ship"
+     ],
+     "edges": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "edge_labels": [
+      "schema",
+      "schema"
+     ],
+     "x": 0.505,
+     "y": 0.41,
+     "width": 0.72,
+     "scale": 0.9,
+     "enter": "cut",
+     "enter_at": 0,
+     "exit_at": 0.4
+    },
+    {
+     "name": "ar-cc",
+     "type": "sprite",
+     "asset": "motifs/arrow-down.svg",
+     "anchor": "center",
+     "background": true,
+     "x": 0.235,
+     "y": 0.298,
+     "height": 0.024,
+     "enter": "cut",
+     "enter_at": 0,
+     "exit_at": 0.4
+    },
+    {
+     "name": "ar-cu",
+     "type": "sprite",
+     "asset": "motifs/arrow-down.svg",
+     "anchor": "center",
+     "background": true,
+     "x": 0.5,
+     "y": 0.298,
+     "height": 0.024,
+     "enter": "cut",
+     "enter_at": 0,
+     "exit_at": 0.4
+    },
+    {
+     "name": "ar-cx",
+     "type": "sprite",
+     "asset": "motifs/arrow-down.svg",
+     "anchor": "center",
+     "background": true,
+     "x": 0.765,
+     "y": 0.298,
+     "height": 0.024,
+     "enter": "cut",
+     "enter_at": 0,
+     "exit_at": 0.4
     },
     {
      "name": "b1",

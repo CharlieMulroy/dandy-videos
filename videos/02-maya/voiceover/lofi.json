@@ -1,7 +1,7 @@
 {
  "file": "videos/02-maya/voiceover/charlie-take1-padded.m4a",
  "offset_s": 0.0,
- "note": "take 1 (headset), 27.1 s; 2.4 s of the recording's own room tone (7.45-8.15 s looped) inserted at 22.8 so the last line lands on the end card",
+ "note": "take 1 (headset), 27.1 s; 2.4 s of mirrored room tone (the 22.3-23.2 s pause, forward/back/forward) inserted at 23.2 so the last line lands on the end card",
  "durations": {
   "s1-room": 5.3,
   "s2-board": 4.4,

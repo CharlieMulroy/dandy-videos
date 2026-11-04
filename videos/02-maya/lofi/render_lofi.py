@@ -508,16 +508,18 @@ def apply_timing():
             sc["dur"] = float(timing[sc["id"]])
 
 
-AUDIO_PRE = "highpass=f=130,afftdn=nf=-22:nr=18"
+AUDIO_PRE = ("highpass=f=130,asendcmd=c='0.0 afftdn sn start; 0.6 afftdn sn stop',afftdn=nf=-25:nr=30:tn=1,"
+             "agate=threshold=0.02:ratio=4:attack=8:release=200:knee=4,"
+             "acompressor=threshold=-20dB:ratio=3:attack=8:release=120")
 
 
 def audio_chain(path):
-    """Clean-up, then a fixed gain to -16 LUFS and a true-peak limiter: constant gain, so pauses never pump."""
-    out = subprocess.run(["ffmpeg", "-loglevel", "info", "-i", path, "-af", AUDIO_PRE + ",loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+    """Noise profile from the silence before the first word, gate, compressor, fixed gain to -16 LUFS, true-peak limiter."""
+    out = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "info", "-i", path, "-af", AUDIO_PRE + ",loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
                          capture_output=True, text=True).stderr
     m = json.loads(out[out.rfind("{"):out.rfind("}") + 1])
     gain = -16.0 - float(m["input_i"])
-    return f"{AUDIO_PRE},volume={gain:.2f}dB,alimiter=limit=0.84:attack=5:release=60,apad"
+    return f"{AUDIO_PRE},volume={gain:.2f}dB,alimiter=limit=0.84:attack=5:release=60:level=0,apad"
 
 
 def render(preview=False, final=False, stills=False):

@@ -20,6 +20,9 @@ import tempfile
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import sfx  # noqa: E402
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 VIDEO = os.path.abspath(os.path.join(HERE, ".."))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
@@ -195,6 +198,42 @@ def fall_in(frame, img, t, start, dur, from_xy, center=HOLE, turn=2.4):
     frame.alpha_composite(im, (int(x - im.width / 2), int(y - im.height / 2)))
 
 
+def eat_flash(frame, t, at, center=HOLE, radius=HOLE_R):
+    """A ring of light bursts off the rim when the hole swallows something."""
+    if t < at or t > at + 0.5:
+        return
+    q = (t - at) / 0.5
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    r = radius * (0.62 + 0.5 * ease(q))
+    d.ellipse((center[0] - r, center[1] - r, center[0] + r, center[1] + r), outline=TEXT + (int(220 * (1 - q)),), width=int(10 * (1 - q)) + 2)
+    frame.alpha_composite(layer.filter(ImageFilter.GaussianBlur(3)))
+
+
+def token_stream(frame, t, start, end, src, dst, seed=21):
+    """Little token squares fly from a chat bubble into the gauge while it fills."""
+    if t < start or t > end + 0.6:
+        return
+    d = ImageDraw.Draw(frame, "RGBA")
+    bw, bh = 300, 110
+    bx, by = src
+    a = ease((t - start) / 0.3) * (1 if t < end else max(0, 1 - (t - end) / 0.5))
+    d.rounded_rectangle((bx - bw / 2, by - bh / 2, bx + bw / 2, by + bh / 2), radius=22, fill=TEXT + (int(235 * a),))
+    f = font("Inter-Medium.otf", 30)
+    for i, line in enumerate(("you: here's my", "project...")):
+        d.text((bx - bw / 2 + 24, by - bh / 2 + 18 + i * 36), line, font=f, fill=VOID + (int(255 * a),))
+    rnd = random.Random(seed)
+    for k in range(40):
+        t0 = start + rnd.random() * (end - start)
+        if t < t0 or t > t0 + 0.7:
+            continue
+        q = ease_in((t - t0) / 0.7)
+        x = lerp(bx + bw / 2, dst[0], q) + math.sin(q * 6 + k) * 20
+        y = lerp(by, dst[1], q)
+        sz = 14 - 6 * q
+        d.rounded_rectangle((x - sz, y - sz / 2, x + sz, y + sz / 2), radius=4, fill=mix(ORANGE, CYAN, rnd.random()) + (int(255 * (1 - q * 0.3)),))
+
+
 def place(frame, img, xy, t, at, alpha=1.0, pop=True):
     if t < at:
         return
@@ -345,6 +384,8 @@ def tally(frame, t, lines, x, y, start, gap=1.9):
         if t < at:
             continue
         p = ease((t - at) / 0.4)
+        if value.isdigit():  # count up
+            value = str(int(int(value) * ease((t - at) / 1.2)))
         yy = y + i * 118 + (1 - p) * 20
         d.text((x, yy + 8), label, font=f, fill=TEXT + (int(255 * p),))
         vw = d.textlength(value, font=fv)
@@ -480,6 +521,7 @@ def s1(t):
     for i, (name, start, frm) in enumerate((("Budget app", 0.0, (150, 300)), ("Week 3", 0.5, (950, 420)), ("Portfolio site", 1.1, (120, 1300)),
                                              ("the schema", 1.8, (980, 1250)), ("Chatbot", 2.7, (220, 1550)), ("auth flow", 3.4, (900, 220)))):
         fall_in(fr, CARDS[name], t, start, 2.6, frm)
+        eat_flash(fr, t, start + 2.3)
     display(fr, "Something is eating your projects.", H * 0.60, t, 0.15, size=92, glow=ORANGE)
     return fr
 
@@ -490,6 +532,7 @@ def s2(t):
     draw_particles(fr, t + 5)
     for i, (name, start, frm) in enumerate((("Week 3", 0.2, (980, 300)), ("auth flow", 1.6, (120, 1400)), ("Chatbot", 3.2, (960, 1500)))):
         fall_in(fr, CARDS[name], t, start, 2.8, frm)
+        eat_flash(fr, t, start + 2.5)
     display(fr, "CONTEXT", H * 0.17, t, 0.3, size=150, glow=ORANGE)
     display(fr, "ROT", H * 0.615, t, 0.55, size=170, glow=CYAN)
     return fr
@@ -503,6 +546,7 @@ def s3(t):
     # gauge: fills 0.5-3.5, drains at 4.6; second gauge (long session) fills 7.5-9.5 and overflows at 9.6
     if t < 7.2:
         draw_gauge(fr, t, 160, 420, 170, 760, lambda tt: (tt - 0.6) / 3.0, drain_at=4.6, center=hole)
+        token_stream(fr, t, 0.6, 3.4, (640, 520), (245, 1100))
         display(fr, "every session starts empty", H * 0.12, t, 0.3, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False, exit_at=6.6)
         display(fr, "you explain, it fills", H * 0.665, t, 1.2, size=52, align="left", x=390, width=560, slam=False, exit_at=4.4, color=CYAN)
         display(fr, "session ends: gone", H * 0.665, t, 4.7, size=52, align="left", x=390, width=560, slam=False, exit_at=6.6, color=ORANGE)
@@ -658,15 +702,34 @@ def render(preview=False, final=False, stills=False):
         return True
     fps = FPS // 3 if preview else FPS
     mp4 = os.path.join(out, f"04-context-rot-vertical{'-final' if final else ''}.mp4")
-    cmd = ["ffmpeg", "-nostdin", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png")]
+    total = sum(s["dur"] for s in SCENES)
+    bed = sfx.build_bed([(s["id"], s["dur"]) for s in SCENES], os.path.join(out, "sfx-bed.wav"))
+    cmd = ["ffmpeg", "-nostdin", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png"), "-i", bed]
     apath = os.path.join(VIDEO, "voiceover", "void.json")
-    if os.path.exists(apath) and not preview:
+    audio = {}
+    if os.path.exists(apath):
         with open(apath) as f:
             audio = json.load(f)
-        if audio.get("file"):
-            total = sum(s["dur"] for s in SCENES)
-            cmd += ["-ss", str(audio.get("offset_s", 0)), "-i", os.path.join(ROOT, audio["file"]), "-af", audio_chain(os.path.join(ROOT, audio["file"]), bool(audio.get("mixed"))),
-                    "-t", str(total), "-c:a", "aac", "-b:a", "192k"]
+    voice = audio.get("file") if not preview else None
+    music = audio.get("music")
+    parts, mix, idx = ["[1:a]volume=0.9[sfx]"], ["[sfx]"], 2
+    if voice:
+        cmd += ["-ss", str(audio.get("offset_s", 0)), "-i", os.path.join(ROOT, voice)]
+        parts.append(f"[{idx}:a]{audio_chain(os.path.join(ROOT, voice), bool(audio.get('mixed')))}[voice]")
+        idx += 1
+    if music:
+        cmd += ["-stream_loop", "-1", "-i", os.path.join(ROOT, music)]
+        parts.append(f"[{idx}:a]volume={audio.get('music_db', -14)}dB[m0]")
+        if voice:  # music ducks under the voice
+            parts.append("[voice]asplit[v1][v2]")
+            parts.append("[m0][v2]sidechaincompress=threshold=0.05:ratio=6:attack=40:release=500[mduck]")
+            mix = ["[v1]", "[sfx]", "[mduck]"]
+        else:
+            mix = ["[sfx]", "[m0]"]
+    elif voice:
+        mix = ["[voice]", "[sfx]"]
+    fc = ";".join(parts) + ";" + "".join(mix) + f"amix=inputs={len(mix)}:normalize=0:duration=first,alimiter=limit=0.89:level=0[aout]"
+    cmd += ["-filter_complex", fc, "-map", "0:v", "-map", "[aout]", "-t", str(total), "-c:a", "aac", "-b:a", "192k"]
     if final:
         cmd += ["-c:v", "libx264", "-preset", "slow", "-pix_fmt", "yuv420p", "-crf", "17", "-movflags", "+faststart", mp4]
     else:

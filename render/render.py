@@ -682,13 +682,18 @@ def draw_captions(frame, captions, t_global, canvas_name):
     sizes = CONTRACT["type"][canvas_name]
     fnt = font("headline", int(sizes["body"] * 0.95))
     d = ImageDraw.Draw(frame)
-    tw = d.textlength(cue["text"], font=fnt)
+    margin = int(min(W, H) * CONTRACT["layout"]["outer_margin_pct_of_short_edge"])
+    lines = wrap(cue["text"], fnt, W - 2 * margin, d)
+    lh = fnt.size * 1.15
     y = captions.get(f"y_{canvas_name}", captions.get("y", 0.8)) * H
-    x = W / 2 - tw / 2
     pad = 18 * SUPERSAMPLE
-    d.rounded_rectangle((x - pad, y - pad * 0.6, x + tw + pad, y + fnt.size * 1.15 + pad * 0.4), radius=14 * SUPERSAMPLE,
-                        fill=rgb(PAL["background"]) + (200,))
-    d.text((x, y), cue["text"], font=fnt, fill=rgb(PAL["text"]) + (255,))
+    for i, line in enumerate(lines):
+        tw = d.textlength(line, font=fnt)
+        x = W / 2 - tw / 2
+        yy = y + i * (lh + pad * 0.8)
+        d.rounded_rectangle((x - pad, yy - pad * 0.6, x + tw + pad, yy + lh + pad * 0.4), radius=14 * SUPERSAMPLE,
+                            fill=rgb(PAL["background"]) + (200,))
+        d.text((x, yy), line, font=fnt, fill=rgb(PAL["text"]) + (255,))
 
 
 def composite(scene, t, captions=None, t_global=0.0, canvas_name="vertical"):
@@ -719,6 +724,18 @@ def stills(video_dir, canvas_name, times):
             if t <= sc["duration"]:
                 composite(sc, t).save(os.path.join(out, f"{sc['id']}-{t:04.1f}.png"))
     print("stills in", out)
+
+
+AUDIO_PRE = "highpass=f=130,afftdn=nf=-22:nr=18"
+
+
+def audio_chain(path):
+    """Clean-up, then a fixed gain to -16 LUFS and a true-peak limiter: constant gain, so pauses never pump."""
+    out = subprocess.run(["ffmpeg", "-loglevel", "info", "-i", path, "-af", AUDIO_PRE + ",loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    m = json.loads(out[out.rfind("{"):out.rfind("}") + 1])
+    gain = -16.0 - float(m["input_i"])
+    return f"{AUDIO_PRE},volume={gain:.2f}dB,alimiter=limit=0.84:attack=5:release=60,apad"
 
 
 def render_video(video_dir, canvas_name, preview=False, final=False):
@@ -757,7 +774,7 @@ def render_video(video_dir, canvas_name, preview=False, final=False):
     if audio and not preview:
         total = sum(sc["duration"] for sc in scenes)
         cmd += ["-ss", str(audio.get("offset_s", 0)), "-i", os.path.join(ROOT, audio["file"]),
-                "-af", "highpass=f=80,afftdn=nf=-28,loudnorm=I=-16:TP=-1.5:LRA=11,apad",
+                "-af", audio_chain(os.path.join(ROOT, audio["file"])),
                 "-t", str(total), "-c:a", "aac", "-b:a", "160k"]
     if final:
         cmd += ["-c:v", "libx264", "-preset", "slow", "-pix_fmt", "yuv420p", "-crf", "17", "-movflags", "+faststart", mp4]

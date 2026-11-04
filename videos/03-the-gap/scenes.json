@@ -3,7 +3,7 @@
  "scenes": [
   {
    "id": "s1-towers",
-   "duration": 8.5,
+   "duration": 8.6,
    "exit": "cut",
    "floor": 0.78,
    "elements": [
@@ -38,7 +38,7 @@
       },
       {
        "asset": "cast/dandy-man/idle.svg",
-       "at": 7.0
+       "at": 7.6
       }
      ]
     },
@@ -104,7 +104,7 @@
      "width": 0.215,
      "scale": 0.6,
      "enter": "fade",
-     "enter_at": 2.1
+     "enter_at": 2.4
     },
     {
      "name": "tw-cx",
@@ -136,14 +136,14 @@
      "width": 0.215,
      "scale": 0.6,
      "enter": "fade",
-     "enter_at": 2.6
+     "enter_at": 3.2
     }
    ],
    "push": 0
   },
   {
    "id": "s2-work",
-   "duration": 6.0,
+   "duration": 4.4,
    "enter": "cut",
    "exit": "cut",
    "floor": 0.78,
@@ -288,7 +288,7 @@
      "y": 0.48,
      "width": 0.38,
      "scale": 0.75,
-     "enter_at": 0.4
+     "enter_at": 0.3
     },
     {
      "name": "cap",
@@ -305,7 +305,7 @@
   },
   {
    "id": "s3-gap",
-   "duration": 8.0,
+   "duration": 9.9,
    "enter": "cut",
    "exit": "cut",
    "floor": 0.78,
@@ -333,7 +333,15 @@
      "sequence": [
       {
        "asset": "cast/dandy-man/pointing.svg",
-       "at": 1.0
+       "at": 1.2
+      },
+      {
+       "asset": "cast/dandy-man/idle.svg",
+       "at": 5.6
+      },
+      {
+       "asset": "cast/dandy-man/pointing.svg",
+       "at": 6.0
       }
      ]
     },
@@ -457,10 +465,10 @@
      "width": 0.38,
      "scale": 0.75,
      "enter": "cut",
-     "rot_at": 0.3,
-     "rot_until": 2.4,
+     "rot_at": 0.2,
+     "rot_until": 2.2,
      "broken_edge": 1,
-     "break_at": 6.2
+     "break_at": 6.0
     },
     {
      "name": "band",
@@ -498,7 +506,7 @@
      "text": "memory files",
      "x": 0.36,
      "y": 0.378,
-     "enter_at": 2.6,
+     "enter_at": 2.4,
      "strike_at": 4.6
     },
     {
@@ -527,7 +535,7 @@
   },
   {
    "id": "s4-dandy",
-   "duration": 7.0,
+   "duration": 9.5,
    "enter": "cut",
    "exit": "cut",
    "floor": 0.78,
@@ -555,11 +563,11 @@
      "sequence": [
       {
        "asset": "cast/dandy-man/hat-tip.svg",
-       "at": 0.6
+       "at": 0.3
       },
       {
        "asset": "cast/dandy-man/idle.svg",
-       "at": 2.2
+       "at": 2.0
       }
      ]
     },
@@ -746,7 +754,7 @@
      "y": 0.41,
      "width": 0.72,
      "scale": 0.9,
-     "enter_at": 0.9
+     "enter_at": 0.5
     },
     {
      "name": "ar-cc",
@@ -758,7 +766,7 @@
      "y": 0.298,
      "height": 0.024,
      "enter": "rise",
-     "enter_at": 2.4
+     "enter_at": 2.6
     },
     {
      "name": "ar-cu",
@@ -770,7 +778,7 @@
      "y": 0.298,
      "height": 0.024,
      "enter": "rise",
-     "enter_at": 2.4
+     "enter_at": 2.6
     },
     {
      "name": "ar-cx",
@@ -782,7 +790,7 @@
      "y": 0.298,
      "height": 0.024,
      "enter": "rise",
-     "enter_at": 2.4
+     "enter_at": 2.6
     },
     {
      "name": "cap1",
@@ -792,8 +800,8 @@
      "text": "reads first",
      "x": 0.55,
      "y": 0.5,
-     "enter_at": 3.4,
-     "exit_at": 5.0
+     "enter_at": 5.5,
+     "exit_at": 7.3
     },
     {
      "name": "cap2",
@@ -803,14 +811,14 @@
      "text": "writes back",
      "x": 0.55,
      "y": 0.5,
-     "enter_at": 5.2
+     "enter_at": 7.4
     }
    ],
    "push": 0
   },
   {
    "id": "s5-flow",
-   "duration": 5.0,
+   "duration": 4.4,
    "enter": "cut",
    "exit": "cut",
    "floor": 0.78,
@@ -838,7 +846,7 @@
      "sequence": [
       {
        "asset": "cast/dandy-man/pointing.svg",
-       "at": 0.8
+       "at": 0.2
       }
      ]
     },
@@ -971,7 +979,7 @@
      "scale": 0.9,
      "enter": "cut",
      "gold_node": 0,
-     "ripple_at": 1.0
+     "ripple_at": 0.4
     },
     {
      "name": "ar-cc",
@@ -1014,7 +1022,7 @@
      "text": "flows downstream",
      "x": 0.55,
      "y": 0.5,
-     "enter_at": 1.4
+     "enter_at": 0.5
     },
     {
      "name": "ledger",
@@ -1024,14 +1032,14 @@
      "text": "on the record",
      "x": 0.55,
      "y": 0.545,
-     "enter_at": 3.2
+     "enter_at": 2.3
     }
    ],
    "push": 0
   },
   {
    "id": "s6-benefits",
-   "duration": 10.0,
+   "duration": 10.2,
    "enter": "cut",
    "floor": 0.78,
    "elements": [
@@ -1058,7 +1066,7 @@
      "sequence": [
       {
        "asset": "cast/dandy-man/pointing.svg",
-       "at": 1.0
+       "at": 1.9
       }
      ]
     },
@@ -1243,7 +1251,7 @@
      "x": 0.1,
      "y": 0.16,
      "width": 0.8,
-     "enter_at": 1.0
+     "enter_at": 1.9
     },
     {
      "name": "b2",
@@ -1254,7 +1262,7 @@
      "x": 0.1,
      "y": 0.25,
      "width": 0.8,
-     "enter_at": 4.0
+     "enter_at": 3.7
     },
     {
      "name": "b3",
@@ -1265,7 +1273,7 @@
      "x": 0.1,
      "y": 0.34,
      "width": 0.8,
-     "enter_at": 7.0
+     "enter_at": 6.7
     }
    ],
    "push": 0
@@ -1276,5 +1284,10 @@
    "duration": 4.5,
    "push": 0
   }
- ]
+ ],
+ "audio": {
+  "file": "videos/03-the-gap/voiceover/charlie-take1.m4a",
+  "offset_s": 0.0,
+  "note": "take 1 (headset), 49.5 s; speech starts at 0.83 s"
+ }
 }

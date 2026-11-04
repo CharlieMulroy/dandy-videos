@@ -1,0 +1,116 @@
+{
+ "y": 0.8,
+ "y_horizontal": 0.86,
+ "cues": [
+  {
+   "start": 0.83,
+   "end": 2.53,
+   "text": "Here's how building with AI works right now."
+  },
+  {
+   "start": 2.99,
+   "end": 4.18,
+   "text": "A harness runs the agents."
+  },
+  {
+   "start": 4.7,
+   "end": 6.07,
+   "text": "Skills tell them how to do things."
+  },
+  {
+   "start": 6.69,
+   "end": 7.87,
+   "text": "Tools let them reach your systems."
+  },
+  {
+   "start": 8.88,
+   "end": 10.5,
+   "text": "All of that is about how the agent works."
+  },
+  {
+   "start": 10.5,
+   "end": 12.34,
+   "text": "None of it holds what you're building."
+  },
+  {
+   "start": 13.12,
+   "end": 14.78,
+   "text": "So every session starts from zero."
+  },
+  {
+   "start": 15.37,
+   "end": 18.15,
+   "text": "Memory files rot, because a person has to keep them current."
+  },
+  {
+   "start": 18.86,
+   "end": 20.42,
+   "text": "And when two agents touch the same thing,"
+  },
+  {
+   "start": 20.96,
+   "end": 21.84,
+   "text": "nobody knows what changed."
+  },
+  {
+   "start": 23.2,
+   "end": 24.3,
+   "text": "Dandy is the state layer."
+  },
+  {
+   "start": 24.3,
+   "end": 25.58,
+   "text": "One graph of your product:"
+  },
+  {
+   "start": 26.2,
+   "end": 27.88,
+   "text": "projects, typed inputs and outputs."
+  },
+  {
+   "start": 28.42,
+   "end": 30.3,
+   "text": "Every agent reads it before it starts,"
+  },
+  {
+   "start": 30.3,
+   "end": 32.07,
+   "text": "writes back what it changed,"
+  },
+  {
+   "start": 32.56,
+   "end": 33.93,
+   "text": "and the change flows downstream."
+  },
+  {
+   "start": 34.76,
+   "end": 35.94,
+   "text": "Every write is on the record."
+  },
+  {
+   "start": 37.09,
+   "end": 38.05,
+   "text": "Which gets you three things."
+  },
+  {
+   "start": 38.69,
+   "end": 39.8,
+   "text": "You pick up where you left off."
+  },
+  {
+   "start": 40.51,
+   "end": 42.86,
+   "text": "Plan and code stop being two sources of truth."
+  },
+  {
+   "start": 43.51,
+   "end": 45.94,
+   "text": "And it works with whatever harness you already use."
+  },
+  {
+   "start": 47.14,
+   "end": 48.49,
+   "text": "Dandy is the state layer."
+  }
+ ]
+}

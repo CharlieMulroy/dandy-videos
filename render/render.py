@@ -731,13 +731,14 @@ AUDIO_PRE = ("highpass=f=130,asendcmd=c='0.0 afftdn sn start; 0.6 afftdn sn stop
              "acompressor=threshold=-20dB:ratio=3:attack=8:release=120")
 
 
-def audio_chain(path):
+def audio_chain(path, mixed=False):
     """Noise profile from the silence before the first word, gate, compressor, fixed gain to -16 LUFS, true-peak limiter."""
-    out = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "info", "-i", path, "-af", AUDIO_PRE + ",loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+    out = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "info", "-i", path, "-af", ("" if mixed else AUDIO_PRE + ",") + "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
                          capture_output=True, text=True).stderr
     m = json.loads(out[out.rfind("{"):out.rfind("}") + 1])
     gain = -16.0 - float(m["input_i"])
-    return f"{AUDIO_PRE},volume={gain:.2f}dB,alimiter=limit=0.84:attack=5:release=60:level=0,apad"
+    pre = "" if mixed else AUDIO_PRE + ","  # a mixed master (voice already cleaned, music under it) gets gain and limiter only
+    return f"{pre}volume={gain:.2f}dB,alimiter=limit=0.84:attack=5:release=60:level=0,apad"
 
 
 def render_video(video_dir, canvas_name, preview=False, final=False):
@@ -776,7 +777,7 @@ def render_video(video_dir, canvas_name, preview=False, final=False):
     if audio and not preview:
         total = sum(sc["duration"] for sc in scenes)
         cmd += ["-ss", str(audio.get("offset_s", 0)), "-i", os.path.join(ROOT, audio["file"]),
-                "-af", audio_chain(os.path.join(ROOT, audio["file"])),
+                "-af", audio_chain(os.path.join(ROOT, audio["file"]), bool(audio.get("mixed"))),
                 "-t", str(total), "-c:a", "aac", "-b:a", "160k"]
     if final:
         cmd += ["-c:v", "libx264", "-preset", "slow", "-pix_fmt", "yuv420p", "-crf", "17", "-movflags", "+faststart", mp4]

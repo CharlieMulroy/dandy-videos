@@ -1286,8 +1286,9 @@
   }
  ],
  "audio": {
-  "file": "videos/03-the-gap/voiceover/charlie-take1.m4a",
+  "file": "videos/03-the-gap/voiceover/charlie-take2-mixed.wav",
   "offset_s": 0.0,
-  "note": "take 1 (headset), 49.5 s; speech starts at 0.83 s"
+  "mixed": true,
+  "note": "take 1 cleaned by Charlie with royalty-free music mixed in (same timing as charlie-take1.m4a); mixed masters get gain and limiter only"
  }
 }

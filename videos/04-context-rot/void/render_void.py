@@ -41,6 +41,12 @@ def ease(t):
     return 1 - (1 - t) ** 3
 
 
+def spring(t, k=1.0):
+    """Overshooting ease: arrives fast, overshoots a little, settles. k scales the overshoot."""
+    t = max(0.0, min(1.0, t))
+    return 1 - math.exp(-6.5 * t) * math.cos(8.0 * t) * (1 + 0.0 * k) if t < 1 else 1.0
+
+
 def ease_in(t):
     t = max(0.0, min(1.0, t))
     return t * t
@@ -105,7 +111,9 @@ def draw_hole(frame, t, center=HOLE, radius=HOLE_R, strength=1.0, speed=1.0):
     arms = 0.55 + 0.45 * np.sin(3 * th - 7.0 * np.log(np.maximum(r, 0.2)) + t * 2.6 * speed)
     disk = np.exp(-((r - 1.15) ** 2) / 0.45) * arms
     outer = np.exp(-((r - 2.1) ** 2) / 1.6) * (0.35 + 0.25 * np.sin(2 * th + 4.0 * np.log(np.maximum(r, 0.2)) - t * 1.4 * speed))
-    rim = np.exp(-((r - 0.62) ** 2) / 0.004) * 1.4
+    rim = np.exp(-((r - 0.62) ** 2) / 0.004) * (1.2 + 0.3 * math.sin(t * 9.0)) + np.exp(-((r - 0.72) ** 2) / 0.02) * 0.5
+    streaks = np.exp(-((r - 1.0) ** 2) / 1.2) * np.clip(np.sin(9 * th + t * 0.8) * 8 - 7, 0, 1) * 0.25
+    disk = disk + streaks
     glow = np.clip(disk * 1.1 + outer * 0.9, 0, 1.6)
     # colour: hot orange near the core, ember mid, cyan at the far edge
     col = np.zeros((H, W, 3), np.float32)
@@ -204,36 +212,51 @@ def place(frame, img, xy, t, at, alpha=1.0, pop=True):
 def display(frame, text, y, t, at, size=104, color=TEXT, align="center", slam=True, exit_at=None, width=None, glow=None, x=None):
     if t < at or (exit_at is not None and t >= exit_at + 0.3):
         return
-    p = ease((t - at) / 0.3)
-    a = p if exit_at is None or t < exit_at else 1 - ease((t - exit_at) / 0.3)
+    a_exit = 1.0 if exit_at is None or t < exit_at else 1 - ease((t - exit_at) / 0.3)
     f = font("Inter-Black.otf", size)
     d = ImageDraw.Draw(frame, "RGBA")
     lines = wrap(text, f, width or (SAFE[2] - SAFE[0]), d)
     lh = size * 1.08
-    sc = (1.25 - 0.25 * p) if slam else 1.0
     layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     ld = ImageDraw.Draw(layer)
+    # words arrive one after another (slam: 90 ms apart with a spring pop; otherwise a quick rise)
+    k = 0
+    space = ld.textlength(" ", font=f)
     for i, line in enumerate(lines):
         tw = ld.textlength(line, font=f)
         lx = (W / 2 - tw / 2) if align == "center" else (x if x is not None else SAFE[0])
         ly = y + i * lh
-        if glow:
-            ld.text((lx, ly), line, font=f, fill=glow + (160,))
-    if glow:
-        layer = layer.filter(ImageFilter.GaussianBlur(18))
-        ld = ImageDraw.Draw(layer)
-    for i, line in enumerate(lines):
-        tw = ld.textlength(line, font=f)
-        lx = (W / 2 - tw / 2) if align == "center" else (x if x is not None else SAFE[0])
-        ly = y + i * lh
-        ld.text((lx + 3, ly + 4), line, font=f, fill=(0, 0, 0, 170))
-        ld.text((lx, ly), line, font=f, fill=color + (255,))
-    if sc != 1.0:
-        nw, nh = int(W * sc), int(H * sc)
-        big = layer.resize((nw, nh), Image.BILINEAR)
-        layer = big.crop(((nw - W) // 2, (nh - H) // 2, (nw - W) // 2 + W, (nh - H) // 2 + H))
-    if a < 1:
-        layer.putalpha(layer.split()[3].point(lambda v: int(v * a)))
+        wx = lx
+        for word in line.split(" "):
+            ww = ld.textlength(word, font=f)
+            wt = (t - at - k * (0.09 if slam else 0.05))
+            k += 1
+            if wt > 0:
+                if slam:
+                    sp = spring(wt / 0.45)
+                    sc = 0.6 + 0.4 * sp
+                    aa = min(1.0, wt / 0.12)
+                else:
+                    sp = ease(wt / 0.35)
+                    sc = 1.0
+                    aa = sp
+                wl = Image.new("RGBA", (int(ww) + 80, int(lh) + 80), (0, 0, 0, 0))
+                wd = ImageDraw.Draw(wl)
+                if glow:
+                    wd.text((40, 40), word, font=f, fill=glow + (170,))
+                    wl = wl.filter(ImageFilter.GaussianBlur(16))
+                    wd = ImageDraw.Draw(wl)
+                wd.text((43, 44), word, font=f, fill=(0, 0, 0, 170))
+                wd.text((40, 40), word, font=f, fill=color + (255,))
+                if sc != 1.0:
+                    wl = wl.resize((max(1, int(wl.width * sc)), max(1, int(wl.height * sc))), Image.BILINEAR)
+                if aa < 1:
+                    wl.putalpha(wl.split()[3].point(lambda v: int(v * aa)))
+                rise = 0 if slam else (1 - sp) * 18
+                layer.alpha_composite(wl, (int(wx + ww / 2 - wl.width / 2), int(ly + lh / 2 - wl.height / 2 + rise)))
+            wx += ww + space
+    if a_exit < 1:
+        layer.putalpha(layer.split()[3].point(lambda v: int(v * a_exit)))
     frame.alpha_composite(layer)
 
 
@@ -410,6 +433,42 @@ def end_card(t):
     return fr
 
 
+# ---------- camera and finish ----------
+_vig = None
+
+
+def finish(frame, t, t_global, shake=0.0, bloom=1.0):
+    """Camera drift with a slow zoom (and an impact shake when asked), then bloom, grain and a vignette."""
+    global _vig
+    # camera: slow zoom 1.00 -> 1.05 across the scene with a gentle wander
+    z = 1.03 + 0.025 * math.sin(t_global * 0.23)
+    ox = math.sin(t_global * 0.31) * 14 + (random.uniform(-1, 1) * shake)
+    oy = math.cos(t_global * 0.27) * 10 + (random.uniform(-1, 1) * shake)
+    nw, nh = int(W * z), int(H * z)
+    big = frame.resize((nw, nh), Image.BILINEAR)
+    x0 = int((nw - W) / 2 + ox)
+    y0 = int((nh - H) / 2 + oy)
+    x0 = max(0, min(nw - W, x0))
+    y0 = max(0, min(nh - H, y0))
+    fr = big.crop((x0, y0, x0 + W, y0 + H)).convert("RGB")
+    arr = np.asarray(fr).astype(np.float32)
+    if bloom > 0:
+        small = fr.resize((W // 4, H // 4), Image.BILINEAR)
+        sa = np.asarray(small).astype(np.float32)
+        lum = sa.mean(axis=2, keepdims=True)
+        bright = np.clip((lum - 150) / 105, 0, 1) * sa
+        bl = Image.fromarray(np.clip(bright, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(10)).resize((W, H), Image.BILINEAR)
+        arr = arr + np.asarray(bl).astype(np.float32) * 0.55 * bloom
+    if _vig is None:
+        yy, xx = grid()
+        v = np.sqrt(((xx - W / 2) / (W * 0.72)) ** 2 + ((yy - H / 2) / (H * 0.62)) ** 2)
+        _vig = np.clip(1 - v * 0.38, 0.6, 1.0)[..., None]
+    arr = arr * _vig
+    noise = np.random.default_rng(int(t_global * 1000) % 100000).normal(0, 4.5, (H // 2, W // 2, 1)).astype(np.float32)
+    arr = arr + np.repeat(np.repeat(noise, 2, axis=0), 2, axis=1)
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).convert("RGBA")
+
+
 # ---------- scenes ----------
 CARDS = {name: card_image(name) for name in ("Budget app", "Week 3", "Portfolio site", "the schema", "Chatbot", "auth flow")}
 
@@ -444,18 +503,18 @@ def s3(t):
     # gauge: fills 0.5-3.5, drains at 4.6; second gauge (long session) fills 7.5-9.5 and overflows at 9.6
     if t < 7.2:
         draw_gauge(fr, t, 160, 420, 170, 760, lambda tt: (tt - 0.6) / 3.0, drain_at=4.6, center=hole)
-        display(fr, "every session starts empty", H * 0.17, t, 0.3, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False, exit_at=6.6)
+        display(fr, "every session starts empty", H * 0.12, t, 0.3, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False, exit_at=6.6)
         display(fr, "you explain, it fills", H * 0.665, t, 1.2, size=52, align="left", x=390, width=560, slam=False, exit_at=4.4, color=CYAN)
         display(fr, "session ends: gone", H * 0.665, t, 4.7, size=52, align="left", x=390, width=560, slam=False, exit_at=6.6, color=ORANGE)
     elif t < 11.8:
         tt = t - 7.2
         draw_gauge(fr, tt, 160, 420, 170, 760, lambda u: 0.3 + u / 2.2, overflow_at=2.4, center=hole)
-        display(fr, "one long session", H * 0.17, tt, 0.0, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False, exit_at=4.3)
+        display(fr, "one long session", H * 0.12, tt, 0.0, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False, exit_at=4.3)
         display(fr, "oldest things fall out first", H * 0.665, tt, 2.5, size=52, align="left", x=390, width=560, slam=False, color=ORANGE, exit_at=4.3)
     else:
         tt = t - 11.8
         sticky(fr, tt, 0.0, (540, 780), stale_at=1.6)
-        display(fr, "notes go stale", H * 0.17, tt, 0.0, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False)
+        display(fr, "notes go stale", H * 0.12, tt, 0.0, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False)
         display(fr, "someone has to keep them current", H * 0.63, tt, 1.8, size=48, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0], slam=False, color=EMBER)
     return fr
 
@@ -582,6 +641,8 @@ def render(preview=False, final=False, stills=False):
                 continue
             t = i * step
             fr = sc["frame"](t)
+            shake = 9.0 * max(0.0, 1 - t / 0.35) if sc["id"] in ("s1-hook", "s2-name") else 0.0
+            fr = finish(fr, t, offset + t, shake=shake, bloom=0.6 if sc["id"] == "end" else 1.0)
             if cues:
                 draw_cue(fr, cues, offset + t)
             if stills:

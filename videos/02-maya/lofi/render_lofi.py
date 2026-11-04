@@ -508,6 +508,19 @@ def apply_timing():
             sc["dur"] = float(timing[sc["id"]])
 
 
+AUDIO_PRE = "highpass=f=130,afftdn=nf=-22:nr=18"
+
+
+def audio_chain(path):
+    """Clean-up plus a two-pass (linear) loudness normalisation, so gain is constant across quiet stretches."""
+    out = subprocess.run(["ffmpeg", "-loglevel", "info", "-i", path, "-af", AUDIO_PRE + ",loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    m = json.loads(out[out.rfind("{"):out.rfind("}") + 1])
+    ln = (f"loudnorm=I=-16:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}"
+          f":measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true")
+    return AUDIO_PRE + "," + ln + ",apad"
+
+
 def render(preview=False, final=False, stills=False):
     apply_timing()
     out = os.path.join(VIDEO, "out")
@@ -568,7 +581,7 @@ def render(preview=False, final=False, stills=False):
             audio = json.load(f)
         total = sum(s["dur"] for s in SCENES)
         cmd += ["-ss", str(audio.get("offset_s", 0)), "-i", os.path.join(ROOT, audio["file"]),
-                "-af", "highpass=f=80,afftdn=nf=-28,loudnorm=I=-16:TP=-1.5:LRA=11,apad", "-t", str(total), "-c:a", "aac", "-b:a", "160k"]
+                "-af", audio_chain(os.path.join(ROOT, audio["file"])), "-t", str(total), "-c:a", "aac", "-b:a", "160k"]
     if final:
         cmd += ["-c:v", "libx264", "-preset", "slow", "-pix_fmt", "yuv420p", "-crf", "17", "-movflags", "+faststart", mp4]
     else:

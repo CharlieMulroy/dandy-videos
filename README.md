@@ -34,10 +34,10 @@ Rendered MP4s are not committed; they go to the shared drive and Dandy stores th
 
 ## State (Nov 3, 2026)
 
-- Three video kinds (Dandy invariants 4 and 5): informational videos use the house style with Dandy Man,
-  the classroom backdrop (motifs/classroom.svg) and this renderer; real-life use case and metaphor videos
-  get their own look per video, share the palette, copy rules and safe zones, and end on the soft end card
-  without Dandy Man.
+- Four video kinds (Dandy invariants 4 and 5): informational videos about Dandy use the house style with
+  Dandy Man, the classroom backdrop (motifs/classroom.svg) and this renderer; real-life use case, metaphor
+  and general-concept videos get their own look per video (not necessarily purple), share the copy rules
+  and safe zones, and end on the soft end card without Dandy Man.
 - The "Renderer" node in Dandy's Shared Foundations mirrors render/render.py; when you add an element type
   or change a rule here, update that node so every Scene Spec downstream is flagged.
 - 01 Why Dandy: final rendered (videos/01-why-dandy/out/01-why-dandy-vertical-final.mp4, 44.6 s), held for Nick.
@@ -47,4 +47,8 @@ Rendered MP4s are not committed; they go to the shared drive and Dandy stores th
   house-style cut, kept for reference.
 - 03 The Gap: classroom, videos/03-the-gap/scenes.json, preview done; waiting on the voiceover. Scenes cut on
   one board, so every scene has "push": 0.
+- 04 Context Rot: first GENERAL-CONCEPT video (fourth kind: a concept for a general audience, Dandy only in
+  the last five seconds, own look, not purple). Rendered by videos/04-context-rot/void/render_void.py
+  (procedural black hole; scenes in that file). Preview done; waiting on Charlie's voiceover in
+  videos/04-context-rot/voiceover/ plus voiceover/void.json {"file": ..., "durations": {...}}.
 - After every render, report the three check names to Dandy with report_test_results (invariants 2, 3, 4).

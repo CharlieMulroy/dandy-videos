@@ -1,7 +1,7 @@
 {
- "file": "videos/02-maya/voiceover/charlie-take1-padded.m4a",
+ "file": "videos/02-maya/voiceover/charlie-mixed-padded.wav",
  "offset_s": 0.0,
- "note": "take 1 (headset), 27.1 s; 2.4 s of mirrored room tone (the 22.3-23.2 s pause, forward/back/forward) inserted at 23.2 so the last line lands on the end card",
+ "note": "Charlie's cleaned master of take 1 (Nov 5), padded with 2.4 s of its own mirrored pause (22.3-23.2 s) at 23.2 so the last line lands on the end card; gain and limiter only",
  "durations": {
   "s1-room": 5.3,
   "s2-board": 4.4,
@@ -10,5 +10,6 @@
   "s5-weeks": 2.0,
   "s6-done": 4.5,
   "end": 4.5
- }
+ },
+ "mixed": true
 }

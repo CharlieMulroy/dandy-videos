@@ -30,6 +30,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "render"))
 import gen_room as G  # noqa: E402
 import checks  # noqa: E402
+from finish import finish  # noqa: E402
 
 with open(os.path.join(ROOT, "style", "contract.json")) as f:
     CONTRACT = json.load(f)
@@ -513,13 +514,14 @@ AUDIO_PRE = ("highpass=f=130,asendcmd=c='0.0 afftdn sn start; 0.6 afftdn sn stop
              "acompressor=threshold=-20dB:ratio=3:attack=8:release=120")
 
 
-def audio_chain(path):
-    """Noise profile from the silence before the first word, gate, compressor, fixed gain to -16 LUFS, true-peak limiter."""
-    out = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "info", "-i", path, "-af", AUDIO_PRE + ",loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+def audio_chain(path, mixed=False):
+    """Cleanup (skipped for a mixed master), fixed gain to -16 LUFS, true-peak limiter."""
+    pre = "" if mixed else AUDIO_PRE + ","
+    out = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "info", "-i", path, "-af", pre + "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
                          capture_output=True, text=True).stderr
     m = json.loads(out[out.rfind("{"):out.rfind("}") + 1])
     gain = -16.0 - float(m["input_i"])
-    return f"{AUDIO_PRE},volume={gain:.2f}dB,alimiter=limit=0.84:attack=5:release=60:level=0,apad"
+    return f"{pre}volume={gain:.2f}dB,alimiter=limit=0.84:attack=5:release=60:level=0,apad"
 
 
 def render(preview=False, final=False, stills=False):
@@ -553,9 +555,11 @@ def render(preview=False, final=False, stills=False):
             t = i * step
             if sc.get("end"):
                 fr = end_card(last_room, t, sc["dur"])
+                fr = finish(fr, t, offset + t, bloom=0.5, grain=3.5, vignette=0.3, drift=0.6)
             else:
                 fr = sc["frame"](t)
                 last_room = fr
+                fr = finish(fr, t, offset + t, bloom=0.4, grain=3.5, vignette=0.34, drift=0.8, zoom=1.02)
             for cid, text, at, y, role, align, exit_at in CAPTIONS:
                 if cid == sc["id"] and not cues:  # on-screen titles only when there is no narration track
                     caption(fr, text, t - at, y=y, role=role, align=align, exit_at=exit_at, t_abs=t)
@@ -582,7 +586,7 @@ def render(preview=False, final=False, stills=False):
             audio = json.load(f)
         total = sum(s["dur"] for s in SCENES)
         cmd += ["-ss", str(audio.get("offset_s", 0)), "-i", os.path.join(ROOT, audio["file"]),
-                "-af", audio_chain(os.path.join(ROOT, audio["file"])), "-t", str(total), "-c:a", "aac", "-b:a", "160k"]
+                "-af", audio_chain(os.path.join(ROOT, audio["file"]), bool(audio.get("mixed"))), "-t", str(total), "-c:a", "aac", "-b:a", "160k"]
     if final:
         cmd += ["-c:v", "libx264", "-preset", "slow", "-pix_fmt", "yuv420p", "-crf", "17", "-movflags", "+faststart", mp4]
     else:

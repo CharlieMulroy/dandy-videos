@@ -21,7 +21,9 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "render"))
 import sfx  # noqa: E402
+from finish import finish, spring  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 VIDEO = os.path.abspath(os.path.join(HERE, ".."))
@@ -42,12 +44,6 @@ HOLE_R = 230
 def ease(t):
     t = max(0.0, min(1.0, t))
     return 1 - (1 - t) ** 3
-
-
-def spring(t, k=1.0):
-    """Overshooting ease: arrives fast, overshoots a little, settles. k scales the overshoot."""
-    t = max(0.0, min(1.0, t))
-    return 1 - math.exp(-6.5 * t) * math.cos(8.0 * t) * (1 + 0.0 * k) if t < 1 else 1.0
 
 
 def ease_in(t):
@@ -472,42 +468,6 @@ def end_card(t):
             d.text((W / 2 - lw / 2, yy), line, font=fl, fill=col + (int(255 * b),))
             yy += fl.size * 1.1 + 50
     return fr
-
-
-# ---------- camera and finish ----------
-_vig = None
-
-
-def finish(frame, t, t_global, shake=0.0, bloom=1.0):
-    """Camera drift with a slow zoom (and an impact shake when asked), then bloom, grain and a vignette."""
-    global _vig
-    # camera: slow zoom 1.00 -> 1.05 across the scene with a gentle wander
-    z = 1.03 + 0.025 * math.sin(t_global * 0.23)
-    ox = math.sin(t_global * 0.31) * 14 + (random.uniform(-1, 1) * shake)
-    oy = math.cos(t_global * 0.27) * 10 + (random.uniform(-1, 1) * shake)
-    nw, nh = int(W * z), int(H * z)
-    big = frame.resize((nw, nh), Image.BILINEAR)
-    x0 = int((nw - W) / 2 + ox)
-    y0 = int((nh - H) / 2 + oy)
-    x0 = max(0, min(nw - W, x0))
-    y0 = max(0, min(nh - H, y0))
-    fr = big.crop((x0, y0, x0 + W, y0 + H)).convert("RGB")
-    arr = np.asarray(fr).astype(np.float32)
-    if bloom > 0:
-        small = fr.resize((W // 4, H // 4), Image.BILINEAR)
-        sa = np.asarray(small).astype(np.float32)
-        lum = sa.mean(axis=2, keepdims=True)
-        bright = np.clip((lum - 150) / 105, 0, 1) * sa
-        bl = Image.fromarray(np.clip(bright, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(10)).resize((W, H), Image.BILINEAR)
-        arr = arr + np.asarray(bl).astype(np.float32) * 0.55 * bloom
-    if _vig is None:
-        yy, xx = grid()
-        v = np.sqrt(((xx - W / 2) / (W * 0.72)) ** 2 + ((yy - H / 2) / (H * 0.62)) ** 2)
-        _vig = np.clip(1 - v * 0.38, 0.6, 1.0)[..., None]
-    arr = arr * _vig
-    noise = np.random.default_rng(int(t_global * 1000) % 100000).normal(0, 4.5, (H // 2, W // 2, 1)).astype(np.float32)
-    arr = arr + np.repeat(np.repeat(noise, 2, axis=0), 2, axis=1)
-    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).convert("RGBA")
 
 
 # ---------- scenes ----------

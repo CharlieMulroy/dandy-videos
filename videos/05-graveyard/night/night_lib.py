@@ -8,6 +8,7 @@ import sys
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from scipy import ndimage as ndi
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
@@ -300,9 +301,10 @@ def stone_image(kind, name, epitaph, blank=False):
     light = light.filter(ImageFilter.GaussianBlur(40))
     light.putalpha(Image.fromarray(np.minimum(np.asarray(light.split()[3]), np.asarray(mask))))
     im.alpha_composite(light)
-    # weathering speckle
+    im = painterly(im, rnd.randrange(1 << 30))
+    # fine grit
     arr = np.asarray(im).astype(np.int16)
-    noise = np.random.default_rng(hash(key) & 0xFFFF).normal(0, 7, arr.shape[:2] + (1,))
+    noise = np.random.default_rng(hash(key) & 0xFFFF).normal(0, 4, arr.shape[:2] + (1,))
     arr[..., :3] = np.clip(arr[..., :3] + noise, 0, 255)
     im = Image.fromarray(arr.astype(np.uint8), "RGBA")
     d = ImageDraw.Draw(im)
@@ -329,6 +331,78 @@ def stone_image(kind, name, epitaph, blank=False):
     im = im.rotate(tilt, resample=Image.BICUBIC, expand=False)
     _stone_cache[key] = im
     return im
+
+
+def painterly(im, seed):
+    """Make a flat stone look painted and old, to sit beside the painted rider: chipped and uneven edges, broad
+    tone variation, brush strokes along the grain, rain stains down from the top, lichen at the base, a crack."""
+    rnd = random.Random(seed)
+    h, w = im.height, im.width
+    arr = np.asarray(im).astype(np.float32)
+    a = arr[..., 3] > 127
+    if not a.any():
+        return im
+    ys, xs = np.where(a)
+    top, bot, left, right = ys.min(), ys.max(), xs.min(), xs.max()
+    # chipped, uneven edges: eat into the silhouette by a noisy depth
+    dist = ndi.distance_transform_edt(a)
+    chip = value_noise(w, h, 7, seed % 9973, octaves=3) * 10 + value_noise(w, h, 30, seed % 7919 + 1, octaves=2) * 4
+    keep = dist > chip - 3
+    for _ in range(rnd.randint(1, 3)):
+        # a few bigger chips off the edge
+        ex = rnd.choice((left, right)) + rnd.uniform(-10, 10)
+        ey = rnd.uniform(top + 20, bot - 60)
+        r = rnd.uniform(8, 20)
+        yy, xx = np.ogrid[:h, :w]
+        keep &= (xx - ex) ** 2 + (yy - ey) ** 2 > r * r
+    arr[..., 3] = np.where(keep, arr[..., 3], 0)
+    # broad tone variation
+    tone = (value_noise(w, h, 3, seed % 6151 + 2, octaves=4) - 0.5) * 30
+    arr[..., :3] += tone[..., None]
+    out = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), "RGBA")
+    mask = out.split()[3]
+    # brush strokes along the grain (mostly vertical), light and dark
+    strokes = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(strokes)
+    for _ in range(260):
+        x = rnd.uniform(left, right)
+        y = rnd.uniform(top, bot)
+        ang = math.pi / 2 + rnd.gauss(0, 0.3)
+        ln = rnd.uniform(14, 42)
+        col = STONE_LIGHT if rnd.random() < 0.45 else STONE_DARK
+        col = mix(col, STONE, rnd.uniform(0.0, 0.5))
+        sd.line((x, y, x + math.cos(ang) * ln, y + math.sin(ang) * ln), fill=col + (rnd.randint(25, 60),), width=rnd.randint(7, 16))
+    # rain stains running down from the top
+    stains = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    td = ImageDraw.Draw(stains)
+    for _ in range(rnd.randint(6, 14)):
+        x = rnd.uniform(left + 15, right - 15)
+        y0 = top + rnd.uniform(0, 60)
+        td.line((x, y0, x + rnd.uniform(-6, 6), y0 + rnd.uniform(80, 320)), fill=(22, 26, 30, rnd.randint(30, 70)), width=rnd.randint(6, 18))
+    stains = stains.filter(ImageFilter.GaussianBlur(4))
+    # lichen at the base
+    lich = value_noise(w, h, 12, seed % 4099 + 3, octaves=3)
+    base_w = np.clip((np.arange(h)[:, None] - (bot - (bot - top) * 0.3)) / ((bot - top) * 0.3), 0, 1)
+    la = np.clip((lich - 0.55) * 4, 0, 1) * base_w * 120
+    lichen = np.zeros((h, w, 4), np.uint8)
+    lichen[..., :3] = (44, 54, 46)
+    lichen[..., 3] = la.astype(np.uint8)
+    # a crack
+    crack = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    if rnd.random() < 0.6:
+        cd = ImageDraw.Draw(crack)
+        x, y = rnd.uniform(left + 30, right - 30), top + rnd.uniform(10, 80)
+        pts = [(x, y)]
+        for _ in range(rnd.randint(4, 8)):
+            x += rnd.uniform(-22, 22)
+            y += rnd.uniform(15, 45)
+            pts.append((x, y))
+        cd.line(pts, fill=(18, 21, 25, 200), width=2)
+    for layer in (strokes.filter(ImageFilter.GaussianBlur(2.2)), stains, Image.fromarray(lichen, "RGBA"), crack):
+        al = np.minimum(np.asarray(layer.split()[3]), np.asarray(mask))
+        layer.putalpha(Image.fromarray(al.astype(np.uint8)))
+        out.alpha_composite(layer)
+    return out
 
 
 def engrave(d, xy, text, f):

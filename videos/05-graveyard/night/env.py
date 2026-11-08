@@ -92,7 +92,8 @@ def draw_far(frame, cam, t):
     strip.paste(tl, (tl.width - off, 0))
     frame.alpha_composite(strip, (0, HORIZON + 6 - tl.height))
     # town lights: a few dim warm points low on the left horizon, flickering slightly
-    d = ImageDraw.Draw(frame, "RGBA")
+    lights = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(lights)
     rnd = random.Random(9)
     for k in range(26):
         x = 40 + rnd.random() * 300 - cam["x"] * 3
@@ -101,6 +102,7 @@ def draw_far(frame, cam, t):
         a = int(rnd.uniform(70, 150) * (0.85 + 0.15 * math.sin(t * rnd.uniform(1, 3) + k)))
         d.ellipse((x - r * 3, y - r * 3, x + r * 3, y + r * 3), fill=(255, 214, 160, a // 6))
         d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 226, 180, a))
+    frame.alpha_composite(lights)
 
 
 # ---------- ground: texture, path, tufts, leaves ----------
@@ -118,6 +120,7 @@ def ground_tex():
 
 rnd_g = random.Random(17)
 TUFTS = [(rnd_g.uniform(-YARD_X - 6, YARD_X + 6), rnd_g.uniform(-12, BACK_Z), rnd_g.random()) for _ in range(900)]
+STROKES = [(rnd_g.uniform(-YARD_X - 4, YARD_X + 4), rnd_g.uniform(-12, BACK_Z), rnd_g.random()) for _ in range(1600)]
 LEAVES = [(rnd_g.uniform(-YARD_X, YARD_X), rnd_g.uniform(-6, 40), rnd_g.random()) for _ in range(500)]
 
 
@@ -155,8 +158,20 @@ def draw_ground(frame, cam, t, light=None):
             r = max(1.0, 0.05 * PX / p[3])
             d.ellipse((p[0] - r * 1.6, p[1] - HORIZON - r * 0.5, p[0] + r * 1.6, p[1] - HORIZON + r * 0.5), fill=mix(PATH, STONE_LIGHT, 0.25) + (60,))
     frame.alpha_composite(layer.filter(ImageFilter.GaussianBlur(5)), (0, HORIZON))
+    # painterly ground: short horizontal strokes lying in the world, so they move with the camera.
+    # Drawn on their own layer: drawing translucent shapes straight onto the frame would lower its alpha.
+    overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(overlay)
+    for (x, z, r) in STROKES:
+        p = project(x, z, cam)
+        if not p or p[3] > 26 or p[3] < 0.5 or p[0] < -200 or p[0] > W + 200:
+            continue
+        ln = (0.35 + 0.6 * r) * PX / p[3]
+        wd = max(1.5, (0.07 + 0.06 * r) * PX / p[3])
+        col = mix((3, 5, 8), GROUND, r)
+        a = int((35 + 30 * r) * min(1.0, max(0.0, (26 - p[3]) / 10)))
+        d.ellipse((p[0] - ln / 2, p[1] - wd / 2, p[0] + ln / 2, p[1] + wd / 2), fill=col + (a,))
     # grass tufts and leaves
-    d = ImageDraw.Draw(frame, "RGBA")
     for (x, z, r) in LEAVES:
         p = project(x, z, cam)
         if not p or p[3] > 12 or p[3] < 0.6:
@@ -179,6 +194,7 @@ def draw_ground(frame, cam, t, light=None):
         for b in range(5):
             ang = -math.pi / 2 + (b - 2) * 0.32 + sway
             d.line((p[0] + (b - 2) * wdt, p[1], p[0] + (b - 2) * wdt + math.cos(ang) * hgt, p[1] + math.sin(ang) * hgt), fill=col + (220,), width=wdt)
+    frame.alpha_composite(overlay)
 
 
 # ---------- fence ----------
@@ -253,7 +269,7 @@ def draw_pillar(frame, cam, x, z, light):
     capc = lit(haze(STONE, d_), x, z, light)
     d = ImageDraw.Draw(frame, "RGBA")
     d.rectangle((b[0] - hw, top[1], b[0] + hw, b[1]), fill=col + (255,))
-    d.rectangle((b[0] - hw, top[1], b[0] - hw * 0.4, b[1]), fill=capc + (120,))
+    d.rectangle((b[0] - hw, top[1], b[0] - hw * 0.4, b[1]), fill=mix(col, capc, 0.5) + (255,))
     cap = up(cam, x, z, 3.15)
     d.rectangle((b[0] - hw * 1.35, cap[1], b[0] + hw * 1.35, top[1]), fill=capc + (255,))
     d.ellipse((b[0] - hw * 0.7, cap[1] - hw * 0.9, b[0] + hw * 0.7, cap[1] + hw * 0.3), fill=capc + (255,))

@@ -320,7 +320,7 @@ def s4(t, dur):
     return fr
 
 
-RIDER_X0, RIDER_V0, RIDER_VMIN = 9.0, 2.4, 0.12
+RIDER_X0, RIDER_V0, RIDER_VMIN = 8.6, 2.4, 0.1
 
 
 def rider_motion(t):
@@ -348,9 +348,9 @@ def s5(t, dur):
     light_strength = ease((t - 0.3) / 1.6)
     light = (rx_w - 0.4, rz_w, 1.3 * light_strength)
     # reaper: near-left, then backs off into the fog once the light reaches him
-    retreat = smooth(min(1.0, max(0.0, (t - 2.6) / 4.5)))
-    gz = lerp(6.8, 15.0, retreat)
-    gx = lerp(-0.8, -3.0, retreat)
+    retreat = smooth(min(1.0, max(0.0, (t - 2.0) / 4.5)))
+    gz = lerp(6.8, 19.0, retreat)
+    gx = lerp(-0.8, -7.0, retreat)
     lantern_xy = []
 
     def reaper(frame):

@@ -2,7 +2,8 @@
 
 v2 (Nov 7): the v1 bed was wind over nothing and read as static. Now a slow minor pad carries the whole piece,
 with a tolling bell on the open, a whistling (not hissing) wind, a crow, gravel footsteps for the reaper, a low
-heartbeat under the funeral, hoofbeats and a rising major swell for the rider's light, and the end chime.
+heartbeat under the funeral, hoofbeats for the rider, the pad resolving from minor to major under him (v4: the separate light swell is gone),
+and the end chime.
 Synthesised at 48 kHz from sines and noise; reuses helpers from 04's sfx.py. build_bed(scenes, path) -> WAV.
 """
 import math
@@ -136,18 +137,6 @@ def hoofbeats(dur, gain=0.5, approach=True):
     return x / (np.abs(x).max() + 1e-6) * gain
 
 
-def light_swell(dur=6.0, gain=0.45):
-    """A major chord that rises in and holds: the purple light."""
-    n = int(SR * dur)
-    t = np.arange(n) / SR
-    x = np.zeros(n, np.float32)
-    for f, g in ((220.0, 1.0), (277.2, 0.7), (329.6, 0.7), (440.0, 0.45), (554.4, 0.3), (659.3, 0.25)):
-        x += tone(f, n, harmonics=((1, 1.0), (2, 0.2)), detune=0.003) * g
-    shimmer = np.sin(2 * math.pi * 1318.5 * t) * np.exp(-((t - 1.2) ** 2) / 0.6) * 0.12
-    x = x * env(n, dur * 0.45, 0.0, 1.0, dur * 0.3) + shimmer
-    return x / (np.abs(x).max() + 1e-6) * gain
-
-
 def build_bed(scenes, path):
     total = sum(d for _, d in scenes)
     mix = np.zeros(int(SR * (total + 2)), np.float32)
@@ -164,12 +153,20 @@ def build_bed(scenes, path):
         starts[sid] = (off, dur)
         off += dur
     end_at = starts["end"][0]
-    # the pad: A minor, F, D minor, E, repeating slowly until the rider; then it hands to the light swell
+    # the pad: A minor, F, D minor, E, repeating slowly; the E is sounding as the rider comes in, and the same pad
+    # resolves to A major under him (v4: no separate light swell, which read as a synth horn)
     am, fm, dm, e = (110.0, 130.8, 164.8, 220.0), (87.3, 110.0, 130.8, 174.6), (73.4, 110.0, 146.8, 174.6), (82.4, 123.5, 164.8, 207.7)
+    amaj = (110.0, 138.6, 164.8, 220.0, 277.2)
     seg = 7.0
     rider_at = starts["s5-rider"][0]
-    nchords = int(math.ceil((rider_at + 3.0) / (seg - 1.8)))
-    put(pad([am, fm, dm, e][: 4] * (nchords // 4 + 1), seg, gain=0.22)[: int(SR * (rider_at + 3.5))] * env(int(SR * (rider_at + 3.5)), 0.5, 0, 1.0, 3.0), 0.0)
+    minor_len = rider_at + 2.6
+    nchords = int(math.ceil(minor_len / (seg - 1.8))) + 1
+    minor = pad([am, fm, dm, e] * (nchords // 4 + 1), seg, gain=0.22)[: int(SR * minor_len)]
+    put(minor * env(len(minor), 0.5, 0, 1.0, 2.5), 0.0)
+    major_at = rider_at + 1.0
+    major_len = total - major_at
+    major = pad([amaj] * (int(major_len / (seg - 1.8)) + 2), seg, gain=0.24)[: int(SR * major_len)]
+    put(major * env(len(major), 2.2, 0, 1.0, 2.5), major_at)
     put(wind(total, gain=0.05), 0.0)
     for sid, (at, dur) in starts.items():
         if sid == "s1-wide":
@@ -188,7 +185,6 @@ def build_bed(scenes, path):
                 put(footstep(gain=0.4 + 0.15 * k), at + a)
         elif sid == "s5-rider":
             put(hoofbeats(5.2, gain=0.42), at + 0.2)
-            put(light_swell(dur + 1.0, gain=0.42), at + 1.6)
         elif sid == "end":
             put(chime(gain=0.45, base=880), at + 0.8)
     mix = mix[: int(SR * total)]

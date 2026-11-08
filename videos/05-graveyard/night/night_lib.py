@@ -274,15 +274,45 @@ def _grid():
     return hw, hh, xs, ys
 
 
+_fog_imgs = {}
+FOG_UNITS = 14.0        # world width one painted fog texture covers
+FOG_HEIGHT = 1100.0     # stone-image pixels a painted fog texture is tall
+GROUND_UNITS = 16.0     # world width the ground-mist texture covers
+
+
+def _seamless(a, axes):
+    """Cross-fade a texture with a half-shifted copy so it wraps without a seam on the given axes."""
+    for ax in axes:
+        n = a.shape[ax]
+        m = np.sin(np.pi * np.arange(n) / n) ** 2
+        m = m[:, None] if ax == 0 else m[None, :]
+        a = a * m + np.roll(a, n // 2, axis=ax) * (1 - m)
+    return a.astype(np.float32)
+
+
+def fog_img(name):
+    """Painted fog texture (from assets/fog) as a 0..1 density map: black is empty, bright is fog."""
+    if name not in _fog_imgs:
+        a = np.asarray(Image.open(os.path.join(HERE, "assets", "fog", name + ".png")).convert("RGB")).astype(np.float32) / 255.0
+        d = a.max(2)
+        d = np.clip(d / np.percentile(d, 99), 0.0, 1.0)
+        if name == "haze":
+            _fog_imgs[name] = _seamless(d, (0, 1))
+        else:
+            h = _seamless(d, (1,))
+            _fog_imgs[name] = np.ascontiguousarray(np.concatenate([h, h[:, :1]], axis=1))
+    return _fog_imgs[name]
+
+
 def fog_actors(t, cam, strength=1.0, color=FOG, reach=34.0):
-    """Fog sheets as depth-ordered actors for draw_field: each sheet is drawn between the stones in front of and
-    behind it, so fog never pops or cuts through a tombstone."""
+    """Fog sheets as depth-ordered actors for draw_field: each sheet is a painted fog texture standing on the ground at
+    a fixed world depth, drawn between the stones in front of and behind it, so fog never pops or cuts a tombstone."""
     import cv2
-    tile = fog_tile()
     hw, hh, xs, ys = _grid()
     out = []
     first = int(math.floor((cam["z"] + 0.4) / FOG_STEP))
     last = int(math.ceil((cam["z"] + reach) / FOG_STEP))
+    hk_s = float(np.clip(1300.0 / cam["k"], 0.6, 1.0))
     for j in range(first, last + 1):
         zj = j * FOG_STEP
         if zj - cam["z"] < 0.4 or zj - cam["z"] > reach:
@@ -292,24 +322,33 @@ def fog_actors(t, cam, strength=1.0, color=FOG, reach=34.0):
             d = zj - cam["z"]
             s = F_SCALE / d
             gy = HORIZON + cam["k"] / d
-            y_hi = max(0, int((gy - FOG_TOP * s * 2.4) / 2))
+            y_hi = max(0, int((gy - FOG_HEIGHT * s) / 2))
             y_lo = min(hh, int((gy + 150 * s) / 2) + 2)
             if y_lo <= y_hi or gy < HORIZON - 4:
                 return
+            kind = "wisps" if j % 5 == 2 else ("haze" if j % 3 == 0 else "bank")
+            tex = fog_img(kind)
+            th, tw = tex.shape[0], tex.shape[1] - (0 if kind == "haze" else 1)
             fade = min(1.0, (d - 0.4) / 2.6) * (1.0 - (d / reach) ** 1.5)
             rnd = (j * 2654435761 % 1000) / 1000.0
             rows = ys[y_hi:y_lo]
             hgt = (gy - rows) / s
             xw = cam["x"] + xs * d / PX
-            wind = t * 0.55 * (0.7 + 0.6 * rnd) + 0.35 * math.sin(t * 0.4 + j)
-            u = ((xw + wind + rnd * 40.0) * (FOG_TILE / 26.0)).astype(np.float32)
-            v = (hgt * (FOG_TILE / 1500.0) + rnd * FOG_TILE + 0.6 * t * (0.4 + rnd)).astype(np.float32)
-            n = cv2.remap(tile, np.broadcast_to(u[None, :], (len(rows), hw)).astype(np.float32), np.broadcast_to(v[:, None], (len(rows), hw)).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
-            wisp = np.clip((n - 0.20) * 2.0, 0.0, 1.0)
-            prof = np.where(hgt >= 0, np.exp(-np.maximum(hgt, 0) / (FOG_TOP * 0.42)), np.exp(hgt / 55.0))[:, None]
-            al = np.clip(wisp * prof * (0.11 * strength * fade * float(np.clip(1300.0 / cam["k"], 0.6, 1.0))), 0.0, 0.8)
+            wind = t * 0.30 * (0.7 + 0.6 * rnd) + 0.2 * math.sin(t * 0.4 + j)
+            flip = -1.0 if j % 2 else 1.0
+            u = np.mod((xw * flip + wind + rnd * FOG_UNITS) / FOG_UNITS, 1.0) * tw
+            if kind == "wisps":
+                v = th / 2.0 - (hgt - 300.0) * th / FOG_HEIGHT
+            else:
+                v = th - 1.0 - hgt * (th - 1.0) / FOG_HEIGHT
+            mapx = np.broadcast_to(u.astype(np.float32)[None, :], (len(rows), hw)).astype(np.float32)
+            mapy = np.broadcast_to(np.clip(v, 0, th - 1.0).astype(np.float32)[:, None], (len(rows), hw)).astype(np.float32)
+            n = cv2.remap(tex, mapx, mapy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+            below = np.where(hgt >= 0, 1.0, np.exp(hgt / 55.0))[:, None]
+            taper = np.exp(-np.maximum(hgt, 0) / 420.0)[:, None] if kind == "haze" else 1.0
+            gain = {"bank": 0.20, "haze": 0.14, "wisps": 0.55}[kind]
+            al = np.clip(n * below * taper * (gain * strength * fade * hk_s), 0.0, 0.85)
             al = cv2.resize(al, (W, (y_lo - y_hi) * 2), interpolation=cv2.INTER_LINEAR)
-            al = cv2.GaussianBlur(al, (0, 0), 2.5)
             arr = np.zeros((al.shape[0], W, 4), np.uint8)
             arr[..., :3] = color
             arr[..., 3] = (al * 255).astype(np.uint8)
@@ -333,11 +372,13 @@ def draw_fog(frame, t, cam, strength=1.0, color=FOG, push=0.0, part="ground"):
         dg = np.minimum(cam["k"] / dy, 90.0)[:, None]
         xw = cam["x"] + xs[None, :] * dg / PX
         zw = np.broadcast_to(cam["z"] + dg, xw.shape)
-        wind = t * 0.5
-        sc = FOG_TILE / 26.0
-        m1 = cv2.remap(tile, ((xw + wind) * sc).astype(np.float32), (zw * sc * 1.3 + t * 0.2 * sc).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
-        m2 = cv2.remap(tile, ((xw - wind * 0.6) * sc * 2.3 + 90).astype(np.float32), (zw * sc * 3.0 + 40).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
-        g = np.clip((0.65 * m1 + 0.35 * m2 - 0.25) * 2.2, 0.0, 1.0)
+        hz = fog_img("haze")
+        th, tw = hz.shape
+        px = tw / GROUND_UNITS
+        wind = t * 0.35
+        m1 = cv2.remap(hz, ((xw + wind) * px).astype(np.float32), ((zw + t * 0.12) * px).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
+        m2 = cv2.remap(hz, ((xw * 0.6 - wind * 0.5 + 7) * px).astype(np.float32), ((zw * 0.6 + 3) * px).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
+        g = np.clip(0.6 * m1 + 0.4 * m2, 0.0, 1.0) ** 1.2 * 1.5
         dens = g * (0.12 + 0.88 * (1.0 - np.exp(-dg / 11.0))) * np.minimum(1.0, dg / 1.8) * np.clip((75.0 - dg) / 30.0, 0.0, 1.0)
         trans[y0:] *= (1.0 - np.clip(dens * 0.34 * strength * hk, 0.0, 0.85))
     hy = (ys - HORIZON)[:, None]

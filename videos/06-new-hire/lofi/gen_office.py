@@ -198,51 +198,31 @@ def hire(pose="typing"):
         b += [f'<path d="M{x + 50} 1070 Q{x + 120} 1120 {x + 200} 1162" stroke="{SHIRT}" stroke-width="42" stroke-linecap="round" fill="none"/>',
               f'<circle cx="{x + 210}" cy="1166" r="20" fill="{SKIN}"/>']
     elif pose == "confused":
-        # hand up, scratching the back of the head
-        b += [f'<path d="M{x + 30} 1040 Q{x - 30} 980 {x + 10} {hy - 30}" stroke="{SHIRT}" stroke-width="42" stroke-linecap="round" fill="none"/>',
-              f'<path d="M{x + 60} 1070 Q{x + 120} 1120 {x + 190} 1160" stroke="{SHIRT_DARK}" stroke-width="40" stroke-linecap="round" fill="none"/>',
-              f'<circle cx="{x + 200}" cy="1164" r="19" fill="{SKIN}"/>']
+        # puzzled: near elbow on the desk edge, forearm up, hand at the chin
+        b += [f'<path d="M{x + 60} 1060 Q{x + 100} 1150 {x + 140} 1170" stroke="{SHIRT}" stroke-width="42" stroke-linecap="round" fill="none"/>',
+              f'<path d="M{x + 140} 1170 Q{x + 128} 1080 {x + 106} {hy + 50}" stroke="{SHIRT}" stroke-width="38" stroke-linecap="round" fill="none"/>',
+              f'<circle cx="{x + 100}" cy="{hy + 46}" r="20" fill="{SKIN}"/>']
     elif pose == "binder":
         # the arm reaching up to the binder; the binder itself is binder.svg, drawn above the desk
-        b += [f'<path d="M{x + 40} 1060 Q{x + 100} 1120 {x + 76} 1104" stroke="{SHIRT}" stroke-width="42" stroke-linecap="round" fill="none"/>']
+        b += [f'<path d="M{x + 40} 1060 Q{x + 100} 1120 {x + 136} 1112" stroke="{SHIRT}" stroke-width="42" stroke-linecap="round" fill="none"/>']
     b += head(hx, hy, facing=1, brow_up=(pose == "confused"), down=(pose == "binder"))
     return svg(b)
 
 
-BINDER = (452, 1050)   # spine centre of the open book, held at chest height and tipped up toward his face
-BOOK_HALF, BOOK_H, BOOK_TILT = 74, 104, -14   # half width, height, tilt in degrees (top leans toward him)
-
-
-def book_pt(u, v):
-    """Point on the open book: u in -1..1 across (left page to right page), v in -0.5..0.5 top to bottom."""
-    import math
-    x, y = BINDER
-    sag = 10 * (1 - abs(u)) ** 0.5 * (1 if abs(u) > 0 else 1)   # pages bow down toward the spine
-    px, py = u * BOOK_HALF, v * BOOK_H + (sag if abs(u) < 1 else 0) * 0.4
-    a = math.radians(BOOK_TILT)
-    return (x + px * math.cos(a) - py * math.sin(a), y + px * math.sin(a) + py * math.cos(a))
+BINDER = (452, 1050)   # centre of the book he holds at chest height
 
 
 def binder():
-    """An open book held normally at chest height, pages tipped up toward his face, his hands at the bottom corners.
-    render_office.py turns a page."""
-    def poly(pts, **kw):
-        attrs = " ".join(f'{k.replace("_", "-")}="{v}"' for k, v in kw.items())
-        return f'<path d="M' + " L".join(f"{px:.1f} {py:.1f}" for px, py in pts) + f' Z" {attrs}/>'
-    cover = [book_pt(-1.06, -0.54), book_pt(1.06, -0.54), book_pt(1.06, 0.56), book_pt(0, 0.6), book_pt(-1.06, 0.56)]
-    left = [book_pt(-1, -0.5), book_pt(-0.5, -0.47), book_pt(0, -0.42), book_pt(0, 0.5), book_pt(-0.5, 0.46), book_pt(-1, 0.5)]
-    right = [book_pt(0, -0.42), book_pt(0.5, -0.47), book_pt(1, -0.5), book_pt(1, 0.5), book_pt(0.5, 0.46), book_pt(0, 0.5)]
-    b = [poly(cover, fill="#3E5C92"),
-         poly(left, fill=BOARD_FACE), poly(right, fill="#DDE3EC"),
-         f'<line x1="{book_pt(0, -0.42)[0]:.1f}" y1="{book_pt(0, -0.42)[1]:.1f}" x2="{book_pt(0, 0.5)[0]:.1f}" y2="{book_pt(0, 0.5)[1]:.1f}" stroke="#A9B3C4" stroke-width="3"/>']
-    for side in (-1, 1):
-        for k in range(5):
-            v = -0.3 + k * 0.15
-            p0, p1 = book_pt(side * 0.18, v), book_pt(side * 0.85, v - 0.02)
-            b.append(f'<line x1="{p0[0]:.1f}" y1="{p0[1]:.1f}" x2="{p1[0]:.1f}" y2="{p1[1]:.1f}" stroke="{METAL}" stroke-width="3" opacity="0.8"/>')
-    for u in (-1.02, 1.02):
-        hx, hy = book_pt(u, 0.44)
-        b.append(f'<circle cx="{hx:.1f}" cy="{hy:.1f}" r="19" fill="{SKIN}"/>')
+    """A book held open toward his face, seen from the side: we see its back cover tipped toward him, a sliver of
+    page edge along the top, and his hand around the near bottom corner. Nothing on it moves."""
+    x, y = BINDER
+    tl, tr, br, bl = (x - 48, y - 62), (x + 14, y - 74), (x + 40, y + 58), (x - 22, y + 70)
+    b = [f'<path d="M{tl[0]} {tl[1]} L{tr[0]} {tr[1]} L{tr[0] + 6} {tr[1] + 10} L{tl[0] + 6} {tl[1] + 10} Z" fill="{BOARD_FACE}"/>',
+         f'<path d="M{tl[0] + 6} {tl[1] + 10} L{tr[0] + 6} {tr[1] + 10} L{br[0]} {br[1]} L{bl[0]} {bl[1]} Z" fill="#3E5C92"/>',
+         f'<path d="M{tl[0] + 6} {tl[1] + 10} L{bl[0]} {bl[1]} L{bl[0] + 10} {bl[1] - 2} L{tl[0] + 15} {tl[1] + 9} Z" fill="#2F4A78"/>',
+         f'<path d="M{tl[0] + 22} {tl[1] + 34} L{tr[0] - 6} {tr[1] + 26}" stroke="#7D97C4" stroke-width="4" stroke-linecap="round"/>',
+         f'<circle cx="{bl[0] + 14}" cy="{bl[1] - 8}" r="19" fill="{SKIN}"/>',
+         f'<circle cx="{br[0] - 2}" cy="{br[1] - 30}" r="17" fill="{SKIN}"/>']
     return svg(b)
 
 

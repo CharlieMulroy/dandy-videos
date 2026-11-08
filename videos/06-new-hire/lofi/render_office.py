@@ -338,19 +338,6 @@ def draw_steam(canvas, t):
             d.line([pts[i], pts[i + 1]], fill=(240, 242, 248, int(a * (1 - i / len(pts)))), width=S(4))
 
 
-def draw_page_flip(canvas, t, at):
-    """One page lifting off the right half and turning over onto the left half."""
-    if t < at or t > at + 0.6:
-        return
-    q = smooth((t - at) / 0.6)
-    u = math.cos(q * math.pi)                  # outer edge travels from the right page (1) to the left page (-1)
-    lift = 0.22 * math.sin(q * math.pi)
-    pts = [G.book_pt(0, -0.42), G.book_pt(u * 0.5, -0.47 - lift), G.book_pt(u, -0.5 - lift * 1.4),
-           G.book_pt(u, 0.5 - lift * 1.4), G.book_pt(u * 0.5, 0.46 - lift), G.book_pt(0, 0.5)]
-    d = ImageDraw.Draw(canvas)
-    d.polygon([(S(px), S(py)) for px, py in pts], fill=(246, 248, 252, 255), outline=(169, 179, 196, 255))
-
-
 # ---------- composing a frame ----------
 def room_frame(t, o):
     """o: dict of shot options. Returns the camera view at 1080x1920 (RGBA)."""
@@ -377,7 +364,6 @@ def room_frame(t, o):
     draw_notes(canvas, t, o.get("notes_at"), o.get("peel"))
     if pose == "binder":
         canvas.alpha_composite(layer("binder"))
-        draw_page_flip(canvas, t, o.get("flip_at", 1.0))
     if standing:
         canvas.alpha_composite(fig)
     if o.get("steam", True):

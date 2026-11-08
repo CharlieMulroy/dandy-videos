@@ -107,3 +107,4 @@ ground shadow, no stray background colour at the edges (hold them over a white a
 - Preview is silent; sound bed and narration come with the recording.
 - v2 (Nov 8): cape removed, glasses added; the binder is now held side-on facing him (a shallow V of covers, page turning toward him) instead of facing the camera.
 - v3 (Nov 8): the book is held open like a normal book at chest height, pages tipped up toward him, head down reading; one page turns right to left.
+- v4 (Nov 8): the book is held naturally, seen from the side by its back cover with a sliver of page edge, no page turn; on day 2 he rests his elbow on the desk with his hand at his chin (the raised arm was cut).

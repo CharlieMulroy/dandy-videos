@@ -58,3 +58,11 @@ Revive your old projects. Use Dandy to keep them alive.
 
 - **The reaper's rounds.** Same graveyard, narrated in the reaper's first person ("I don't kill projects. I wait."). Creepier and more memorable, but it puts Charlie's voice in a villain role for 40 seconds and makes the end card turn feel abrupt.
 - **Night shift.** A builder with a lantern tries to dig a project back up while the reaper shadows them; ends with them carrying it out the gate. Stronger story, roughly twice the animation (a walking character with props), better as a follow-up once this look exists.
+
+## v4 change list (Charlie's notes on the v3 render, Nov 7; agreed, not yet implemented)
+
+1. Sound: remove the light swell (the sustained detuned chord read as a futuristic horn). The main pad resolves from minor to major when the rider arrives instead; hoofbeats carry the entrance. Bell on the open stays unless Charlie says otherwise.
+2. Environment: ground the yard. Low hill and dark treeline closing the back, a chapel with a steeple off-centre against the moon, an iron fence with stone posts and a far gate around the perimeter so the rows end at a boundary, a few big bare trees inside the yard between rows plus a dead tree in the foreground of the wide shot, a dirt path up the centre aisle (the camera's line), grass tufts and leaves on the ground, faint town lights beyond the fence on one side. The wide open must show the yard's edges.
+3. Purple only on the lantern and its light. Drop the rim-light pass on the rider; plain dark silhouette. Glow on fog, ground patch and stone tint stay.
+4. Horse: option A, painted puppet. One AI-generated illustration of horse and rider (side view facing left, full gallop, dark cloak streaming, tricorn, lantern held forward, black horse, moonlit night, plain dark background, no purple except the lantern), saved as videos/05-graveyard/night/assets/rider-source.png. Cut into parts (body, neck and head, four legs, cloak, lantern arm) as transparent PNGs under assets/rider/, rigged in rider.py: legs cycle, body bobs, cloak ripples, slows to a halt on arrival. Lighting and palette of the generation must match the night scene so it does not look pasted on. Code-drawn silhouette (current rider.py) stays as fallback for the far entrance if the painted one does not read at distance.
+

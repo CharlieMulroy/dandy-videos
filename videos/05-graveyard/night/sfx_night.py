@@ -170,7 +170,7 @@ def build_bed(scenes, path):
     rider_at = starts["s5-rider"][0]
     nchords = int(math.ceil((rider_at + 3.0) / (seg - 1.8)))
     put(pad([am, fm, dm, e][: 4] * (nchords // 4 + 1), seg, gain=0.22)[: int(SR * (rider_at + 3.5))] * env(int(SR * (rider_at + 3.5)), 0.5, 0, 1.0, 3.0), 0.0)
-    put(wind(total, gain=0.14), 0.0)
+    put(wind(total, gain=0.05), 0.0)
     for sid, (at, dur) in starts.items():
         if sid == "s1-wide":
             put(bell(gain=0.45), at + 0.4)
@@ -183,7 +183,7 @@ def build_bed(scenes, path):
                 put(footstep(gain=0.28 + 0.03 * k), at + 1.4 + k * 1.15)
             put(bell(gain=0.3, base=146.8), at + 4.6)
         elif sid == "s4-weeks":
-            put(heartbeat(dur, gain=0.28), at)
+            put(heartbeat(dur, gain=0.2), at)
             for k, a in enumerate((4.4, 8.9)):
                 put(footstep(gain=0.4 + 0.15 * k), at + a)
         elif sid == "s5-rider":

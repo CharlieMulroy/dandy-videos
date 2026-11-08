@@ -29,6 +29,7 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "render"))
 import sfx_night  # noqa: E402
+from rider import draw_rider  # noqa: E402
 from finish import finish  # noqa: E402
 from night_lib import (CONTRACT, EYES, FOG, FPS, GOLD, H, HORIZON, NIGHT, PURPLE, SAFE, TEXT, W, alpha_mul, chat_panel, display,  # noqa: E402
                        draw_fog, draw_landscape, draw_moon, draw_reaper, ease, font, lerp, mix, sky, smooth, stone_image, wrap)
@@ -169,73 +170,6 @@ def rot(px, py, cx, cy, ang):
 
 def ellipse_pts(cx, cy, rx, ry, ang=0.0, n=28):
     return [rot(cx + math.cos(a) * rx, cy + math.sin(a) * ry, cx, cy, ang) for a in (2 * math.pi * k / n for k in range(n))]
-
-
-def draw_rider(frame, sx, gy, L, phase, t, lantern=1.0, fade=1.0):
-    """Horse and rider in silhouette, facing left, L = body length in px. Returns the lantern's screen position.
-    phase drives the gait (trot); 0 phase speed means standing."""
-    if fade <= 0:
-        return None
-    layer = Image.new("RGBA", (int(L * 2.0), int(L * 1.75)), (0, 0, 0, 0))
-    d = ImageDraw.Draw(layer)
-    ox, oy = layer.width / 2, layer.height - 8
-    SIL = (12, 10, 20, 255)
-    bob = -0.02 * L * abs(math.sin(phase))
-    by = oy + bob
-
-    def P(x, y):
-        return ox + x * L, by + y * L
-
-    def leg(hx, hy, a, bend, w):
-        up, lo = 0.28 * L, 0.27 * L
-        kx, ky = hx - math.sin(a) * up, hy + math.cos(a) * up
-        b = a - bend
-        fx, fy = kx - math.sin(b) * lo, ky + math.cos(b) * lo
-        d.line((hx, hy, kx, ky), fill=SIL, width=int(w))
-        d.line((kx, ky, fx, fy), fill=SIL, width=int(w * 0.75))
-        d.ellipse((fx - w * 0.6, fy - w * 0.35, fx + w * 0.6, fy + w * 0.45), fill=SIL)
-
-    sw1, sw2 = math.sin(phase), math.sin(phase + math.pi)
-    # far legs first, then near legs after the body
-    for (hx, hy), s_ in (((0.30, -0.56), sw1), ((-0.26, -0.58), sw2)):
-        x, y = P(hx, hy)
-        leg(x, y, 0.5 * s_, 0.9 * max(0.0, s_ if hx < 0 else -s_), L * 0.06)
-    # tail
-    tx, ty = P(0.40, -0.70)
-    d.polygon([(tx, ty), (tx + 0.16 * L, ty - 0.02 * L + math.sin(t * 3) * 0.02 * L), (tx + 0.26 * L, ty + 0.26 * L), (tx + 0.16 * L, ty + 0.30 * L), (tx + 0.05 * L, ty + 0.12 * L)], fill=SIL)
-    # body, neck, head, ears, mane
-    d.polygon(ellipse_pts(*P(0.0, -0.62), 0.43 * L, 0.19 * L), fill=SIL)
-    d.polygon([P(-0.22, -0.56), P(-0.34, -0.82), P(-0.68, -1.24), P(-0.56, -1.06), P(-0.42, -0.74)], fill=SIL)
-    d.polygon([P(-0.30, -0.82), P(-0.66, -1.22), P(-0.60, -1.26), P(-0.24, -0.84)], fill=SIL)
-    d.polygon(ellipse_pts(*P(-0.745, -1.08), 0.19 * L, 0.07 * L, ang=-1.07), fill=SIL)
-    mx, my = P(-0.84, -0.905)
-    d.ellipse((mx - 0.055 * L, my - 0.055 * L, mx + 0.055 * L, my + 0.055 * L), fill=SIL)
-    d.polygon([P(-0.66, -1.22), P(-0.65, -1.33), P(-0.60, -1.22)], fill=SIL)
-    d.polygon([P(-0.60, -1.22), P(-0.57, -1.32), P(-0.54, -1.21)], fill=SIL)
-    d.polygon([P(-0.60, -1.26), P(-0.46, -1.08), P(-0.26, -0.86), P(-0.34, -0.84), P(-0.50, -1.02)], fill=SIL)
-    for (hx, hy), s_ in (((0.26, -0.55), sw2), ((-0.30, -0.57), sw1)):
-        x, y = P(hx, hy)
-        leg(x, y, 0.5 * s_, 0.9 * max(0.0, s_ if hx < 0 else -s_), L * 0.07)
-    # rider: near leg, torso, cloak, head, hat, arm and pole
-    d.line((P(-0.02, -0.80), P(-0.10, -0.46)), fill=SIL, width=int(0.055 * L))
-    d.polygon([P(0.05, -0.80), P(-0.07, -0.80), P(-0.14, -1.08), P(-0.02, -1.10)], fill=SIL)
-    d.polygon([P(0.04, -1.06), P(0.18 + 0.02 * math.sin(t * 4), -0.96), P(0.20, -0.78), P(0.05, -0.80)], fill=SIL)
-    cx_, cy_ = P(-0.09, -1.19)
-    d.ellipse((cx_ - 0.065 * L, cy_ - 0.065 * L, cx_ + 0.065 * L, cy_ + 0.065 * L), fill=SIL)
-    d.polygon(ellipse_pts(*P(-0.09, -1.245), 0.16 * L, 0.03 * L), fill=SIL)
-    d.rounded_rectangle((cx_ - 0.075 * L, cy_ - 0.19 * L, cx_ + 0.075 * L, cy_ - 0.05 * L), radius=int(0.02 * L), fill=SIL)
-    d.line((P(-0.11, -1.06), P(-0.36, -1.16)), fill=SIL, width=int(0.045 * L))
-    d.line((P(-0.36, -1.16), P(-0.42, -1.50)), fill=(26, 22, 18, 255), width=int(0.02 * L))
-    lx, ly = P(-0.42, -1.52)
-    lw, lh = 0.075 * L, 0.11 * L
-    d.rounded_rectangle((lx - lw / 2, ly, lx + lw / 2, ly + lh), radius=int(0.012 * L), fill=(18, 16, 14, 255), outline=(60, 54, 48, 255), width=2)
-    d.rounded_rectangle((lx - lw * 0.34, ly + lh * 0.15, lx + lw * 0.34, ly + lh * 0.85), radius=int(0.008 * L), fill=mix(PURPLE, (255, 255, 255), 0.55) + (int(255 * lantern),))
-    # ground shadow
-    shd = Image.new("RGBA", (int(L * 0.9), int(L * 0.08) + 16), (0, 0, 0, 0))
-    ImageDraw.Draw(shd).ellipse((8, 6, shd.width - 8, shd.height - 6), fill=(0, 0, 0, 160))
-    frame.alpha_composite(alpha_mul(shd.filter(ImageFilter.GaussianBlur(10)), fade), (int(sx - shd.width / 2), int(gy - shd.height / 2)))
-    frame.alpha_composite(alpha_mul(layer, fade), (int(sx - ox), int(gy - oy)))
-    return (sx - ox + lx, gy - oy + ly + lh * 0.5)
 
 
 def lantern_glow(frame, xy, radius, strength, t):
@@ -419,8 +353,9 @@ def s5(t, dur):
         pr = project(rx_w, rz_w, cam)
         if pr:
             sx, gy, s, d = pr
-            gait = t * 9.5 if arrive < 1 else 0.0
-            xy = draw_rider(frame, sx, gy, 600 * s, gait, t, lantern=light_strength)
+            speed = 1.0 - arrive ** 2
+            gait = 2 * math.pi * 1.9 * (t - 0.45 * max(0.0, t - 1.2) * arrive)
+            xy = draw_rider(frame, sx, gy, 680 * s, gait, t, speed=speed, lantern=light_strength)
             if xy:
                 lantern_xy.append(xy)
     draw_field(fr, cam, light=light, actors=[(gz, reaper), (rz_w, rider)])
@@ -528,7 +463,7 @@ def render(preview=False, final=False, stills=False):
             t = i * step
             fr = sc["frame"](t, sc["dur"])
             shake = 7.0 * max(0.0, 1 - (t - 4.6) / 0.35) if sc["id"] == "s3-reveal" and t >= 4.6 else 0.0
-            fr = finish(fr, t, offset + t, shake=shake, bloom=0.8, grain=5.0, vignette=0.45, drift=0.5)
+            fr = finish(fr, t, offset + t, shake=shake, bloom=0.8, grain=1.6, vignette=0.45, drift=0.5)
             if cues:
                 draw_cue(fr, cues, offset + t)
             if stills:

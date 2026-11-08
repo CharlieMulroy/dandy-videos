@@ -34,7 +34,7 @@ SKIN, HAIR = "#E9BE98", "#2A2230"
 SHIRT, SHIRT_DARK = "#8FB0DA", "#6E8FBC"
 TIE = "#22304F"
 TROUSERS, SHOE = "#3A4256", "#2A1E18"
-CAPE, CAPE_DARK = "#C2333F", "#8E2230"
+GLASSES = "#1F1A24"
 LANYARD = "#E9EDF3"
 
 W, H = 1080, 1920
@@ -125,7 +125,11 @@ def head(hx, hy, facing=1, brow_up=False):
          # short hair with a quiff at the front
          f'<path d="M{hx - 56 * f} {hy + 6} Q{hx - 62 * f} {hy - 60} {hx} {hy - 62} Q{hx + 50 * f} {hy - 76} {hx + 62 * f} {hy - 40} Q{hx + 34 * f} {hy - 44} {hx + 20 * f} {hy - 30} Q{hx - 20 * f} {hy - 34} {hx - 30 * f} {hy - 10} Q{hx - 44 * f} {hy - 2} {hx - 56 * f} {hy + 6} Z" fill="{HAIR}"/>',
          # eye, brow, small smile
-         f'<circle cx="{hx + 30 * f}" cy="{hy - 2}" r="5" fill="{HAIR}"/>']
+         f'<circle cx="{hx + 30 * f}" cy="{hy - 2}" r="5" fill="{HAIR}"/>',
+         # glasses: one round lens seen side-on, a bridge stub at the nose and the arm back to the ear
+         f'<circle cx="{hx + 32 * f}" cy="{hy - 2}" r="15" fill="#DDE6F2" fill-opacity="0.25" stroke="{GLASSES}" stroke-width="4"/>',
+         f'<line x1="{hx + 47 * f}" y1="{hy - 4}" x2="{hx + 54 * f}" y2="{hy - 6}" stroke="{GLASSES}" stroke-width="4" stroke-linecap="round"/>',
+         f'<line x1="{hx + 17 * f}" y1="{hy - 4}" x2="{hx - 10 * f}" y2="{hy}" stroke="{GLASSES}" stroke-width="4" stroke-linecap="round"/>']
     by = -26 if brow_up else -18
     b.append(f'<path d="M{hx + 18 * f} {hy + by} Q{hx + 32 * f} {hy + by - 6} {hx + 44 * f} {hy + by + 2}" stroke="{HAIR}" stroke-width="4" fill="none" stroke-linecap="round"/>')
     if brow_up:
@@ -170,7 +174,6 @@ def hire(pose="typing"):
         # standing beside the whiteboard, facing left, marker raised to the board's right edge
         hx, hy = HEAD["board"]
         sx, sy = hx + 6, 900
-        b += cape_behind(sx + 60, sy, 520, flare=-40)
         b += [f'<path d="M{sx - 40} 1180 L{sx - 46} {FLOOR - 10} M{sx + 30} 1180 L{sx + 36} {FLOOR - 10}" stroke="{TROUSERS}" stroke-width="54" stroke-linecap="round"/>',
               f'<ellipse cx="{sx - 66}" cy="{FLOOR - 4}" rx="40" ry="14" fill="{SHOE}"/>',
               f'<ellipse cx="{sx + 16}" cy="{FLOOR - 4}" rx="40" ry="14" fill="{SHOE}"/>',
@@ -187,8 +190,6 @@ def hire(pose="typing"):
         b += head(hx, hy, facing=-1)
         return svg(b)
     b += chair()
-    # cape draped over the chair back from his shoulders
-    b += cape_behind(x + 10, 1000, 330)
     b += legs_seated(hip)
     lean = 24 if pose == "typing" else (6 if pose == "confused" else 10)
     b += torso_seated(hip, lean)
@@ -203,26 +204,29 @@ def hire(pose="typing"):
               f'<circle cx="{x + 200}" cy="1164" r="19" fill="{SKIN}"/>']
     elif pose == "binder":
         # the arm reaching up to the binder; the binder itself is binder.svg, drawn above the desk
-        b += [f'<path d="M{x + 40} 1060 Q{x + 110} 1080 {x + 150} 1010" stroke="{SHIRT}" stroke-width="42" stroke-linecap="round" fill="none"/>']
+        b += [f'<path d="M{x + 40} 1060 Q{x + 100} 1120 {x + 152} 1100" stroke="{SHIRT}" stroke-width="42" stroke-linecap="round" fill="none"/>']
     b += head(hx, hy, facing=1, brow_up=(pose == "confused"))
     return svg(b)
 
 
-BINDER = (450, 1000)   # spine top of the open binder (render flips a page around here)
+BINDER = (488, 1030)   # spine of the open binder, held up side-on; the pages open back toward his face
+BINDER_TOP, BINDER_BOT = (446, 942), (452, 1120)
 
 
 def binder():
-    """The open binder held up in front of the desk, with the hand that holds it."""
-    x, y = BINDER
-    b = [f'<path d="M{x - 130} {y + 30} L{x} {y} L{x} {y + 170} L{x - 126} {y + 196} Z" fill="#3E5C92"/>',
-         f'<path d="M{x} {y} L{x + 130} {y + 30} L{x + 126} {y + 196} L{x} {y + 170} Z" fill="#33507F"/>',
-         f'<path d="M{x - 120} {y + 38} L{x - 4} {y + 12} L{x - 4} {y + 162} L{x - 116} {y + 186} Z" fill="{BOARD_FACE}"/>',
-         f'<path d="M{x + 4} {y + 12} L{x + 120} {y + 38} L{x + 116} {y + 186} L{x + 4} {y + 162} Z" fill="#DDE3EC"/>',
-         *[f'<line x1="{x - 104}" y1="{y + 60 + k * 22}" x2="{x - 20}" y2="{y + 42 + k * 22}" stroke="{METAL}" stroke-width="4"/>' for k in range(5)],
-         *[f'<line x1="{x + 20}" y1="{y + 42 + k * 22}" x2="{x + 100}" y2="{y + 60 + k * 22}" stroke="{METAL}" stroke-width="4"/>' for k in range(5)],
-         f'<circle cx="{x - 124}" cy="{y + 110}" r="20" fill="{SKIN}"/>',
-         f'<circle cx="{x + 124}" cy="{y + 110}" r="20" fill="{SKIN}"/>']
+    """The open binder seen edge-on, held at chest height facing him: a shallow V of two thick covers with the
+    spine away from him, a thin page block inside, his hand under it. render_office.py turns a page."""
+    (x, y), tp, bt = BINDER, BINDER_TOP, BINDER_BOT
+    b = [f'<path d="M{x - 6} {y} L{tp[0] + 8} {tp[1] + 6} L{bt[0] + 8} {bt[1] - 6} Z" fill="{BOARD_FACE}"/>',
+         *[f'<line x1="{x - 8}" y1="{y + d}" x2="{lerp_(tp[0], bt[0], 0.5) + 6 + d / 3}" y2="{y + d * 4}" stroke="#C3CBD8" stroke-width="2"/>' for d in (-12, -4, 4, 12)],
+         f'<path d="M{x} {y} L{tp[0]} {tp[1]}" stroke="#3E5C92" stroke-width="14" stroke-linecap="round"/>',
+         f'<path d="M{x} {y} L{bt[0]} {bt[1]}" stroke="#33507F" stroke-width="14" stroke-linecap="round"/>',
+         f'<circle cx="{bt[0] + 6}" cy="{bt[1] - 18}" r="20" fill="{SKIN}"/>']
     return svg(b)
+
+
+def lerp_(a, b, p):
+    return a + (b - a) * p
 
 
 def monitor(scr, stand=True):

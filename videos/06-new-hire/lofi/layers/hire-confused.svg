@@ -3,8 +3,6 @@
 <rect x="190" y="1255" width="190" height="30" rx="12" fill="#3A4357"/>
 <rect x="272" y="1285" width="26" height="110" fill="#3A4357"/>
 <path d="M200 1400 L370 1400 M285 1395 L285 1370" stroke="#3A4357" stroke-width="18" stroke-linecap="round"/>
-<path d="M280 990 Q215 1148.5 230 1330 L330 1310 Q320 1165.0 340 994 Z" fill="#C2333F"/>
-<path d="M280 990 Q215 1148.5 230 1330 L264.0 1324 Q250 1165.0 296 996 Z" fill="#8E2230" opacity="0.7"/>
 <path d="M300 1262 L450 1262 L450 1400" stroke="#3A4256" stroke-width="54" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 <ellipse cx="470" cy="1408" rx="42" ry="16" fill="#2A1E18"/>
 <path d="M280 1270 L292 1000 Q346 958 418 1008 L368 1270 Z" fill="#8FB0DA"/>
@@ -21,6 +19,9 @@
 <ellipse cx="346" cy="926" rx="10" ry="14" fill="#E9BE98" stroke="#D9A882" stroke-width="2"/>
 <path d="M304 926 Q298 860 360 858 Q410 844 422 880 Q394 876 380 890 Q340 886 330 910 Q316 918 304 926 Z" fill="#2A2230"/>
 <circle cx="390" cy="918" r="5" fill="#2A2230"/>
+<circle cx="392" cy="918" r="15" fill="#DDE6F2" fill-opacity="0.25" stroke="#1F1A24" stroke-width="4"/>
+<line x1="407" y1="916" x2="414" y2="914" stroke="#1F1A24" stroke-width="4" stroke-linecap="round"/>
+<line x1="377" y1="916" x2="350" y2="920" stroke="#1F1A24" stroke-width="4" stroke-linecap="round"/>
 <path d="M378 894 Q392 888 404 896" stroke="#2A2230" stroke-width="4" fill="none" stroke-linecap="round"/>
 <ellipse cx="394" cy="946" rx="6" ry="7" fill="#9C5D4A"/>
 </svg>

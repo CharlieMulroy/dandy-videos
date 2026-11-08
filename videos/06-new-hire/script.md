@@ -6,7 +6,7 @@
 Code-drawn SVG room layers (back wall, desk, figure, front props) rastered at 2x, a fixed camera that only ever
 drifts or pushes a little, hard cuts between still shots, and tiny ambient motion: coffee steam, a blinking cursor,
 light through the blinds, a slow sky change outside the window. The hire is a Maya-style figure, realistic but
-cartoonish, in a shirt and tie with a cape. No ChatGPT stills for now; the v1 prompts are parked at the bottom in
+cartoonish, in a shirt and tie with glasses (the cape was cut after v1). No ChatGPT stills for now; the v1 prompts are parked at the bottom in
 case we want painted upgrades later.
 
 **Target length:** about 38 s (about 95 narrated words). Status: v2 approved Nov 8 (turn line, final line and cape chosen). v1 was a 55 s workplace comedy
@@ -55,7 +55,7 @@ Unlock their full potential. Use Dandy.
 
 1. On-screen turn: "This is your AI agent".
 2. Final line: "Unlock their full potential. Use Dandy." on the end card with the hat logo, wordmark and dandylabs.dev.
-3. The hire keeps the cape for the superpowered read; revisit if it looks odd at lofi scale.
+3. The hire is a normal guy: no cape (cut after the v1 preview), shirt, tie, lanyard and glasses. His "superpowers" are only what he does in beat 2.
 
 ## Parked: v1 painted-still prompts
 
@@ -105,3 +105,4 @@ ground shadow, no stray background colour at the edges (hold them over a white a
 - Shots: s1-hire 4.0, s2-design 2.4, s3-build 2.3, s4-docs 2.3, s5-day2 7.0, s6-turn 7.0, s7-dandy 8.0, end 5.0 (38 s). Timings move to voiceover/office.json once narration is recorded.
 - Each shot has one small motion: push-in, last arrow drawing, code scroll, page flip, ticking second hand, "?" bubble, grade change, panel slide and sticky-note peel. Ambient: steam, light beams, dust.
 - Preview is silent; sound bed and narration come with the recording.
+- v2 (Nov 8): cape removed, glasses added; the binder is now held side-on facing him (a shallow V of covers, page turning toward him) instead of facing the camera.

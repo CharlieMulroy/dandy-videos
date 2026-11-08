@@ -339,16 +339,15 @@ def draw_steam(canvas, t):
 
 
 def draw_page_flip(canvas, t, at):
-    """One binder page turning right to left."""
+    """One page lifting off the lower half and turning to the upper half, seen edge-on as a curving white line."""
     if t < at or t > at + 0.6:
         return
     q = smooth((t - at) / 0.6)
-    x, y = G.BINDER
-    reach = 116 * math.cos(q * math.pi)
-    lift = 26 * math.sin(q * math.pi)
-    poly = [(x, y + 12), (x + reach, y + 38 - lift), (x + reach * 0.97, y + 186 - lift), (x, y + 162)]
-    d = ImageDraw.Draw(canvas)
-    d.polygon([(S(px), S(py)) for px, py in poly], fill=(244, 246, 250, 255), outline=(170, 178, 196, 255))
+    (x, y), tp, bt = G.BINDER, G.BINDER_TOP, G.BINDER_BOT
+    end = (lerp(bt[0], tp[0], q) + 30 * math.sin(q * math.pi) * -1, lerp(bt[1], tp[1], q))
+    mid = (lerp(x, end[0], 0.5) - 26 * math.sin(q * math.pi), lerp(y, end[1], 0.5))
+    pts = [(S(x - 6), S(y)), (S(mid[0]), S(mid[1])), (S(end[0]), S(end[1]))]
+    ImageDraw.Draw(canvas).line(pts, fill=(250, 251, 253, 255), width=S(5), joint="curve")
 
 
 # ---------- composing a frame ----------

@@ -126,6 +126,8 @@ def draw_field(frame, cam, light=None, extra=(), max_d=42.0, actors=()):
         if pr is None or pr[3] > max_d:
             continue
         sx, gy, s, d = pr
+        if d < 0.5:  # passing through the camera: already faded out, skip the giant resize
+            continue
         half = 270 * s
         if sx < -half or sx > W + half or gy < HORIZON - 10:
             continue
@@ -147,7 +149,7 @@ def draw_field(frame, cam, light=None, extra=(), max_d=42.0, actors=()):
             dist2 = (x - lx) ** 2 + (z - lz) ** 2 * 0.6
             tint_k = min(0.55, ls / (1 + dist2 * 0.7))
         im = stone_at_scale(img, s, haze_k, tint_k)
-        fade = 1.0 if d > 0.7 else max(0.0, (d - 0.18) / 0.52)
+        fade = 1.0 if d > 0.9 else max(0.0, (d - 0.5) / 0.4)
         y = int(gy - im.height * 0.94 + rise)
         # ground shadow
         if d < 12:

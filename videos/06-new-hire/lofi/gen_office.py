@@ -117,7 +117,7 @@ def cape_behind(sx, sy, length, flare=0):
             f'<path d="M{sx - 30} {sy - 10} Q{sx - 95 - flare} {sy + length * 0.45} {sx - 80 - flare} {sy + length} L{sx - 46 - flare / 2} {sy + length - 6} Q{sx - 60} {sy + length * 0.5} {sx - 14} {sy - 4} Z" fill="{CAPE_DARK}" opacity="0.7"/>']
 
 
-def head(hx, hy, facing=1, brow_up=False):
+def head(hx, hy, facing=1, brow_up=False, down=False):
     f = facing
     b = [f'<circle cx="{hx}" cy="{hy}" r="54" fill="{SKIN}"/>',
          # ear
@@ -125,7 +125,7 @@ def head(hx, hy, facing=1, brow_up=False):
          # short hair with a quiff at the front
          f'<path d="M{hx - 56 * f} {hy + 6} Q{hx - 62 * f} {hy - 60} {hx} {hy - 62} Q{hx + 50 * f} {hy - 76} {hx + 62 * f} {hy - 40} Q{hx + 34 * f} {hy - 44} {hx + 20 * f} {hy - 30} Q{hx - 20 * f} {hy - 34} {hx - 30 * f} {hy - 10} Q{hx - 44 * f} {hy - 2} {hx - 56 * f} {hy + 6} Z" fill="{HAIR}"/>',
          # eye, brow, small smile
-         f'<circle cx="{hx + 30 * f}" cy="{hy - 2}" r="5" fill="{HAIR}"/>',
+         f'<circle cx="{hx + 30 * f}" cy="{hy + (5 if down else -2)}" r="5" fill="{HAIR}"/>',
          # glasses: one round lens seen side-on, a bridge stub at the nose and the arm back to the ear
          f'<circle cx="{hx + 32 * f}" cy="{hy - 2}" r="15" fill="#DDE6F2" fill-opacity="0.25" stroke="{GLASSES}" stroke-width="4"/>',
          f'<line x1="{hx + 47 * f}" y1="{hy - 4}" x2="{hx + 54 * f}" y2="{hy - 6}" stroke="{GLASSES}" stroke-width="4" stroke-linecap="round"/>',
@@ -204,29 +204,46 @@ def hire(pose="typing"):
               f'<circle cx="{x + 200}" cy="1164" r="19" fill="{SKIN}"/>']
     elif pose == "binder":
         # the arm reaching up to the binder; the binder itself is binder.svg, drawn above the desk
-        b += [f'<path d="M{x + 40} 1060 Q{x + 100} 1120 {x + 152} 1100" stroke="{SHIRT}" stroke-width="42" stroke-linecap="round" fill="none"/>']
-    b += head(hx, hy, facing=1, brow_up=(pose == "confused"))
+        b += [f'<path d="M{x + 40} 1060 Q{x + 100} 1120 {x + 76} 1104" stroke="{SHIRT}" stroke-width="42" stroke-linecap="round" fill="none"/>']
+    b += head(hx, hy, facing=1, brow_up=(pose == "confused"), down=(pose == "binder"))
     return svg(b)
 
 
-BINDER = (488, 1030)   # spine of the open binder, held up side-on; the pages open back toward his face
-BINDER_TOP, BINDER_BOT = (446, 942), (452, 1120)
+BINDER = (452, 1050)   # spine centre of the open book, held at chest height and tipped up toward his face
+BOOK_HALF, BOOK_H, BOOK_TILT = 74, 104, -14   # half width, height, tilt in degrees (top leans toward him)
+
+
+def book_pt(u, v):
+    """Point on the open book: u in -1..1 across (left page to right page), v in -0.5..0.5 top to bottom."""
+    import math
+    x, y = BINDER
+    sag = 10 * (1 - abs(u)) ** 0.5 * (1 if abs(u) > 0 else 1)   # pages bow down toward the spine
+    px, py = u * BOOK_HALF, v * BOOK_H + (sag if abs(u) < 1 else 0) * 0.4
+    a = math.radians(BOOK_TILT)
+    return (x + px * math.cos(a) - py * math.sin(a), y + px * math.sin(a) + py * math.cos(a))
 
 
 def binder():
-    """The open binder seen edge-on, held at chest height facing him: a shallow V of two thick covers with the
-    spine away from him, a thin page block inside, his hand under it. render_office.py turns a page."""
-    (x, y), tp, bt = BINDER, BINDER_TOP, BINDER_BOT
-    b = [f'<path d="M{x - 6} {y} L{tp[0] + 8} {tp[1] + 6} L{bt[0] + 8} {bt[1] - 6} Z" fill="{BOARD_FACE}"/>',
-         *[f'<line x1="{x - 8}" y1="{y + d}" x2="{lerp_(tp[0], bt[0], 0.5) + 6 + d / 3}" y2="{y + d * 4}" stroke="#C3CBD8" stroke-width="2"/>' for d in (-12, -4, 4, 12)],
-         f'<path d="M{x} {y} L{tp[0]} {tp[1]}" stroke="#3E5C92" stroke-width="14" stroke-linecap="round"/>',
-         f'<path d="M{x} {y} L{bt[0]} {bt[1]}" stroke="#33507F" stroke-width="14" stroke-linecap="round"/>',
-         f'<circle cx="{bt[0] + 6}" cy="{bt[1] - 18}" r="20" fill="{SKIN}"/>']
+    """An open book held normally at chest height, pages tipped up toward his face, his hands at the bottom corners.
+    render_office.py turns a page."""
+    def poly(pts, **kw):
+        attrs = " ".join(f'{k.replace("_", "-")}="{v}"' for k, v in kw.items())
+        return f'<path d="M' + " L".join(f"{px:.1f} {py:.1f}" for px, py in pts) + f' Z" {attrs}/>'
+    cover = [book_pt(-1.06, -0.54), book_pt(1.06, -0.54), book_pt(1.06, 0.56), book_pt(0, 0.6), book_pt(-1.06, 0.56)]
+    left = [book_pt(-1, -0.5), book_pt(-0.5, -0.47), book_pt(0, -0.42), book_pt(0, 0.5), book_pt(-0.5, 0.46), book_pt(-1, 0.5)]
+    right = [book_pt(0, -0.42), book_pt(0.5, -0.47), book_pt(1, -0.5), book_pt(1, 0.5), book_pt(0.5, 0.46), book_pt(0, 0.5)]
+    b = [poly(cover, fill="#3E5C92"),
+         poly(left, fill=BOARD_FACE), poly(right, fill="#DDE3EC"),
+         f'<line x1="{book_pt(0, -0.42)[0]:.1f}" y1="{book_pt(0, -0.42)[1]:.1f}" x2="{book_pt(0, 0.5)[0]:.1f}" y2="{book_pt(0, 0.5)[1]:.1f}" stroke="#A9B3C4" stroke-width="3"/>']
+    for side in (-1, 1):
+        for k in range(5):
+            v = -0.3 + k * 0.15
+            p0, p1 = book_pt(side * 0.18, v), book_pt(side * 0.85, v - 0.02)
+            b.append(f'<line x1="{p0[0]:.1f}" y1="{p0[1]:.1f}" x2="{p1[0]:.1f}" y2="{p1[1]:.1f}" stroke="{METAL}" stroke-width="3" opacity="0.8"/>')
+    for u in (-1.02, 1.02):
+        hx, hy = book_pt(u, 0.44)
+        b.append(f'<circle cx="{hx:.1f}" cy="{hy:.1f}" r="19" fill="{SKIN}"/>')
     return svg(b)
-
-
-def lerp_(a, b, p):
-    return a + (b - a) * p
 
 
 def monitor(scr, stand=True):

@@ -339,15 +339,16 @@ def draw_steam(canvas, t):
 
 
 def draw_page_flip(canvas, t, at):
-    """One page lifting off the lower half and turning to the upper half, seen edge-on as a curving white line."""
+    """One page lifting off the right half and turning over onto the left half."""
     if t < at or t > at + 0.6:
         return
     q = smooth((t - at) / 0.6)
-    (x, y), tp, bt = G.BINDER, G.BINDER_TOP, G.BINDER_BOT
-    end = (lerp(bt[0], tp[0], q) + 30 * math.sin(q * math.pi) * -1, lerp(bt[1], tp[1], q))
-    mid = (lerp(x, end[0], 0.5) - 26 * math.sin(q * math.pi), lerp(y, end[1], 0.5))
-    pts = [(S(x - 6), S(y)), (S(mid[0]), S(mid[1])), (S(end[0]), S(end[1]))]
-    ImageDraw.Draw(canvas).line(pts, fill=(250, 251, 253, 255), width=S(5), joint="curve")
+    u = math.cos(q * math.pi)                  # outer edge travels from the right page (1) to the left page (-1)
+    lift = 0.22 * math.sin(q * math.pi)
+    pts = [G.book_pt(0, -0.42), G.book_pt(u * 0.5, -0.47 - lift), G.book_pt(u, -0.5 - lift * 1.4),
+           G.book_pt(u, 0.5 - lift * 1.4), G.book_pt(u * 0.5, 0.46 - lift), G.book_pt(0, 0.5)]
+    d = ImageDraw.Draw(canvas)
+    d.polygon([(S(px), S(py)) for px, py in pts], fill=(246, 248, 252, 255), outline=(169, 179, 196, 255))
 
 
 # ---------- composing a frame ----------

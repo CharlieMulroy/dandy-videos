@@ -43,6 +43,20 @@ GOLD = tuple(int(BRAND["accent_gold"].lstrip("#")[k:k + 2], 16) for k in (0, 2, 
 HORIZON = int(H * 0.56)
 
 
+# ---------- camera and projection ----------
+F_SCALE = 2.0   # a stone image is drawn at scale 1 when it is 2 world units away
+PX = 540        # lateral pixels per world unit at distance 1
+
+
+def project(x, z, cam):
+    """World (x, z) to (screen_x, ground_y, scale, distance) for camera dict(x, z, k). None when behind."""
+    d = z - cam["z"]
+    if d <= 0.18:
+        return None
+    s = F_SCALE / d
+    return W / 2 + (x - cam["x"]) * PX / d, HORIZON + cam["k"] / d, s, d
+
+
 def ease(t):
     t = max(0.0, min(1.0, t))
     return 1 - (1 - t) ** 3

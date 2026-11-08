@@ -28,25 +28,12 @@ VIDEO = os.path.abspath(os.path.join(HERE, ".."))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "render"))
+import env  # noqa: E402
 import sfx_night  # noqa: E402
 from rider import draw_rider, rider_glass_estimate  # noqa: E402
 from finish import finish  # noqa: E402
-from night_lib import (CONTRACT, EYES, FOG, FPS, GOLD, H, HORIZON, NIGHT, PURPLE, SAFE, TEXT, W, alpha_mul, chat_panel, display,  # noqa: E402
+from night_lib import (F_SCALE, PX, project, CONTRACT, EYES, FOG, FPS, GOLD, H, HORIZON, NIGHT, PURPLE, SAFE, TEXT, W, alpha_mul, chat_panel, display,  # noqa: E402
                        draw_fog, draw_landscape, draw_moon, draw_reaper, ease, font, lerp, mix, sky, smooth, stone_image, wrap)
-
-# ---------- camera and projection ----------
-F_SCALE = 2.0   # a stone image is drawn at scale 1 when it is 2 world units away
-PX = 540        # lateral pixels per world unit at distance 1
-
-
-def project(x, z, cam):
-    """World (x, z) to (screen_x, ground_y, scale, distance) for camera dict(x, z, k). None when behind."""
-    d = z - cam["z"]
-    if d <= 0.18:
-        return None
-    s = F_SCALE / d
-    return W / 2 + (x - cam["x"]) * PX / d, HORIZON + cam["k"] / d, s, d
-
 
 def cam_at(x, z, k):
     return dict(x=x, z=z, k=k)
@@ -55,7 +42,7 @@ def cam_at(x, z, k):
 # ---------- the field ----------
 COLS = [-13.0, -10.8, -8.6, -6.4, -4.2, -2.0, 2.0, 4.2, 6.4, 8.6, 10.8, 13.0]
 ROW_STEP = 1.8
-ROWS = [2.0 + ROW_STEP * i for i in range(40)]
+ROWS = [2.0 + ROW_STEP * i for i in range(28)]
 NAMED = {
     # (col x, row z): (kind, name, epitaph). These are the stones the push passes close.
     (-2.0, 2.0): ("round", "Budget App", "Started with a prompt.\nBuried in a tab."),
@@ -75,6 +62,8 @@ def field():
     rnd = random.Random(8)
     for z in ROWS:
         for x in COLS:
+            if any(abs(x - tx) < 1.4 and abs(z - tz) < 1.4 for (tx, tz, *_) in env.YARD_TREES):
+                continue
             if (x, z) in NAMED:
                 kind, name, ep = NAMED[(x, z)]
             else:
@@ -138,6 +127,7 @@ def draw_field(frame, cam, light=None, extra=(), max_d=42.0, actors=()):
             sx, gy, s, d = pr
             items.append((d, sx, gy, s, img, rise, x, z))
     items.sort(key=lambda it: -it[0])
+    actors = list(actors) + env.actors(cam, 0.0, light)
     pending = sorted(((z - cam["z"], fn) for z, fn in actors), key=lambda a: -a[0])
     for d, sx, gy, s, img, rise, x, z in items:
         while pending and pending[0][0] > d:
@@ -233,6 +223,8 @@ def base(t, cam):
     fr = sky()
     draw_moon(fr, t, cam["x"] * 60)
     draw_landscape(fr, cam["x"] * 60 + cam["z"] * 2)
+    env.draw_far(fr, cam, t)
+    env.draw_ground(fr, cam, t)
     return fr
 
 
@@ -243,7 +235,7 @@ def s1(t, dur):
     cam = cam_at(0.0, z, k)
     fr = base(t, cam)
     draw_fog(fr, t, cam["x"], strength=0.5, push=z)
-    draw_field(fr, cam)
+    draw_field(fr, cam, max_d=72.0)
     draw_fog(fr, t + 3, cam["x"], strength=0.7, push=z)
     return fr
 

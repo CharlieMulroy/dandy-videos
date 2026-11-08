@@ -1,7 +1,9 @@
-"""Sound bed for video 05's night look: wind, a crow, gravel footsteps, a low drone, dirt, and the end chime.
+"""Sound bed for video 05's night look.
 
-Synthesised from noise and sines at 48 kHz like 04's sfx.py, whose helpers it reuses.
-build_bed(scenes, path) writes a stereo WAV the renderer mixes under the narration.
+v2 (Nov 7): the v1 bed was wind over nothing and read as static. Now a slow minor pad carries the whole piece,
+with a tolling bell on the open, a whistling (not hissing) wind, a crow, gravel footsteps for the reaper, a low
+heartbeat under the funeral, hoofbeats and a rising major swell for the rider's light, and the end chime.
+Synthesised at 48 kHz from sines and noise; reuses helpers from 04's sfx.py. build_bed(scenes, path) -> WAV.
 """
 import math
 import os
@@ -11,74 +13,144 @@ import wave
 import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "04-context-rot", "void"))
-from sfx import SR, chime, env, lowpass, swell, thud  # noqa: E402
+from sfx import SR, chime, env, lowpass  # noqa: E402
 
 rng = np.random.default_rng(31)
 
 
-def wind(dur, gain=0.3, seed=0):
-    """Filtered noise with a slow gusting envelope and a moving cutoff."""
+def tone(freq, n, harmonics=((1, 1.0), (2, 0.35), (3, 0.18), (4, 0.08)), detune=0.0025, phase=0.0):
+    t = np.arange(n) / SR
+    x = np.zeros(n, np.float32)
+    for h, g in harmonics:
+        x += np.sin(2 * math.pi * freq * h * t + phase) * g
+        x += np.sin(2 * math.pi * freq * h * (1 + detune) * t + phase * 1.3) * g * 0.6
+    return x
+
+
+def pad(chords, seg, gain=0.25):
+    """chords: list of lists of frequencies; each held for seg seconds with a slow cross-fade."""
+    out = []
+    n = int(SR * seg)
+    xf = int(SR * 1.8)
+    for k, ch in enumerate(chords):
+        x = np.zeros(n, np.float32)
+        for f in ch:
+            x += tone(f, n, phase=k * 0.7) / len(ch)
+        # slow tremolo so it breathes
+        t = np.arange(n) / SR
+        x *= 0.85 + 0.15 * np.sin(2 * math.pi * 0.11 * t + k)
+        x *= env(n, xf / SR, 0.0, 1.0, xf / SR)
+        out.append(x)
+    # overlap-add the cross-fades
+    total = np.zeros(int(n * len(chords) - xf * (len(chords) - 1)) + 1, np.float32)
+    pos = 0
+    for x in out:
+        total[pos:pos + n] += x
+        pos += n - xf
+    return total / (np.abs(total).max() + 1e-6) * gain
+
+
+def wind(dur, gain=0.16, seed=0):
+    """Band-limited whistle rather than hiss: a narrow moving band of noise with a gusting envelope."""
     n = int(SR * dur)
     r = np.random.default_rng(seed)
     w = r.normal(0, 1, n).astype(np.float32)
     t = np.arange(n) / SR
-    gust = 0.55 + 0.45 * np.sin(2 * math.pi * 0.07 * t + 1.3) * np.sin(2 * math.pi * 0.023 * t)
-    cutoff = 350 + 450 * gust
-    x = lowpass(w, cutoff) * gust
-    x -= lowpass(x, 40)  # take the rumble out so it reads as air, not a hole
+    gust = 0.5 + 0.5 * np.sin(2 * math.pi * 0.05 * t + 1.3) * np.sin(2 * math.pi * 0.019 * t + 0.4)
+    centre = 320 + 420 * gust
+    hi = lowpass(w, centre * 1.25)
+    lo = lowpass(w, centre * 0.8)
+    x = (hi - lo) * (0.3 + 0.7 * gust)
     return x / (np.abs(x).max() + 1e-6) * gain
 
 
-def crow(gain=0.5):
-    """Two rough caws: a sawtooth-ish tone with a fast pitch drop and noise."""
+def bell(gain=0.5, base=196.0):
+    """One toll: inharmonic partials with long decays."""
+    n = int(SR * 5.0)
+    t = np.arange(n) / SR
+    x = np.zeros(n, np.float32)
+    for ratio, g, dec in ((0.5, 0.5, 1.2), (1.0, 1.0, 1.6), (2.0, 0.6, 2.4), (2.41, 0.4, 3.0), (2.98, 0.3, 3.4), (4.5, 0.15, 5.0)):
+        x += np.sin(2 * math.pi * base * ratio * t) * g * np.exp(-t * dec)
+    x *= env(n, 0.004, 0.1, 1.0, 0.5)
+    return x / (np.abs(x).max() + 1e-6) * gain
+
+
+def crow(gain=0.4):
     out = []
     for k in range(2):
-        n = int(SR * 0.28)
+        n = int(SR * 0.26)
         t = np.arange(n) / SR
-        f = 520 * np.exp(-t * 2.5) + 180
+        f = 540 * np.exp(-t * 2.8) + 170
         ph = np.cumsum(f) / SR
         saw = 2 * (ph % 1) - 1
         x = (saw * 0.7 + rng.normal(0, 0.5, n)) * env(n, 0.02, 0.1, 0.6, 0.1)
-        x = lowpass(x.astype(np.float32), 2200)
-        out.append(x)
-        out.append(np.zeros(int(SR * 0.12), np.float32))
+        out.append(lowpass(x.astype(np.float32), 2200))
+        out.append(np.zeros(int(SR * 0.13), np.float32))
     x = np.concatenate(out)
     return x / (np.abs(x).max() + 1e-6) * gain
 
 
 def footstep(gain=0.45):
-    """A heel on gravel: a low thump and a short crunch."""
     n = int(SR * 0.3)
     t = np.arange(n) / SR
-    thump = np.sin(2 * math.pi * 65 * t) * np.exp(-t * 18)
-    crunch = lowpass(rng.normal(0, 1, n).astype(np.float32), 1800) * np.exp(-t * 28) * 0.8
+    thump = np.sin(2 * math.pi * 62 * t) * np.exp(-t * 18)
+    crunch = lowpass(rng.normal(0, 1, n).astype(np.float32), 1700) * np.exp(-t * 26) * 0.8
     x = thump + crunch
     return x / (np.abs(x).max() + 1e-6) * gain
 
 
-def drone(dur, gain=0.3, base=41.2):
-    """Low detuned sines, slow swell; the reaper's presence."""
+def heartbeat(dur, bpm=58, gain=0.3):
     n = int(SR * dur)
-    t = np.arange(n) / SR
     x = np.zeros(n, np.float32)
-    for f, g in ((base, 1.0), (base * 1.005, 0.8), (base * 2, 0.35), (base * 2.98, 0.15)):
-        x += np.sin(2 * math.pi * f * t) * g
-    x *= env(n, min(2.5, dur * 0.4), 0.0, 1.0, min(2.0, dur * 0.3))
+    beat = int(SR * 60 / bpm)
+    kn = int(SR * 0.25)
+    kt = np.arange(kn) / SR
+    k1 = np.sin(2 * math.pi * 48 * kt) * np.exp(-kt * 22)
+    k2 = np.sin(2 * math.pi * 42 * kt) * np.exp(-kt * 26) * 0.7
+    for i in range(0, n - beat, beat):
+        x[i:i + kn] += k1
+        j = i + int(SR * 0.22)
+        x[j:j + kn] += k2
+    x *= env(n, 2.0, 0.0, 1.0, 1.5)
     return x / (np.abs(x).max() + 1e-6) * gain
 
 
-def dirt(gain=0.6):
-    """Earth shifting: a bandpassed noise swell with grit."""
-    n = int(SR * 1.4)
+def hoofbeats(dur, gain=0.5, approach=True):
+    """Canter: three beats and a rest per stride, each a thud with a short click; grows louder as it approaches."""
+    n = int(SR * dur)
+    x = np.zeros(n, np.float32)
+    stride = 0.62
+    kn = int(SR * 0.16)
+    kt = np.arange(kn) / SR
+    thud = np.sin(2 * math.pi * 90 * kt) * np.exp(-kt * 30)
+    click = lowpass(rng.normal(0, 1, kn).astype(np.float32), 3000) * np.exp(-kt * 70) * 0.5
+    hit = thud + click
+    t0 = 0.0
+    while t0 < dur:
+        for off in (0.0, 0.14, 0.3):
+            i = int((t0 + off) * SR)
+            if i + kn < n:
+                g = (0.25 + 0.75 * min(1.0, (t0 / dur) * 1.6)) if approach else 1.0
+                x[i:i + kn] += hit * g
+        t0 += stride
+    return x / (np.abs(x).max() + 1e-6) * gain
+
+
+def light_swell(dur=6.0, gain=0.45):
+    """A major chord that rises in and holds: the purple light."""
+    n = int(SR * dur)
     t = np.arange(n) / SR
-    x = lowpass(rng.normal(0, 1, n).astype(np.float32), 900) * env(n, 0.5, 0.3, 0.7, 0.5)
-    x += lowpass(rng.normal(0, 1, n).astype(np.float32), 300) * np.exp(-t * 3) * 0.6
+    x = np.zeros(n, np.float32)
+    for f, g in ((220.0, 1.0), (277.2, 0.7), (329.6, 0.7), (440.0, 0.45), (554.4, 0.3), (659.3, 0.25)):
+        x += tone(f, n, harmonics=((1, 1.0), (2, 0.2)), detune=0.003) * g
+    shimmer = np.sin(2 * math.pi * 1318.5 * t) * np.exp(-((t - 1.2) ** 2) / 0.6) * 0.12
+    x = x * env(n, dur * 0.45, 0.0, 1.0, dur * 0.3) + shimmer
     return x / (np.abs(x).max() + 1e-6) * gain
 
 
 def build_bed(scenes, path):
     total = sum(d for _, d in scenes)
-    mix = np.zeros(int(SR * (total + 1)), np.float32)
+    mix = np.zeros(int(SR * (total + 2)), np.float32)
 
     def put(sound, at):
         i = int(at * SR)
@@ -86,33 +158,41 @@ def build_bed(scenes, path):
         if i < len(mix):
             mix[i:j] += sound[: j - i]
 
-    put(wind(total, gain=0.28), 0.0)
+    starts = {}
     off = 0.0
     for sid, dur in scenes:
-        if sid == "s1-stone":
-            put(crow(gain=0.35), off + 1.6)
-        elif sid == "s2-row":
-            put(crow(gain=0.25), off + 5.2)
-        elif sid == "s3-reaper":
-            put(drone(dur + 2, gain=0.3), off)
-            put(footstep(gain=0.5), off + 3.2)
-            put(thud(gain=0.7), off + 4.1)
-        elif sid == "s4-funeral":
-            put(drone(dur, gain=0.22, base=36.7), off)
-            for k, at in enumerate((4.3, 8.6)):
-                put(footstep(gain=0.4 + 0.15 * k), off + at)
-            put(dirt(gain=0.6), off + 10.4)
-            put(thud(gain=0.6), off + 11.6)
-        elif sid == "s5-gate":
-            for k in range(6):
-                put(footstep(gain=0.3), off + 0.6 + k * 0.95)
-            put(swell(5.0, gain=0.3), off + 2.5)
-            put(chime(gain=0.35, base=660), off + 3.0)
-        elif sid == "end":
-            put(chime(gain=0.5, base=880), off + 0.8)
+        starts[sid] = (off, dur)
         off += dur
+    end_at = starts["end"][0]
+    # the pad: A minor, F, D minor, E, repeating slowly until the rider; then it hands to the light swell
+    am, fm, dm, e = (110.0, 130.8, 164.8, 220.0), (87.3, 110.0, 130.8, 174.6), (73.4, 110.0, 146.8, 174.6), (82.4, 123.5, 164.8, 207.7)
+    seg = 7.0
+    rider_at = starts["s5-rider"][0]
+    nchords = int(math.ceil((rider_at + 3.0) / (seg - 1.8)))
+    put(pad([am, fm, dm, e][: 4] * (nchords // 4 + 1), seg, gain=0.22)[: int(SR * (rider_at + 3.5))] * env(int(SR * (rider_at + 3.5)), 0.5, 0, 1.0, 3.0), 0.0)
+    put(wind(total, gain=0.14), 0.0)
+    for sid, (at, dur) in starts.items():
+        if sid == "s1-wide":
+            put(bell(gain=0.45), at + 0.4)
+            put(bell(gain=0.35), at + 3.6)
+            put(crow(gain=0.3), at + 2.2)
+        elif sid == "s2-push":
+            put(crow(gain=0.2), at + 4.0)
+        elif sid == "s3-reveal":
+            for k in range(6):
+                put(footstep(gain=0.28 + 0.03 * k), at + 1.4 + k * 1.15)
+            put(bell(gain=0.3, base=146.8), at + 4.6)
+        elif sid == "s4-weeks":
+            put(heartbeat(dur, gain=0.28), at)
+            for k, a in enumerate((4.4, 8.9)):
+                put(footstep(gain=0.4 + 0.15 * k), at + a)
+        elif sid == "s5-rider":
+            put(hoofbeats(5.2, gain=0.42), at + 0.2)
+            put(light_swell(dur + 1.0, gain=0.42), at + 1.6)
+        elif sid == "end":
+            put(chime(gain=0.45, base=880), at + 0.8)
     mix = mix[: int(SR * total)]
-    mix = mix / (np.abs(mix).max() + 1e-6) * 0.7
+    mix = mix / (np.abs(mix).max() + 1e-6) * 0.72
     stereo = np.stack([mix, mix], axis=1)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)

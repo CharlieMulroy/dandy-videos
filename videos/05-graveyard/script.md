@@ -7,28 +7,28 @@ fog rolling low over the ground, tombstones with readable epitaphs, and the reap
 Creepy but quiet; the fun is in the epitaphs. Video 04 explains how context rot works; this one does not
 repeat the mechanism. It shows the body count and names the killer.
 
-**Target length:** 45 to 50 s (about 115 narrated words). Status: draft v2, Nov 7. Charlie approved beats 1 to 5 and the purple-only-at-the-way-out rule; CTA reworded per his note.
+**Target length:** about 54 s (about 125 narrated words). Status: draft v3, Nov 7. After the first preview Charlie asked for a wide opening that pushes through the columns, a pull-back reveal of the reaper, the reaper closing in week by week, more done with the purple light, and a rider carrying the light who drives the reaper off; v3 is that cut. The open-grave turn from v2 is dropped.
 
 | # | Sec | Visual | On-screen text | Narration (plain, dry, a little dark) |
 | --- | --- | --- | --- | --- |
-| 1 | 0-4 | Cold open, no logo. Fog drifts across the frame, clears on a single tombstone, close. Moonlight. The epitaph is legible: HERE LIES / Budget App / "Started with a prompt. Buried in a tab." | the epitaph | Every builder has a graveyard. |
-| 2 | 4-13 | Camera drifts slowly along the row. Three more stones come out of the fog, each readable for about two seconds: "Portfolio Site v3, rebuilt the login twice, did not survive the third"; "Discord Bot, last words: as I mentioned earlier"; "Recipe Scraper, 2026 to 2026". A crow on one. | the epitaphs | The portfolio site. The Discord bot. The recipe thing. None of them died because the idea was bad. |
-| 3 | 13-21 | Between two stones, far back in the fog, a tall hooded shape stands still. Scythe. Two faint lights where eyes would be. It takes one slow step. Big type: CONTEXT ROT. | "CONTEXT ROT" | They died because something walks these rows. It is called context rot. It never kills a project outright. It waits. |
-| 4 | 21-35 | The burial, from the viewer's side. A phone or laptop glow at the edge of the frame; a chat window; the cursor types "so the project is..." then "ok so, again, the project is..." then just a blinking cursor. The fog rises a little each time. The reaper is closer each time, never moving on camera. On the last beat a fresh stone rises out of the ground, blank. | "week 1: you explain it" / "week 3: you explain it again" / "week 6:" (blank) | You come back after two weeks and the agent asks what the project is. So you explain it. You come back again and explain it a little less well. The third time, you don't come back. That is the whole funeral. |
-| 5 | 35-44 | The turn. Camera drifts to one grave that is open and empty. Dirt thrown out, a lantern on the ground, muddy footprints leading to the gate. Through the gate, a small workshop window lit warm. The reaper reaches the gate and stops; it cannot read what is inside. | "the ones that get out" / "kept the truth outside the chat" | The ones that get out are not smarter. They kept the truth about the project somewhere every session reads first, outside the chat. The reaper can't take what it can't reach. |
-| 6 | 44-50 | Soft end card: fog, then the hat and the wordmark, dandylabs.dev, 14-day free trial. | "Revive your old projects." | Revive your old projects. Use Dandy to keep them alive. |
+| 1 | 0-5 | Cold open, no logo. Wide and high: the whole graveyard under the moon, rows and columns of stones running back into fog. A bell tolls. The camera starts to descend. | none | Every builder has a graveyard. |
+| 2 | 5-16 | The push: the camera comes down to eye level and walks straight up the centre aisle. Named stones pass close on either side, each readable for a beat: Budget App ("Started with a prompt. Buried in a tab."), Portfolio Site v3 ("Rebuilt the login twice. Did not survive the third."), Discord Bot ("Last words: as I mentioned earlier"), Recipe Scraper ("2026 to 2026"), Habit Tracker. | the epitaphs | The budget app. The portfolio site. The Discord bot. The recipe thing. None of them died because the idea was bad. |
+| 3 | 16-24 | The camera pulls back and up to a wide view. Far down the rows, a hooded figure is walking between the stones, scythe over its shoulder, two faint lights where eyes would be. Big type: CONTEXT ROT. | "CONTEXT ROT" | They died because something walks these rows. It is called context rot. It never kills a project outright. It waits. |
+| 4 | 24-38 | The weeks. The camera holds. A chat window at the lower right: "so the project is a budget app..." then "ok so, again, the project is..." then just a cursor. With each week a pulse of fog, and the reaper is closer, never moving on camera, until it fills the left of the frame. A fresh blank stone rises from the ground. | "week 1: you explain it" / "week 3: you explain it again" / "week 6:" | You come back after two weeks and the agent asks what the project is. So you explain it. You come back again and explain it a little less well. The third time, you don't come back. That is the whole funeral. |
+| 5 | 38-48 | The turn. Purple light spills in from the right before anything else. Hoofbeats. A rider on horseback canters in carrying a lantern on a pole, the only purple in the film, and slows to a walk in the middle of the rows. The stones near the light take its colour. The reaper backs away into the fog and its eyes go out. | "unless the truth rides in with you" / "written down, read first, every session" | Unless the truth about the project rides in with you. Written down. Read first, every session. The reaper can't take what it can't reach. |
+| 6 | 48-54 | Soft end card: the purple light settles behind it; the hat and the wordmark, dandylabs.dev, 14-day free trial. | "Revive your old projects." | Revive your old projects. Use Dandy to keep them alive. |
 
 ## Narration, read straight through
 
 Every builder has a graveyard.
 
-The portfolio site. The Discord bot. The recipe thing. None of them died because the idea was bad.
+The budget app. The portfolio site. The Discord bot. The recipe thing. None of them died because the idea was bad.
 
 They died because something walks these rows. It is called context rot. It never kills a project outright. It waits.
 
 You come back after two weeks and the agent asks what the project is. So you explain it. You come back again and explain it a little less well. The third time, you don't come back. That is the whole funeral.
 
-The ones that get out are not smarter. They kept the truth about the project somewhere every session reads first, outside the chat. The reaper can't take what it can't reach.
+Unless the truth about the project rides in with you. Written down. Read first, every session. The reaper can't take what it can't reach.
 
 Revive your old projects. Use Dandy to keep them alive.
 
@@ -47,12 +47,12 @@ Revive your old projects. Use Dandy to keep them alive.
 
 - Beat 3 is the only place the mechanism is even hinted at ("it waits"), on purpose. 04 carries the explanation; if someone watches both, they should feel like two angles on one villain, not the same lesson twice.
 - Beat 4 is the emotional core and the part most people will recognise. The three on-screen lines are the arc; keep them short so they read over the fog.
-- Beat 5 is true without Dandy (a README, a doc, anything outside the chat that every session reads first), which keeps the video honest as a metaphor video. The sell is only beat 6.
+- Beat 5 is true without Dandy (a README, a doc, anything outside the chat that every session reads first), which keeps the video honest as a metaphor video. The sell is only beat 6. The rider is a plain silhouette in a broad-brimmed hat, deliberately not Dandy Man (invariant 5: no mascot in metaphor videos).
 - CTA (Charlie, Nov 7): explicit rather than clever. "Revive your old projects. Use Dandy to keep them alive." The word "revive" ties back to the open grave in beat 5.
 - Messaging rules apply: no long dashes, no Jira / harness / framework, no customer names. Voice stays plain.
 - Hook test: first frame has motion (fog), a victim (the stone), and a line most builders will take personally. No logo until the end.
 - Palette for this video: night #070B10, fog #9FB3C8 (low alpha, layered), moon #E8EEF2, stone #4A535C with #2A3038 shadow, epitaph text #D9DEE3, reaper #020305 with eye lights #B8FFD9 (cold green), the lit window and lantern in brand purple #7C4DFF so the way out quietly matches the end card.
-- Sound: wind, a crow, slow footsteps on gravel for the reaper, one low drone under beat 3 and 4, silence for a half second before the end card.
+- Sound (v2 bed): a slow A-minor pad under everything, a tolling bell on the open, whistling wind, a crow, gravel footsteps for the reaper, a low heartbeat under the weeks, hoofbeats and a rising major swell for the rider's light, the end chime. Music still gets added at post time if wanted; the pad is quiet enough to sit under it.
 
 ## Alternatives considered (not drafted)
 

@@ -3,11 +3,11 @@ Vertical only.
 
 Usage:  python3 videos/05-graveyard/night/render_night.py [--preview] [--final] [--stills]
 
-Everything is procedural: a moon behind thin cloud, parallax hills and bare trees, three layers of drifting
-ground fog, engraved tombstones laid out in one continuous world the camera drifts along, the reaper (hooded
-cloak, scythe, two cold eye lights), the chat glow of beat 4, the open grave, lantern and lit gate of beat 5,
-and the soft end card. Palette is this video's own (night, fog, stone, cold green eyes); the only brand purple
-is the lantern and the window beyond the gate, which hands off to the end card.
+v2 (Nov 7, after Charlie's notes on the first preview): a perspective camera instead of a sideways pan. The field
+is a grid of stones (12 columns, 40 rows) in world units; the camera starts wide and high, pushes forward through
+the columns past the named stones, pulls back to reveal the reaper walking the rows, holds while the reaper
+closes in week by week, and then a rider on horseback carries the purple light in and the reaper retreats.
+Drawing helpers live in night_lib.py; sound in sfx_night.py; the shared finish pass in render/finish.py.
 Scene durations can be overridden by voiceover/night.json; narration captions come from captions.json.
 """
 import argparse
@@ -21,7 +21,7 @@ import sys
 import tempfile
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 VIDEO = os.path.abspath(os.path.join(HERE, ".."))
@@ -29,631 +29,226 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "render"))
 import sfx_night  # noqa: E402
-from finish import finish, spring  # noqa: E402
+from finish import finish  # noqa: E402
+from night_lib import (CONTRACT, EYES, FOG, FPS, GOLD, H, HORIZON, NIGHT, PURPLE, SAFE, TEXT, W, alpha_mul, chat_panel, display,  # noqa: E402
+                       draw_fog, draw_landscape, draw_moon, draw_reaper, ease, font, lerp, mix, sky, smooth, stone_image, wrap)
 
-with open(os.path.join(ROOT, "style", "contract.json")) as f:
-    CONTRACT = json.load(f)
-BRAND = CONTRACT["palette"]
-FONT_DIR = "/usr/share/fonts/opentype/inter"
-FPS = CONTRACT["motion"]["fps"]
-W, H = 1080, 1920
-SAFE = (int(W * 0.08), CONTRACT["layout"]["vertical_safe_top_px"], W - int(W * 0.08), H - CONTRACT["layout"]["vertical_safe_bottom_px"])
-
-NIGHT = (7, 11, 16)
-SKY_TOP = (4, 7, 12)
-SKY_LOW = (16, 24, 34)
-FOG = (159, 179, 200)
-MOON = (232, 238, 242)
-STONE = (74, 83, 92)
-STONE_DARK = (42, 48, 56)
-STONE_LIGHT = (108, 118, 128)
-GROUND = (12, 17, 22)
-GROUND_LIGHT = (22, 30, 36)
-TEXT = (217, 222, 227)
-ENGRAVE = (28, 32, 38)
-REAPER = (2, 3, 5)
-REAPER_EDGE = (34, 42, 52)
-EYES = (184, 255, 217)
-PURPLE = tuple(int(BRAND["highlight"].lstrip("#")[k:k + 2], 16) for k in (0, 2, 4))
-GOLD = tuple(int(BRAND["accent_gold"].lstrip("#")[k:k + 2], 16) for k in (0, 2, 4))
-
-HORIZON = int(H * 0.56)
+# ---------- camera and projection ----------
+F_SCALE = 2.0   # a stone image is drawn at scale 1 when it is 2 world units away
+PX = 540        # lateral pixels per world unit at distance 1
 
 
-def ease(t):
-    t = max(0.0, min(1.0, t))
-    return 1 - (1 - t) ** 3
+def project(x, z, cam):
+    """World (x, z) to (screen_x, ground_y, scale, distance) for camera dict(x, z, k). None when behind."""
+    d = z - cam["z"]
+    if d <= 0.18:
+        return None
+    s = F_SCALE / d
+    return W / 2 + (x - cam["x"]) * PX / d, HORIZON + cam["k"] / d, s, d
 
 
-def ease_in(t):
-    t = max(0.0, min(1.0, t))
-    return t * t
+def cam_at(x, z, k):
+    return dict(x=x, z=z, k=k)
 
 
-def smooth(t):
-    t = max(0.0, min(1.0, t))
-    return t * t * (3 - 2 * t)
+# ---------- the field ----------
+COLS = [-13.0, -10.8, -8.6, -6.4, -4.2, -2.0, 2.0, 4.2, 6.4, 8.6, 10.8, 13.0]
+ROW_STEP = 1.8
+ROWS = [2.0 + ROW_STEP * i for i in range(40)]
+NAMED = {
+    # (col x, row z): (kind, name, epitaph). These are the stones the push passes close.
+    (-2.0, 2.0): ("round", "Budget App", "Started with a prompt.\nBuried in a tab."),
+    (2.0, 5.6): ("slab", "Portfolio Site v3", "Rebuilt the login twice.\nDid not survive the third."),
+    (-2.0, 9.2): ("round", "Discord Bot", "Last words:\n\"as I mentioned earlier\""),
+    (2.0, 12.8): ("slab", "Recipe Scraper", "2026 to 2026"),
+    (-2.0, 16.4): ("round", "Habit Tracker", "Explained eleven times.\nFinished zero."),
+    (4.2, 7.4): ("slab", "Inventory Tool", "Cause of death:\n\"let me catch you up\""),
+    (-4.2, 11.0): ("round", "The Newsletter Thing", "Session ended.\nSo did it."),
+    (4.2, 14.6): ("round", "Side Project #14", "Beloved for a weekend."),
+}
+KINDS = ("round", "slab", "cross", "round", "slab")
 
 
-def lerp(a, b, p):
-    return a + (b - a) * p
-
-
-def mix(c1, c2, p):
-    return tuple(int(lerp(c1[i], c2[i], p)) for i in range(3))
-
-
-def font(name, size):
-    return ImageFont.truetype(os.path.join(FONT_DIR, name), max(1, int(size)))
-
-
-def alpha_mul(im, a):
-    if a >= 1:
-        return im
-    im = im.copy()
-    im.putalpha(im.split()[3].point(lambda v: int(v * a)))
-    return im
-
-
-# ---------- depth ----------
-def depth_scale(p):
-    """p is 0 (horizon) to 1 (nearest row). Returns (ground_y, scale)."""
-    return HORIZON + (H * 0.22) * (p ** 1.3), 0.12 + 0.88 * (p ** 1.4)
-
-
-def screen_x(wx, cam, p):
-    return W / 2 + (wx - cam) * p
-
-
-# ---------- noise and sky ----------
-def value_noise(w, h, cells, seed, octaves=4):
-    r = np.random.default_rng(seed)
-    out = np.zeros((h, w), np.float32)
-    amp, total = 1.0, 0.0
-    for o in range(octaves):
-        c = cells * (2 ** o)
-        g = r.random((max(2, h * c // w + 2), c + 2)).astype(np.float32)
-        im = Image.fromarray((g * 255).astype(np.uint8)).resize((w, h), Image.BICUBIC)
-        out += np.asarray(im).astype(np.float32) / 255 * amp
-        total += amp
-        amp *= 0.5
-    out /= total
-    out = (out - out.min()) / (out.max() - out.min() + 1e-6)
+def field():
+    out = []
+    rnd = random.Random(8)
+    for z in ROWS:
+        for x in COLS:
+            if (x, z) in NAMED:
+                kind, name, ep = NAMED[(x, z)]
+            else:
+                if rnd.random() < 0.18:  # gaps in the rows
+                    continue
+                kind, name, ep = rnd.choice(KINDS), "", ""
+            jitter = rnd.uniform(-0.18, 0.18)
+            out.append((x + jitter, z + rnd.uniform(-0.25, 0.25), kind, name, ep))
     return out
 
 
-_sky = None
+FIELD = field()
+_resized = {}
+_shaded = {}
 
 
-def sky():
-    global _sky
-    if _sky is None:
-        yy = np.linspace(0, 1, H).astype(np.float32)[:, None]
-        grad = np.zeros((H, W, 3), np.float32)
-        for i in range(3):
-            grad[..., i] = SKY_TOP[i] + (SKY_LOW[i] - SKY_TOP[i]) * np.clip(yy / 0.6, 0, 1) ** 1.6
-        # ground below the horizon
-        grad[HORIZON:, :] = np.array(GROUND, np.float32)
-        gy = np.linspace(0, 1, H - HORIZON).astype(np.float32)[:, None, None]
-        grad[HORIZON:, :] = np.array(GROUND, np.float32) * (1 - gy * 0.5) + np.array(GROUND_LIGHT, np.float32) * gy * 0.5
-        im = Image.fromarray(grad.astype(np.uint8)).convert("RGBA")
-        d = ImageDraw.Draw(im)
-        rnd = random.Random(5)
-        for _ in range(140):
-            x, y = rnd.random() * W, rnd.random() * HORIZON * 0.85
-            r = rnd.random() * 1.4 + 0.3
-            d.ellipse((x - r, y - r, x + r, y + r), fill=mix(SKY_TOP, MOON, rnd.uniform(0.3, 0.8)) + (255,))
-        _sky = im
-    return _sky.copy()
-
-
-def draw_moon(frame, t, cam):
-    mx, my, mr = W * 0.70 - cam * 0.02, H * 0.19, 92
-    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    gd = ImageDraw.Draw(glow)
-    for k, (rr, a) in enumerate(((mr * 4.2, 22), (mr * 2.6, 40), (mr * 1.5, 70))):
-        gd.ellipse((mx - rr, my - rr, mx + rr, my + rr), fill=mix(SKY_LOW, MOON, 0.6) + (a,))
-    glow = glow.filter(ImageFilter.GaussianBlur(40))
-    frame.alpha_composite(glow)
-    d = ImageDraw.Draw(frame, "RGBA")
-    d.ellipse((mx - mr, my - mr, mx + mr, my + mr), fill=MOON + (255,))
-    # a few maria
-    for (ox, oy, r) in ((-20, -10, 22), (18, 20, 16), (-5, 30, 10)):
-        d.ellipse((mx + ox - r, my + oy - r, mx + ox + r, my + oy + r), fill=mix(MOON, SKY_LOW, 0.18) + (255,))
-    # thin cloud across it, drifting
-    cl = cloud_strip()
-    off = int((t * 18 + cam * 0.03) % cl.width)
-    strip = Image.new("RGBA", (W, cl.height), (0, 0, 0, 0))
-    strip.paste(cl, (-off, 0))
-    strip.paste(cl, (cl.width - off, 0))
-    frame.alpha_composite(strip, (0, int(my - cl.height / 2 + 10)))
-
-
-_cloud = None
-
-
-def cloud_strip():
-    global _cloud
-    if _cloud is None:
-        w, h = 2400, 260
-        n = value_noise(w, h, 6, 77, octaves=5)
-        band = np.exp(-((np.linspace(-1, 1, h)[:, None]) ** 2) / 0.35)
-        a = np.clip((n - 0.45) * 2.2, 0, 1) * band * 0.75
-        arr = np.zeros((h, w, 4), np.uint8)
-        arr[..., :3] = mix(SKY_LOW, FOG, 0.35)
-        arr[..., 3] = (a * 255).astype(np.uint8)
-        _cloud = Image.fromarray(arr, "RGBA")
-    return _cloud
-
-
-# ---------- far landscape ----------
-_hills = {}
-
-
-def hills_layer(seed, w, h, lift, color):
-    key = (seed, w, h, lift)
-    if key not in _hills:
-        n = value_noise(w, 8, 5, seed, octaves=3)[4]
-        im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-        d = ImageDraw.Draw(im)
-        pts = [(x, h - lift - n[x] * lift * 0.9) for x in range(0, w, 4)] + [(w, h), (0, h)]
-        d.polygon(pts, fill=color + (255,))
-        _hills[key] = im
-    return _hills[key]
-
-
-def branch(d, x, y, ang, length, width, depth, rnd, color):
-    if depth == 0 or length < 6:
-        return
-    x2, y2 = x + math.cos(ang) * length, y - math.sin(ang) * length
-    d.line((x, y, x2, y2), fill=color, width=max(1, int(width)))
-    for k in range(2 if depth > 2 else rnd.choice((1, 2))):
-        a = ang + rnd.uniform(-0.75, 0.75) + (0.35 if k == 0 else -0.35)
-        branch(d, x2, y2, a, length * rnd.uniform(0.62, 0.78), width * 0.68, depth - 1, rnd, color)
-
-
-_trees = None
-
-
-def trees_layer():
-    global _trees
-    if _trees is None:
-        w, h = 4200, 700
-        im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-        d = ImageDraw.Draw(im)
-        rnd = random.Random(12)
-        col = (6, 9, 13, 255)
-        for x in range(120, w, 330):
-            tx = x + rnd.uniform(-90, 90)
-            th = rnd.uniform(240, 380)
-            d.line((tx, h, tx, h - th), fill=col, width=14)
-            branch(d, tx, h - th, math.pi / 2, th * 0.55, 10, 5, rnd, col)
-        _trees = im
-    return _trees
-
-
-def draw_landscape(frame, cam):
-    far = hills_layer(21, 3000, 180, 110, mix(SKY_LOW, NIGHT, 0.5))
-    near = hills_layer(22, 3000, 200, 80, NIGHT)
-    for layer, p, yb in ((far, 0.05, HORIZON + 6), (near, 0.09, HORIZON + 10)):
-        off = int(cam * p) % layer.width
-        strip = Image.new("RGBA", (W, layer.height), (0, 0, 0, 0))
-        strip.paste(layer, (-off, 0))
-        strip.paste(layer, (layer.width - off, 0))
-        frame.alpha_composite(strip, (0, yb - layer.height))
-    tl = trees_layer()
-    off = int(cam * 0.16) % tl.width
-    strip = Image.new("RGBA", (W, tl.height), (0, 0, 0, 0))
-    strip.paste(tl, (-off, 0))
-    strip.paste(tl, (tl.width - off, 0))
-    frame.alpha_composite(strip, (0, HORIZON + 14 - tl.height))
-    # ground rows: faint lighter streaks for the paths between rows
-    d = ImageDraw.Draw(frame, "RGBA")
-    for p in (0.25, 0.5, 0.8):
-        gy, _ = depth_scale(p)
-        d.line((0, gy + 6, W, gy + 6), fill=GROUND_LIGHT + (45,), width=int(2 + 4 * p))
-
-
-# ---------- fog ----------
-_fog = {}
-
-
-def fog_tex(seed):
-    if seed not in _fog:
-        w, h = 3000, 520
-        n = value_noise(w, h, 5, seed, octaves=5)
-        yy = np.linspace(0, 1, h)[:, None]
-        band = np.clip((yy - 0.05) / 0.45, 0, 1) * np.clip((1.0 - yy) / 0.25 + 0.2, 0, 1)
-        a = np.clip((n - 0.32) * 1.9, 0, 1) * band
-        _fog[seed] = a.astype(np.float32)
-    return _fog[seed]
-
-
-def draw_fog(frame, t, cam, strength=1.0, color=FOG):
-    """Three fog layers at different depths; each a scrolled crop of a noise band over the ground."""
-    for seed, p, speed, top, height, alpha in ((1, 0.45, 26, HORIZON - 40, 300, 0.30), (2, 0.8, 44, HORIZON + 90, 420, 0.36), (3, 1.2, 70, HORIZON + 420, 560, 0.40)):
-        tex = fog_tex(seed)
-        th, tw = tex.shape
-        off = int(t * speed + cam * p * 0.8) % tw
-        band = np.concatenate([tex[:, off:], tex[:, :off]], axis=1)[:, :W]
-        if band.shape[1] < W:
-            band = np.concatenate([band, tex[:, : W - band.shape[1]]], axis=1)
-        band = np.asarray(Image.fromarray((band * 255).astype(np.uint8)).resize((W, height), Image.BILINEAR)).astype(np.float32) / 255
-        arr = np.zeros((height, W, 4), np.uint8)
-        arr[..., :3] = color
-        arr[..., 3] = np.clip(band * alpha * strength * 255, 0, 255).astype(np.uint8)
-        frame.alpha_composite(Image.fromarray(arr, "RGBA"), (0, int(top)))
-
-
-# ---------- stones ----------
-STONES = [
-    # wx, depth p, kind, name, epitaph
-    (0, 1.0, "round", "Budget App", "Started with a prompt.\nBuried in a tab."),
-    (1150, 1.0, "slab", "Portfolio Site v3", "Rebuilt the login twice.\nDid not survive the third."),
-    (2300, 1.0, "round", "Discord Bot", "Last words:\n\"as I mentioned earlier\""),
-    (3450, 1.0, "cross", "Recipe Scraper", "2026 to 2026"),
-    (4700, 1.0, "slab", "Habit Tracker", "Explained eleven times.\nFinished zero."),
-    # a back row and a far row for depth, names only
-    (520, 0.62, "round", "Side Project #14", "Beloved for a weekend."),
-    (1800, 0.62, "slab", "Inventory Tool", "Cause of death:\n\"let me catch you up\""),
-    (3000, 0.62, "round", "The Newsletter Thing", "Session ended.\nSo did it."),
-    (4200, 0.62, "cross", "CLI Helper", ""),
-    (5400, 0.62, "slab", "Dashboard v2", "Explained. Re-explained."),
-    (-300, 0.36, "round", "", ""), (700, 0.36, "cross", "", ""), (1700, 0.36, "slab", "", ""), (2600, 0.36, "round", "", ""),
-    (3600, 0.36, "slab", "", ""), (4500, 0.36, "cross", "", ""), (5400, 0.36, "round", "", ""), (6400, 0.36, "slab", "", ""),
-]
-_stone_cache = {}
-
-
-def stone_image(kind, name, epitaph, blank=False):
-    key = (kind, name, epitaph, blank)
-    if key in _stone_cache:
-        return _stone_cache[key]
-    w, h = 460, 560
-    im = Image.new("RGBA", (w + 80, h + 60), (0, 0, 0, 0))
-    d = ImageDraw.Draw(im)
-    x0, y0 = 40, 30
-    rnd = random.Random(hash(key) & 0xFFFF)
-    tilt = rnd.uniform(-2.5, 2.5)
-    if kind == "round":
-        body = (x0 + 30, y0 + 20, x0 + w - 30, y0 + h)
-        d.rounded_rectangle(body, radius=150, fill=STONE + (255,))
-        d.rectangle((x0 + 30, y0 + 220, x0 + w - 30, y0 + h), fill=STONE + (255,))
-    elif kind == "slab":
-        d.rounded_rectangle((x0 + 20, y0 + 40, x0 + w - 20, y0 + h), radius=26, fill=STONE + (255,))
-    else:  # cross
-        d.rounded_rectangle((x0 + w / 2 - 50, y0, x0 + w / 2 + 50, y0 + h), radius=18, fill=STONE + (255,))
-        d.rounded_rectangle((x0 + 60, y0 + 130, x0 + w - 60, y0 + 230), radius=18, fill=STONE + (255,))
-        d.rounded_rectangle((x0 + 10, y0 + h - 70, x0 + w - 10, y0 + h), radius=16, fill=STONE + (255,))
-    # moonlit edge on the left, shadow on the right
-    mask = im.split()[3]
-    light = Image.new("RGBA", im.size, (0, 0, 0, 0))
-    ld = ImageDraw.Draw(light)
-    ld.rectangle((0, 0, x0 + 70, im.height), fill=STONE_LIGHT + (120,))
-    ld.rectangle((x0 + w - 120, 0, im.width, im.height), fill=STONE_DARK + (160,))
-    light = light.filter(ImageFilter.GaussianBlur(40))
-    light.putalpha(Image.fromarray(np.minimum(np.asarray(light.split()[3]), np.asarray(mask))))
-    im.alpha_composite(light)
-    # weathering speckle
-    arr = np.asarray(im).astype(np.int16)
-    noise = np.random.default_rng(hash(key) & 0xFFFF).normal(0, 7, arr.shape[:2] + (1,))
-    arr[..., :3] = np.clip(arr[..., :3] + noise, 0, 255)
-    im = Image.fromarray(arr.astype(np.uint8), "RGBA")
-    d = ImageDraw.Draw(im)
-    if not blank and name:
-        cx = x0 + w / 2
-        y = y0 + (150 if kind != "cross" else 260)
-        f_small = font("Inter-SemiBold.otf", 26)
-        label = "HERE LIES"
-        tw = d.textlength(label, font=f_small)
-        engrave(d, (cx - tw / 2, y), label, f_small)
-        y += 50
-        f_name = font("Inter-Bold.otf", 40 if len(name) < 16 else 34)
-        for line in wrap(name, f_name, w - 110, d):
-            tw = d.textlength(line, font=f_name)
-            engrave(d, (cx - tw / 2, y), line, f_name)
-            y += f_name.size * 1.18
-        y += 26
-        f_ep = font("Inter-Regular.otf", 29)
-        for para in epitaph.split("\n"):
-            for line in wrap(para, f_ep, w - 110, d):
-                tw = d.textlength(line, font=f_ep)
-                engrave(d, (cx - tw / 2, y), line, f_ep)
-                y += f_ep.size * 1.25
-    im = im.rotate(tilt, resample=Image.BICUBIC, expand=False)
-    _stone_cache[key] = im
+def stone_at_scale(img, scale, haze_k, tint_k):
+    key = (id(img), round(scale, 2), round(haze_k, 2), round(tint_k, 2))
+    if key in _shaded:
+        return _shaded[key]
+    rk = (id(img), round(scale, 2))
+    if rk not in _resized:
+        if len(_resized) > 600:
+            _resized.clear()
+        w, h = max(2, int(img.width * scale)), max(2, int(img.height * scale))
+        _resized[rk] = img.resize((w, h), Image.LANCZOS if scale < 1 else Image.BILINEAR)
+    im = _resized[rk]
+    if haze_k > 0.01 or tint_k > 0.01:
+        arr = np.asarray(im).astype(np.float32)
+        if haze_k > 0.01:
+            arr[..., :3] = arr[..., :3] * (1 - haze_k) + np.array(mix(NIGHT, FOG, 0.25), np.float32) * haze_k
+        if tint_k > 0.01:
+            arr[..., :3] = arr[..., :3] * (1 - tint_k * 0.7) + np.array(mix(PURPLE, (255, 255, 255), 0.25), np.float32) * tint_k * 0.7 + np.array(PURPLE, np.float32) * tint_k * 0.35
+            arr[..., :3] = np.clip(arr[..., :3], 0, 255)
+        im = Image.fromarray(arr.astype(np.uint8), "RGBA")
+    if len(_shaded) > 900:
+        _shaded.clear()
+    _shaded[key] = im
     return im
 
 
-def engrave(d, xy, text, f):
-    x, y = xy
-    d.text((x + 1, y + 2), text, font=f, fill=STONE_LIGHT + (140,))
-    d.text((x, y), text, font=f, fill=ENGRAVE + (255,))
-
-
-def wrap(text, fnt, max_w, d):
-    words, lines, cur = text.split(), [], ""
-    for w in words:
-        trial = (cur + " " + w).strip()
-        if d.textlength(trial, font=fnt) <= max_w or not cur:
-            cur = trial
-        else:
-            lines.append(cur)
-            cur = w
-    if cur:
-        lines.append(cur)
-    return lines
-
-
-def draw_stone_at(frame, img, sx, ground_y, scale, rise=0.0):
-    w, h = int(img.width * scale), int(img.height * scale)
-    im = img.resize((w, h), Image.LANCZOS) if scale != 1 else img
-    x, y = int(sx - w / 2), int(ground_y - h * 0.94 + rise)
-    # soft shadow on the ground
-    sh = Image.new("RGBA", (w + 60, int(40 * scale) + 30), (0, 0, 0, 0))
-    ImageDraw.Draw(sh).ellipse((30, 10, w + 30, int(40 * scale) + 10), fill=(0, 0, 0, 150))
-    frame.alpha_composite(sh.filter(ImageFilter.GaussianBlur(12)), (x - 30, int(ground_y - 22 * scale)))
-    if rise > 0:  # still coming out of the ground: clip below ground
-        im = im.crop((0, 0, w, max(1, int(ground_y + 6 - y))))
-    frame.alpha_composite(im, (x, y))
-
-
-def draw_stones(frame, cam, extra=(), skip=(), zoom=1.0):
+def draw_field(frame, cam, light=None, extra=(), max_d=42.0, actors=()):
+    """Project every stone, sort far to near, draw with atmospheric haze and (optionally) the lantern's light.
+    light = (x, z, strength) in world units. extra = list of (x, z, img, rise_px) drawn in depth order too.
+    actors = list of (z, draw_fn) interleaved by depth so stones in front of a figure occlude it."""
     items = []
-    for i, (wx, p, kind, name, ep) in enumerate(STONES):
-        if i in skip:
+    for (x, z, kind, name, ep) in FIELD:
+        pr = project(x, z, cam)
+        if pr is None or pr[3] > max_d:
             continue
-        gy, sc = depth_scale(p)
-        sx = screen_x(wx, cam, p * zoom)
-        if -400 < sx < W + 400:
-            items.append((p, sx, gy, sc * zoom, stone_image(kind, name, ep), 0.0))
-    items += list(extra)
-    for p, sx, gy, sc, img, rise in sorted(items, key=lambda it: it[0]):
-        draw_stone_at(frame, haze(img, p), sx, gy, sc, rise)
+        sx, gy, s, d = pr
+        half = 270 * s
+        if sx < -half or sx > W + half or gy < HORIZON - 10:
+            continue
+        items.append((d, sx, gy, s, stone_image(kind, name, ep), 0.0, x, z))
+    for (x, z, img, rise) in extra:
+        pr = project(x, z, cam)
+        if pr is not None:
+            sx, gy, s, d = pr
+            items.append((d, sx, gy, s, img, rise, x, z))
+    items.sort(key=lambda it: -it[0])
+    pending = sorted(((z - cam["z"], fn) for z, fn in actors), key=lambda a: -a[0])
+    for d, sx, gy, s, img, rise, x, z in items:
+        while pending and pending[0][0] > d:
+            pending.pop(0)[1](frame)
+        haze_k = min(0.8, max(0.0, (d - 2.0) / 14) * 0.9)
+        tint_k = 0.0
+        if light is not None:
+            lx, lz, ls = light
+            dist2 = (x - lx) ** 2 + (z - lz) ** 2 * 0.6
+            tint_k = min(0.55, ls / (1 + dist2 * 0.7))
+        im = stone_at_scale(img, s, haze_k, tint_k)
+        fade = 1.0 if d > 0.7 else max(0.0, (d - 0.18) / 0.52)
+        y = int(gy - im.height * 0.94 + rise)
+        # ground shadow
+        if d < 12:
+            sw, sh = im.width + 40, int(40 * s) + 24
+            shd = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
+            ImageDraw.Draw(shd).ellipse((20, 8, sw - 20, sh - 8), fill=(0, 0, 0, int(140 * fade)))
+            frame.alpha_composite(shd.filter(ImageFilter.GaussianBlur(8 + 6 * s)), (int(sx - sw / 2), int(gy - sh / 2)))
+        if rise > 0:
+            im = im.crop((0, 0, im.width, max(1, int(gy + 6 - y))))
+        frame.alpha_composite(alpha_mul(im, fade), (int(sx - im.width / 2), y))
+    for _, fn in pending:
+        fn(frame)
 
 
-_haze = {}
+# ---------- the rider ----------
+def rot(px, py, cx, cy, ang):
+    c, s = math.cos(ang), math.sin(ang)
+    return cx + (px - cx) * c - (py - cy) * s, cy + (px - cx) * s + (py - cy) * c
 
 
-def haze(img, p):
-    """Atmospheric perspective: far stones sink toward the night."""
-    if p >= 0.95:
-        return img
-    key = (id(img), round(p, 2))
-    if key not in _haze:
-        k = (1 - p) * 0.62
-        arr = np.asarray(img).astype(np.float32)
-        arr[..., :3] = arr[..., :3] * (1 - k) + np.array(mix(NIGHT, FOG, 0.25), np.float32) * k
-        _haze[key] = Image.fromarray(arr.astype(np.uint8), "RGBA")
-    return _haze[key]
+def ellipse_pts(cx, cy, rx, ry, ang=0.0, n=28):
+    return [rot(cx + math.cos(a) * rx, cy + math.sin(a) * ry, cx, cy, ang) for a in (2 * math.pi * k / n for k in range(n))]
 
 
-# ---------- the reaper ----------
-def draw_reaper(frame, sx, ground_y, height, t, eyes=1.0, sway=1.0, step=0.0, fade=1.0):
-    """Hooded cloak, scythe, two eye lights. height is the full figure height in px."""
+def draw_rider(frame, sx, gy, L, phase, t, lantern=1.0, fade=1.0):
+    """Horse and rider in silhouette, facing left, L = body length in px. Returns the lantern's screen position.
+    phase drives the gait (trot); 0 phase speed means standing."""
     if fade <= 0:
-        return
-    hgt = height
-    wid = hgt * 0.42
-    layer = Image.new("RGBA", (int(wid * 3.4), int(hgt * 1.7)), (0, 0, 0, 0))
+        return None
+    layer = Image.new("RGBA", (int(L * 2.0), int(L * 1.75)), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
-    cx, base = layer.width / 2, layer.height - 10
-    sw = math.sin(t * 1.3) * 0.012 * hgt * sway
-    bob = abs(math.sin(step * math.pi)) * hgt * 0.02 if step else 0
-    top = base - hgt + bob
-    # cloak: shoulders to a ragged hem
-    rnd = random.Random(3)
-    hem = []
-    for k in range(13):
-        xx = cx - wid * 0.62 + (wid * 1.24) * k / 12
-        yy = base - rnd.uniform(0, hgt * 0.05) - (hgt * 0.02 if k % 2 else 0)
-        hem.append((xx + sw * 0.3, yy))
-    cloak = [(cx - wid * 0.22 + sw, top + hgt * 0.17), (cx + wid * 0.22 + sw, top + hgt * 0.17), (cx + wid * 0.55 + sw * 0.6, top + hgt * 0.5)] + hem[::-1] + [(cx - wid * 0.55 + sw * 0.6, top + hgt * 0.5)]
-    d.polygon(cloak, fill=REAPER + (255,))
-    # moonlit edge on the left shoulder
-    d.line([(cx - wid * 0.22 + sw, top + hgt * 0.17), (cx - wid * 0.55 + sw * 0.6, top + hgt * 0.5), (cx - wid * 0.62, base)], fill=REAPER_EDGE + (160,), width=max(2, int(hgt * 0.008)))
-    # hood
-    hw, hh = wid * 0.36, hgt * 0.2
-    d.ellipse((cx - hw + sw, top, cx + hw + sw, top + hh * 1.3), fill=REAPER + (255,))
-    d.polygon([(cx - hw * 0.95 + sw, top + hh * 0.7), (cx + hw * 0.95 + sw, top + hh * 0.7), (cx + wid * 0.26 + sw, top + hgt * 0.2), (cx - wid * 0.26 + sw, top + hgt * 0.2)], fill=REAPER + (255,))
-    d.ellipse((cx - hw * 0.62 + sw, top + hh * 0.42, cx + hw * 0.62 + sw, top + hh * 1.22), fill=(0, 0, 0, 255))
-    # scythe: a tall staff in the right hand, a long crescent blade sweeping over the head
-    sx0, sy0 = cx + wid * 0.48 + sw * 0.5, base - hgt * 0.03
-    sx1, sy1 = cx + wid * 0.58 + sw, top - hgt * 0.16
-    d.line((sx0, sy0, sx1, sy1), fill=(22, 18, 14, 255), width=max(3, int(hgt * 0.016)))
-    bl = hgt * 0.5
-    # crescent hung off the staff tip, sweeping left and drooping: outer arc and a thinner inner arc
-    ocx, ocy, orad = sx1 - bl * 0.55, sy1 + bl * 0.55, bl * 0.78
-    pts = []
-    for k in range(24):
-        a = math.radians(45 + 110 * k / 23)
-        pts.append((ocx + math.cos(a) * orad, ocy - math.sin(a) * orad))
-    for k in range(23, -1, -1):
-        a = math.radians(45 + 110 * k / 23)
-        taper = 1 - 0.14 * (k / 23) ** 0.7
-        pts.append((ocx + math.cos(a) * orad * taper, ocy - math.sin(a) * orad * taper + bl * 0.04))
-    d.polygon(pts, fill=(112, 122, 132, 255))
-    d.line(pts[:24], fill=(205, 214, 222, 220), width=max(1, int(hgt * 0.005)))
-    # eyes
-    if eyes > 0:
-        ex, ey = cx + sw, top + hh * 0.82
-        gap, er = hw * 0.26, max(2, hgt * 0.012)
-        flick = 0.85 + 0.15 * math.sin(t * 7.0) * math.sin(t * 3.1)
-        glow = Image.new("RGBA", layer.size, (0, 0, 0, 0))
-        gd = ImageDraw.Draw(glow)
-        for off in (-gap, gap):
-            gd.ellipse((ex + off - er * 3, ey - er * 3, ex + off + er * 3, ey + er * 3), fill=EYES + (int(120 * eyes * flick),))
-        layer.alpha_composite(glow.filter(ImageFilter.GaussianBlur(er * 1.6)))
-        for off in (-gap, gap):
-            d.ellipse((ex + off - er, ey - er * 0.7, ex + off + er, ey + er * 0.7), fill=EYES + (int(255 * eyes * flick),))
+    ox, oy = layer.width / 2, layer.height - 8
+    SIL = (12, 10, 20, 255)
+    bob = -0.02 * L * abs(math.sin(phase))
+    by = oy + bob
+
+    def P(x, y):
+        return ox + x * L, by + y * L
+
+    def leg(hx, hy, a, bend, w):
+        up, lo = 0.28 * L, 0.27 * L
+        kx, ky = hx - math.sin(a) * up, hy + math.cos(a) * up
+        b = a - bend
+        fx, fy = kx - math.sin(b) * lo, ky + math.cos(b) * lo
+        d.line((hx, hy, kx, ky), fill=SIL, width=int(w))
+        d.line((kx, ky, fx, fy), fill=SIL, width=int(w * 0.75))
+        d.ellipse((fx - w * 0.6, fy - w * 0.35, fx + w * 0.6, fy + w * 0.45), fill=SIL)
+
+    sw1, sw2 = math.sin(phase), math.sin(phase + math.pi)
+    # far legs first, then near legs after the body
+    for (hx, hy), s_ in (((0.30, -0.56), sw1), ((-0.26, -0.58), sw2)):
+        x, y = P(hx, hy)
+        leg(x, y, 0.5 * s_, 0.9 * max(0.0, s_ if hx < 0 else -s_), L * 0.06)
+    # tail
+    tx, ty = P(0.40, -0.70)
+    d.polygon([(tx, ty), (tx + 0.16 * L, ty - 0.02 * L + math.sin(t * 3) * 0.02 * L), (tx + 0.26 * L, ty + 0.26 * L), (tx + 0.16 * L, ty + 0.30 * L), (tx + 0.05 * L, ty + 0.12 * L)], fill=SIL)
+    # body, neck, head, ears, mane
+    d.polygon(ellipse_pts(*P(0.0, -0.62), 0.43 * L, 0.19 * L), fill=SIL)
+    d.polygon([P(-0.22, -0.56), P(-0.34, -0.82), P(-0.68, -1.24), P(-0.56, -1.06), P(-0.42, -0.74)], fill=SIL)
+    d.polygon([P(-0.30, -0.82), P(-0.66, -1.22), P(-0.60, -1.26), P(-0.24, -0.84)], fill=SIL)
+    d.polygon(ellipse_pts(*P(-0.745, -1.08), 0.19 * L, 0.07 * L, ang=-1.07), fill=SIL)
+    mx, my = P(-0.84, -0.905)
+    d.ellipse((mx - 0.055 * L, my - 0.055 * L, mx + 0.055 * L, my + 0.055 * L), fill=SIL)
+    d.polygon([P(-0.66, -1.22), P(-0.65, -1.33), P(-0.60, -1.22)], fill=SIL)
+    d.polygon([P(-0.60, -1.22), P(-0.57, -1.32), P(-0.54, -1.21)], fill=SIL)
+    d.polygon([P(-0.60, -1.26), P(-0.46, -1.08), P(-0.26, -0.86), P(-0.34, -0.84), P(-0.50, -1.02)], fill=SIL)
+    for (hx, hy), s_ in (((0.26, -0.55), sw2), ((-0.30, -0.57), sw1)):
+        x, y = P(hx, hy)
+        leg(x, y, 0.5 * s_, 0.9 * max(0.0, s_ if hx < 0 else -s_), L * 0.07)
+    # rider: near leg, torso, cloak, head, hat, arm and pole
+    d.line((P(-0.02, -0.80), P(-0.10, -0.46)), fill=SIL, width=int(0.055 * L))
+    d.polygon([P(0.05, -0.80), P(-0.07, -0.80), P(-0.14, -1.08), P(-0.02, -1.10)], fill=SIL)
+    d.polygon([P(0.04, -1.06), P(0.18 + 0.02 * math.sin(t * 4), -0.96), P(0.20, -0.78), P(0.05, -0.80)], fill=SIL)
+    cx_, cy_ = P(-0.09, -1.19)
+    d.ellipse((cx_ - 0.065 * L, cy_ - 0.065 * L, cx_ + 0.065 * L, cy_ + 0.065 * L), fill=SIL)
+    d.polygon(ellipse_pts(*P(-0.09, -1.245), 0.16 * L, 0.03 * L), fill=SIL)
+    d.rounded_rectangle((cx_ - 0.075 * L, cy_ - 0.19 * L, cx_ + 0.075 * L, cy_ - 0.05 * L), radius=int(0.02 * L), fill=SIL)
+    d.line((P(-0.11, -1.06), P(-0.36, -1.16)), fill=SIL, width=int(0.045 * L))
+    d.line((P(-0.36, -1.16), P(-0.42, -1.50)), fill=(26, 22, 18, 255), width=int(0.02 * L))
+    lx, ly = P(-0.42, -1.52)
+    lw, lh = 0.075 * L, 0.11 * L
+    d.rounded_rectangle((lx - lw / 2, ly, lx + lw / 2, ly + lh), radius=int(0.012 * L), fill=(18, 16, 14, 255), outline=(60, 54, 48, 255), width=2)
+    d.rounded_rectangle((lx - lw * 0.34, ly + lh * 0.15, lx + lw * 0.34, ly + lh * 0.85), radius=int(0.008 * L), fill=mix(PURPLE, (255, 255, 255), 0.55) + (int(255 * lantern),))
     # ground shadow
-    sh = Image.new("RGBA", (int(wid * 1.6), int(hgt * 0.06) + 20), (0, 0, 0, 0))
-    ImageDraw.Draw(sh).ellipse((10, 8, sh.width - 10, sh.height - 8), fill=(0, 0, 0, 170))
-    frame.alpha_composite(alpha_mul(sh.filter(ImageFilter.GaussianBlur(10)), fade), (int(sx - sh.width / 2), int(ground_y - sh.height / 2)))
-    frame.alpha_composite(alpha_mul(layer, fade), (int(sx - cx), int(ground_y - base)))
+    shd = Image.new("RGBA", (int(L * 0.9), int(L * 0.08) + 16), (0, 0, 0, 0))
+    ImageDraw.Draw(shd).ellipse((8, 6, shd.width - 8, shd.height - 6), fill=(0, 0, 0, 160))
+    frame.alpha_composite(alpha_mul(shd.filter(ImageFilter.GaussianBlur(10)), fade), (int(sx - shd.width / 2), int(gy - shd.height / 2)))
+    frame.alpha_composite(alpha_mul(layer, fade), (int(sx - ox), int(gy - oy)))
+    return (sx - ox + lx, gy - oy + ly + lh * 0.5)
 
 
-# ---------- display type (same feel as 04: spring word-by-word) ----------
-def display(frame, text, y, t, at, size=104, color=TEXT, align="center", slam=True, exit_at=None, width=None, glow=None, x=None, weight="Inter-Black.otf"):
-    if t < at or (exit_at is not None and t >= exit_at + 0.3):
+def lantern_glow(frame, xy, radius, strength, t):
+    """The purple light in screen space: a soft radial glow plus a lit patch of ground."""
+    if strength <= 0:
         return
-    a_exit = 1.0 if exit_at is None or t < exit_at else 1 - ease((t - exit_at) / 0.3)
-    f = font(weight, size)
-    d = ImageDraw.Draw(frame, "RGBA")
-    lines = wrap(text, f, width or (SAFE[2] - SAFE[0]), d)
-    lh = size * 1.08
-    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ld = ImageDraw.Draw(layer)
-    k = 0
-    space = ld.textlength(" ", font=f)
-    for i, line in enumerate(lines):
-        tw = ld.textlength(line, font=f)
-        lx = (W / 2 - tw / 2) if align == "center" else (x if x is not None else SAFE[0])
-        ly = y + i * lh
-        wx = lx
-        for word in line.split(" "):
-            ww = ld.textlength(word, font=f)
-            wt = (t - at - k * (0.09 if slam else 0.05))
-            k += 1
-            if wt > 0:
-                if slam:
-                    sp = spring(wt / 0.45)
-                    sc = 0.6 + 0.4 * sp
-                    aa = min(1.0, wt / 0.12)
-                else:
-                    sp = ease(wt / 0.35)
-                    sc = 1.0
-                    aa = sp
-                wl = Image.new("RGBA", (int(ww) + 80, int(lh) + 80), (0, 0, 0, 0))
-                wd = ImageDraw.Draw(wl)
-                if glow:
-                    wd.text((40, 40), word, font=f, fill=glow + (170,))
-                    wl = wl.filter(ImageFilter.GaussianBlur(16))
-                    wd = ImageDraw.Draw(wl)
-                wd.text((43, 44), word, font=f, fill=(0, 0, 0, 170))
-                wd.text((40, 40), word, font=f, fill=color + (255,))
-                if sc != 1.0:
-                    wl = wl.resize((max(1, int(wl.width * sc)), max(1, int(wl.height * sc))), Image.BILINEAR)
-                if aa < 1:
-                    wl.putalpha(wl.split()[3].point(lambda v: int(v * aa)))
-                rise = 0 if slam else (1 - sp) * 18
-                layer.alpha_composite(wl, (int(wx + ww / 2 - wl.width / 2), int(ly + lh / 2 - wl.height / 2 + rise)))
-            wx += ww + space
-    if a_exit < 1:
-        layer.putalpha(layer.split()[3].point(lambda v: int(v * a_exit)))
-    frame.alpha_composite(layer)
-
-
-# ---------- beat 4: the chat glow ----------
-def chat_panel(frame, t, at, until, typed, blank=False):
-    """A chat window at the lower right. Types `typed` after `at`; fades at `until`."""
-    if t < at or t > until + 0.4:
-        return
-    a = ease((t - at) / 0.4) * (1.0 if t < until else max(0.0, 1 - (t - until) / 0.4))
-    x0, y0, x1, y1 = 470, 1150, 994, 1440
-    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(layer)
-    # screen glow spilling onto the fog
-    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(glow).rounded_rectangle((x0 - 60, y0 - 60, x1 + 60, y1 + 60), radius=60, fill=(150, 180, 210, 70))
-    layer.alpha_composite(glow.filter(ImageFilter.GaussianBlur(50)))
-    d.rounded_rectangle((x0, y0, x1, y1), radius=26, fill=(18, 24, 32, 240), outline=(60, 72, 86, 255), width=2)
-    d.rounded_rectangle((x0, y0, x1, y0 + 54), radius=26, fill=(28, 36, 46, 255))
-    d.rectangle((x0, y0 + 28, x1, y0 + 54), fill=(28, 36, 46, 255))
-    f_t = font("Inter-Medium.otf", 24)
-    d.text((x0 + 24, y0 + 14), "new session", font=f_t, fill=(150, 165, 180, 255))
-    f_a = font("Inter-Regular.otf", 28)
-    d.text((x0 + 28, y0 + 84), "What is this project?", font=f_a, fill=(170, 185, 200, 255))
-    # the user's typed reply
-    n = 0 if blank else int(max(0, (t - at - 0.9)) * 22)
-    shown = typed[:n]
-    f_u = font("Inter-Regular.otf", 30)
-    lines = wrap(shown, f_u, x1 - x0 - 56, d) if shown else [""]
-    yy = y0 + 150
-    for line in lines[-3:]:
-        d.text((x0 + 28, yy), line, font=f_u, fill=TEXT + (255,))
-        yy += 40
-    if int(t * 2.4) % 2 == 0:
-        last = lines[-1] if lines else ""
-        cw = d.textlength(last, font=f_u)
-        d.rectangle((x0 + 30 + cw, yy - 40 + 4, x0 + 33 + cw, yy - 4), fill=TEXT + (255,))
-    frame.alpha_composite(alpha_mul(layer, a))
-
-
-# ---------- beat 5: grave, lantern, gate, window ----------
-def draw_open_grave(frame, sx, gy, scale, a=1.0):
-    w, h = 420 * scale, 150 * scale
-    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(layer)
-    # dirt mound behind
-    d.ellipse((sx - w * 0.75, gy - h * 0.55, sx + w * 0.75, gy + h * 0.25), fill=(26, 22, 18, 255))
-    d.ellipse((sx - w * 0.6, gy - h * 0.62, sx + w * 0.5, gy + h * 0.1), fill=(36, 30, 24, 255))
-    # the hole
-    d.polygon([(sx - w / 2, gy - h * 0.1), (sx + w / 2, gy - h * 0.1), (sx + w * 0.42, gy + h * 0.55), (sx - w * 0.42, gy + h * 0.55)], fill=(2, 3, 4, 255))
-    d.line([(sx - w / 2, gy - h * 0.1), (sx + w / 2, gy - h * 0.1)], fill=(48, 40, 32, 255), width=max(2, int(4 * scale)))
-    frame.alpha_composite(alpha_mul(layer, a))
-
-
-def draw_lantern(frame, sx, gy, scale, t, a=1.0):
-    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(layer)
-    hh = 90 * scale
-    flick = 0.9 + 0.1 * math.sin(t * 9) * math.sin(t * 4.3)
+    x, y = xy
+    flick = 0.92 + 0.08 * math.sin(t * 9.0) * math.sin(t * 4.3)
     glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow)
-    for r, al in ((hh * 3.2, 40), (hh * 1.8, 80), (hh * 1.0, 120)):
-        gd.ellipse((sx - r, gy - hh * 0.5 - r, sx + r, gy - hh * 0.5 + r), fill=PURPLE + (int(al * flick),))
-    layer.alpha_composite(glow.filter(ImageFilter.GaussianBlur(hh * 0.5)))
-    bw = hh * 0.5
-    d.rounded_rectangle((sx - bw / 2, gy - hh, sx + bw / 2, gy), radius=int(hh * 0.08), fill=(20, 18, 16, 255), outline=(70, 64, 58, 255), width=2)
-    d.rounded_rectangle((sx - bw * 0.36, gy - hh * 0.85, sx + bw * 0.36, gy - hh * 0.15), radius=int(hh * 0.05), fill=mix(PURPLE, (255, 255, 255), 0.45) + (255,))
-    d.arc((sx - bw * 0.4, gy - hh * 1.3, sx + bw * 0.4, gy - hh * 0.8), 180, 360, fill=(70, 64, 58, 255), width=3)
-    frame.alpha_composite(alpha_mul(layer, a))
-
-
-def draw_footprints(frame, pts, t, at, a=1.0):
-    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(layer)
-    for k, (x, y, s) in enumerate(pts):
-        if t < at + k * 0.25:
-            break
-        q = ease((t - at - k * 0.25) / 0.3)
-        d.ellipse((x - 16 * s, y - 8 * s, x + 16 * s, y + 8 * s), fill=(4, 5, 7, int(200 * q)))
-    frame.alpha_composite(alpha_mul(layer, a))
-
-
-def draw_gate(frame, sx, gy, scale, t, a=1.0, window=1.0):
-    """Two stone posts, an iron arch and bars, and beyond them the lit window."""
-    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(layer)
-    gh, gw = 620 * scale, 300 * scale
-    # window beyond, far
-    wx, wy = sx + 60 * scale, gy - gh * 0.52
-    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    gd = ImageDraw.Draw(glow)
-    for r, al in ((gh * 0.6, 50), (gh * 0.32, 110)):
-        gd.ellipse((wx - r, wy - r * 0.8, wx + r, wy + r * 0.8), fill=PURPLE + (int(al * window),))
-    layer.alpha_composite(glow.filter(ImageFilter.GaussianBlur(gh * 0.12)))
-    # a small house silhouette with the window
-    hw, hh = gw * 0.9, gh * 0.42
-    d.polygon([(wx - hw / 2, gy - 10), (wx - hw / 2, wy + hh * 0.2), (wx, wy - hh * 0.45), (wx + hw / 2, wy + hh * 0.2), (wx + hw / 2, gy - 10)], fill=(5, 7, 10, 255))
-    ww, wh = hw * 0.26, hh * 0.3
-    d.rounded_rectangle((wx - ww / 2, wy - wh / 2, wx + ww / 2, wy + wh / 2), radius=6, fill=mix(PURPLE, (255, 255, 255), 0.35) + (int(255 * window),))
-    d.line((wx, wy - wh / 2, wx, wy + wh / 2), fill=(5, 7, 10, 255), width=max(2, int(4 * scale)))
-    d.line((wx - ww / 2, wy, wx + ww / 2, wy), fill=(5, 7, 10, 255), width=max(2, int(4 * scale)))
-    # posts
-    for px in (sx - gw / 2, sx + gw / 2):
-        d.rounded_rectangle((px - 34 * scale, gy - gh, px + 34 * scale, gy), radius=int(10 * scale), fill=STONE_DARK + (255,))
-        d.rectangle((px - 34 * scale, gy - gh, px - 20 * scale, gy), fill=STONE + (200,))
-        d.rectangle((px - 46 * scale, gy - gh - 30 * scale, px + 46 * scale, gy - gh), fill=STONE + (255,))
-    # arch and bars
-    d.arc((sx - gw / 2, gy - gh - 120 * scale, sx + gw / 2, gy - gh + 120 * scale), 180, 360, fill=(14, 16, 20, 255), width=max(4, int(12 * scale)))
-    for k in range(7):
-        bx = sx - gw / 2 + 40 * scale + (gw - 80 * scale) * k / 6
-        d.line((bx, gy - gh * 0.78, bx, gy), fill=(14, 16, 20, 255), width=max(2, int(7 * scale)))
-    d.line((sx - gw / 2, gy - gh * 0.78, sx + gw / 2, gy - gh * 0.78), fill=(14, 16, 20, 255), width=max(3, int(9 * scale)))
-    d.line((sx - gw / 2, gy - gh * 0.3, sx + gw / 2, gy - gh * 0.3), fill=(14, 16, 20, 255), width=max(3, int(9 * scale)))
-    frame.alpha_composite(alpha_mul(layer, a))
+    for r, al in ((radius * 1.0, 28), (radius * 0.6, 55), (radius * 0.32, 95), (radius * 0.14, 150)):
+        gd.ellipse((x - r, y - r, x + r, y + r), fill=PURPLE + (int(al * strength * flick),))
+    frame.alpha_composite(glow.filter(ImageFilter.GaussianBlur(radius * 0.18)))
 
 
 # ---------- end card ----------
@@ -669,11 +264,11 @@ def hat_img(h):
 
 def end_card(t):
     fr = sky()
-    draw_moon(fr, t + 40, 0)
     draw_landscape(fr, 0)
     draw_fog(fr, t + 40, 0, strength=0.9)
-    dim = Image.new("RGBA", (W, H), NIGHT + (int(200 * ease(t / 1.0)),))
-    fr.alpha_composite(dim)
+    # the purple light lingers from the rider, then settles behind the card
+    lantern_glow(fr, (W * 0.5, H * 0.62), 900, 0.6 * (1 - 0.5 * ease(t / 1.5)), t)
+    fr.alpha_composite(Image.new("RGBA", (W, H), NIGHT + (int(200 * ease(t / 1.0)),)))
     sizes = CONTRACT["type"]["vertical"]
     d = ImageDraw.Draw(fr, "RGBA")
     display(fr, "Revive your old projects.", H * 0.20, t, 0.3, size=92, glow=PURPLE)
@@ -698,125 +293,156 @@ def end_card(t):
 
 
 # ---------- scenes ----------
-def base(t, cam, fog=1.0):
+def base(t, cam):
     fr = sky()
-    draw_moon(fr, t, cam)
-    draw_landscape(fr, cam)
+    draw_moon(fr, t, cam["x"] * 60)
+    draw_landscape(fr, cam["x"] * 60 + cam["z"] * 2)
     return fr
 
 
-def s1(t):
-    # close on the first stone: camera sits on it, slightly zoomed, fog clears off it in the first second
-    cam = 0 + t * 6
+def s1(t, dur):
+    # wide and high: the whole field under the moon, fog over everything; the push starts slowly
+    z = -14 + 10 * (t / dur) ** 2.2
+    k = 6000 - 1400 * (t / dur) ** 2
+    cam = cam_at(0.0, z, k)
     fr = base(t, cam)
-    draw_fog(fr, t, cam, strength=0.6)
-    draw_stones(fr, cam, zoom=1.18, skip=())
-    draw_fog(fr, t + 3, cam, strength=max(0.25, 1.1 - t * 0.5))
+    draw_fog(fr, t, cam["x"], strength=0.5, push=z)
+    draw_field(fr, cam)
+    draw_fog(fr, t + 3, cam["x"], strength=0.7, push=z)
     return fr
+
+
+PUSH_V = 1.65
 
 
 def s2(t, dur):
-    # drift down the row: stone 2 to stone 4, about 2 s each
-    cam = 1150 + smooth(t / dur) * 2300 + math.sin(t * 0.6) * 10
-    fr = base(t + 4, cam)
-    draw_fog(fr, t + 4, cam, strength=0.6)
-    draw_stones(fr, cam)
-    draw_fog(fr, t + 7, cam, strength=0.75)
+    # the push: down the centre aisle at a steady walk, the named stones passing close on either side
+    z = -4 + PUSH_V * t
+    k = lerp(4600, 900, smooth(t / (dur * 0.55)))
+    # weave toward each named stone: Budget App (left, z=2) is passed at distance 2 when the camera is at z=0
+    period = 2 * 3.6 / PUSH_V
+    t_pass = 4.0 / PUSH_V
+    x = -0.9 * math.cos(2 * math.pi * (t - t_pass) / period) * smooth(t / 2.0)
+    cam = cam_at(x, z, k)
+    fr = base(t + 5, cam)
+    draw_fog(fr, t + 5, x, strength=0.45, push=z)
+    draw_field(fr, cam)
+    draw_fog(fr, t + 8, x, strength=0.5, push=z)
     return fr
 
 
 def s3(t, dur):
-    # the reaper, far back between two stones, takes one step; CONTEXT ROT slams in
-    cam = 3450 + 560 + t * 4
-    fr = base(t + 13, cam)
-    draw_fog(fr, t + 13, cam, strength=0.6)
-    gy, sc = depth_scale(0.5)
-    step = min(1.0, max(0.0, (t - 3.0) / 1.0))
-    rx = screen_x(cam + 10, cam, 0.5) + smooth(step) * 38 * sc
-    draw_reaper(fr, rx, gy, 760 * sc, t, eyes=min(1.0, max(0.0, (t - 0.8) / 1.5)), step=step if step < 1 else 0, fade=min(1.0, t / 0.8))
-    draw_stones(fr, cam)
-    draw_fog(fr, t + 16, cam, strength=0.85)
-    display(fr, "CONTEXT ROT", H * 0.26, t, 4.6, size=150, glow=(60, 90, 80))
+    # pull back and up to a wide view; the reaper is walking the rows
+    q = smooth(min(1.0, t / 3.2))
+    z = lerp(-4 + PUSH_V * 11.0, 5.4, q)
+    k = lerp(900, 1300, q)
+    cam = cam_at(0.0, z, k)
+    fr = base(t + 16, cam)
+    draw_fog(fr, t + 16, 0, strength=0.5, push=z)
+    rx = lerp(-3.2, 1.4, smooth(t / dur))
+    rz = 11.5
+
+    def reaper(frame):
+        pr = project(rx, rz, cam)
+        if pr:
+            sx, gy, s, d = pr
+            draw_reaper(frame, sx, gy, 760 * s, t, eyes=min(1.0, max(0.0, (t - 1.0) / 1.5)), step=(t * 0.9) % 1, fade=min(1.0, max(0.0, (t - 0.6) / 1.2)))
+    draw_field(fr, cam, actors=[(rz, reaper)])
+    draw_fog(fr, t + 19, 0, strength=0.75, push=z)
+    display(fr, "CONTEXT ROT", H * 0.24, t, 4.6, size=150, glow=(60, 90, 80))
     return fr
 
 
-S4_PHASES = (0.0, 4.5, 9.0)
+S4_PHASES = (0.0, 4.6, 9.2)
+S4_Z = (11.5, 9.0, 7.0)
 
 
 def s4(t, dur):
-    # the funeral from the viewer's side: three phases, fog thicker and the reaper nearer each time
-    cam = 4700 - 560 + t * 2
-    fr = base(t + 21, cam)
+    # the weeks: the camera holds, the reaper is nearer each week, the chat window types at the lower right
+    cam = cam_at(0.0, 5.4, 1300)
+    fr = base(t + 24, cam)
     phase = 0 if t < S4_PHASES[1] else (1 if t < S4_PHASES[2] else 2)
-    draw_fog(fr, t + 21, cam, strength=0.6 + 0.15 * phase)
-    # the reaper: a fixed spot per phase, nearer each time; a pulse of fog covers each change
-    for k, (p, offx) in enumerate(((0.5, -230), (0.68, -300), (0.86, -330))):
-        if k != phase:
-            continue
-        gy, sc = depth_scale(p)
-        since = t - S4_PHASES[k]
-        draw_reaper(fr, W / 2 + offx, gy, 760 * sc, t, eyes=1.0, fade=min(1.0, since / 0.6 + (1.0 if k == 0 else 0.0)))
-    # a fresh blank stone rising on the last phase
+    since = t - S4_PHASES[phase]
+    draw_fog(fr, t + 24, 0, strength=0.5 + 0.12 * phase, push=cam["z"])
+    rz = S4_Z[phase] - 0.35 * smooth(since / 4.4)
+    rx = (-1.0, -0.9, -0.75)[phase]
+
+    def reaper(frame):
+        pr = project(rx, rz, cam)
+        if pr:
+            sx, gy, s, d = pr
+            draw_reaper(frame, sx, gy, 760 * s, t, eyes=1.0, fade=min(1.0, since / 0.5 + (1.0 if phase == 0 else 0.0)))
     extra = []
-    gy, sc = depth_scale(1.0)
-    if t > 10.4:
-        q = smooth((t - 10.4) / 2.2)
+    if t > 10.6:
+        q = smooth((t - 10.6) / 2.4)
         img = stone_image("round", "", "", blank=True)
-        extra.append((1.0, W * 0.3, gy, sc * 0.9, img, (1 - q) * img.height * 0.9 * sc))
-    draw_stones(fr, cam, extra=extra)
+        extra.append((0.7, 8.6, img, (1 - q) * img.height * 0.9 * (F_SCALE / 3.2)))
+    draw_field(fr, cam, extra=extra, actors=[(rz, reaper)])
     pulse = 0.0
     for ph in S4_PHASES[1:]:
         if ph - 0.5 < t < ph + 0.9:
             pulse = max(pulse, 1 - abs(t - ph - 0.2) / 0.7)
-    draw_fog(fr, t + 24, cam, strength=0.8 + 0.2 * phase + 0.9 * pulse)
-    chat_panel(fr, t, 0.3, 4.3, "so the project is a budget app, it tracks my spending by category and")
-    chat_panel(fr, t, 4.8, 8.8, "ok so, again, the project is a budget app that")
-    chat_panel(fr, t, 9.3, 12.6, "", blank=True)
-    display(fr, "week 1: you explain it", H * 0.30, t, 0.9, size=62, slam=False, exit_at=4.2, weight="Inter-Bold.otf")
-    display(fr, "week 3: you explain it again", H * 0.30, t, 5.3, size=62, slam=False, exit_at=8.7, weight="Inter-Bold.otf")
-    display(fr, "week 6:", H * 0.30, t, 9.8, size=62, slam=False, exit_at=13.2, weight="Inter-Bold.otf")
+    draw_fog(fr, t + 27, 0, strength=0.75 + 0.15 * phase + 0.9 * pulse, push=cam["z"])
+    chat_panel(fr, t, 0.3, 4.4, "so the project is a budget app, it tracks my spending by category and")
+    chat_panel(fr, t, 4.9, 9.0, "ok so, again, the project is a budget app that")
+    chat_panel(fr, t, 9.5, 12.8, "", blank=True)
+    display(fr, "week 1: you explain it", H * 0.27, t, 0.9, size=62, slam=False, exit_at=4.3, weight="Inter-Bold.otf")
+    display(fr, "week 3: you explain it again", H * 0.27, t, 5.4, size=62, slam=False, exit_at=8.9, weight="Inter-Bold.otf")
+    display(fr, "week 6:", H * 0.27, t, 10.0, size=62, slam=False, exit_at=13.4, weight="Inter-Bold.otf")
     return fr
 
 
 def s5(t, dur):
-    # the turn: the open grave, the lantern, footprints to the gate, the lit window beyond; the reaper stops at the gate
-    cam = 4700 + 900 + smooth(t / 5.5) * 700
-    fr = base(t + 35, cam)
-    draw_fog(fr, t + 35, cam, strength=0.6)
-    # gate and house, mid depth, to the right
-    ggy, gsc = depth_scale(0.6)
-    gx = screen_x(6700, cam, 0.6)
-    draw_gate(fr, gx, ggy, gsc, t, window=0.6 + 0.4 * ease((t - 2.5) / 1.5))
-    # the reaper walks to the gate and stops
-    rgy, rsc = depth_scale(0.6)
-    walk = smooth(min(1.0, t / 6.0))
-    rx = screen_x(5500 + 950 * walk, cam, 0.6)
-    draw_reaper(fr, rx, rgy, 760 * rsc, t, eyes=1.0 - 0.5 * ease((t - 6.5) / 1.5), step=(t * 1.05) % 1 if walk < 1 else 0)
-    # near row: open grave where a stone should be
-    gy, sc = depth_scale(1.0)
-    grave_x = screen_x(6080, cam, 1.0)
-    draw_open_grave(fr, grave_x, gy - 40, sc)
-    draw_stones(fr, cam, skip=())
-    draw_lantern(fr, grave_x + 300 * sc, gy - 4, sc, t)
-    pts = [(grave_x + 120 + k * 70, gy - 60 - k * 38, 1.0 - k * 0.1) for k in range(7)]
-    draw_footprints(fr, pts, t, 0.8)
-    draw_fog(fr, t + 38, cam, strength=0.7)
-    display(fr, "the ones that get out", H * 0.27, t, 0.5, size=72, slam=False, exit_at=4.4, weight="Inter-Bold.otf")
-    display(fr, "kept the truth outside the chat", H * 0.27, t, 4.9, size=72, slam=False, exit_at=dur - 0.3, weight="Inter-Bold.otf")
+    # the rider: purple light before the horse, the horse canters in from the right and slows, the reaper retreats
+    cam = cam_at(0.0, 5.4, 1300)
+    fr = base(t + 38, cam)
+    draw_fog(fr, t + 38, 0, strength=0.55, push=cam["z"])
+    # rider path in world units: enters at x=+5.2, settles at x=+0.4; z a little nearer than the reaper
+    arrive = smooth(min(1.0, max(0.0, (t - 1.2) / 5.0)))
+    rx_w = lerp(6.0, 0.0, arrive)
+    rz_w = 8.3
+    light_strength = ease((t - 0.3) / 1.6)
+    light = (rx_w - 0.4, rz_w, 1.3 * light_strength)
+    # reaper: near-left, then backs off into the fog once the light reaches him
+    retreat = smooth(min(1.0, max(0.0, (t - 2.6) / 4.5)))
+    gz = lerp(6.8, 15.0, retreat)
+    gx = lerp(-0.8, -3.0, retreat)
+    lantern_xy = []
+
+    def reaper(frame):
+        pr = project(gx, gz, cam)
+        if pr:
+            sx, gy, s, d = pr
+            draw_reaper(frame, sx, gy, 760 * s, t, eyes=1.0 - retreat, step=((t * 0.8) % 1) if 0 < retreat < 1 else 0, fade=1.0 - smooth((t - 5.2) / 2.6))
+
+    def rider(frame):
+        pr = project(rx_w, rz_w, cam)
+        if pr:
+            sx, gy, s, d = pr
+            gait = t * 9.5 if arrive < 1 else 0.0
+            xy = draw_rider(frame, sx, gy, 600 * s, gait, t, lantern=light_strength)
+            if xy:
+                lantern_xy.append(xy)
+    draw_field(fr, cam, light=light, actors=[(gz, reaper), (rz_w, rider)])
+    if lantern_xy:
+        lantern_glow(fr, lantern_xy[0], 900, light_strength, t)
+    draw_fog(fr, t + 41, 0, strength=0.6, color=mix(FOG, PURPLE, 0.35 * light_strength), push=cam["z"])
+    display(fr, "unless the truth rides in with you", H * 0.26, t, 2.4, size=70, slam=False, exit_at=6.2, weight="Inter-Bold.otf")
+    display(fr, "written down, read first, every session", H * 0.26, t, 6.7, size=70, slam=False, exit_at=dur - 0.3, weight="Inter-Bold.otf")
     return fr
 
 
 SCENES = [
-    dict(id="s1-stone", dur=4.0, frame=lambda t, d: s1(t)),
-    dict(id="s2-row", dur=9.0, frame=s2),
-    dict(id="s3-reaper", dur=8.0, frame=s3),
-    dict(id="s4-funeral", dur=14.0, frame=s4),
-    dict(id="s5-gate", dur=9.0, frame=s5),
+    dict(id="s1-wide", dur=5.0, frame=s1),
+    dict(id="s2-push", dur=11.0, frame=s2),
+    dict(id="s3-reveal", dur=8.0, frame=s3),
+    dict(id="s4-weeks", dur=14.0, frame=s4),
+    dict(id="s5-rider", dur=10.0, frame=s5),
     dict(id="end", dur=6.0, frame=lambda t, d: end_card(t)),
 ]
 
-ON_SCREEN = ["HERE LIES", "CONTEXT ROT", "week 1: you explain it", "week 3: you explain it again", "week 6:", "the ones that get out",
-             "kept the truth outside the chat", "Revive your old projects.", "new session", "What is this project?"] + [s[3] for s in STONES] + [s[4] for s in STONES]
+ON_SCREEN = ["HERE LIES", "CONTEXT ROT", "week 1: you explain it", "week 3: you explain it again", "week 6:", "unless the truth rides in with you",
+             "written down, read first, every session", "Revive your old projects.", "new session", "What is this project?"] + [v[1] for v in NAMED.values()] + [v[2] for v in NAMED.values()]
 
 
 def apply_timing():
@@ -901,8 +527,8 @@ def render(preview=False, final=False, stills=False):
                 continue
             t = i * step
             fr = sc["frame"](t, sc["dur"])
-            shake = 7.0 * max(0.0, 1 - (t - 4.6) / 0.35) if sc["id"] == "s3-reaper" and t >= 4.6 else 0.0
-            fr = finish(fr, t, offset + t, shake=shake, bloom=0.8, grain=5.0, vignette=0.45, drift=0.6)
+            shake = 7.0 * max(0.0, 1 - (t - 4.6) / 0.35) if sc["id"] == "s3-reveal" and t >= 4.6 else 0.0
+            fr = finish(fr, t, offset + t, shake=shake, bloom=0.8, grain=5.0, vignette=0.45, drift=0.5)
             if cues:
                 draw_cue(fr, cues, offset + t)
             if stills:

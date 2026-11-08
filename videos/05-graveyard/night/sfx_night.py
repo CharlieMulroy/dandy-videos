@@ -1,7 +1,7 @@
 """Sound bed for video 05's night look.
 
 v2 (Nov 7): the v1 bed was wind over nothing and read as static. Now a slow minor pad carries the whole piece,
-with a tolling bell on the open, a whistling (not hissing) wind, a crow, gravel footsteps for the reaper, a low
+with a tolling bell on the open, a whistling (not hissing) wind (v5: the synthesised crow is gone, Charlie found it off), gravel footsteps for the reaper, a low
 heartbeat under the funeral, hoofbeats for the rider, the pad resolving from minor to major under him (v4: the separate light swell is gone),
 and the end chime.
 Synthesised at 48 kHz from sines and noise; reuses helpers from 04's sfx.py. build_bed(scenes, path) -> WAV.
@@ -73,21 +73,6 @@ def bell(gain=0.5, base=196.0):
     for ratio, g, dec in ((0.5, 0.5, 1.2), (1.0, 1.0, 1.6), (2.0, 0.6, 2.4), (2.41, 0.4, 3.0), (2.98, 0.3, 3.4), (4.5, 0.15, 5.0)):
         x += np.sin(2 * math.pi * base * ratio * t) * g * np.exp(-t * dec)
     x *= env(n, 0.004, 0.1, 1.0, 0.5)
-    return x / (np.abs(x).max() + 1e-6) * gain
-
-
-def crow(gain=0.4):
-    out = []
-    for k in range(2):
-        n = int(SR * 0.26)
-        t = np.arange(n) / SR
-        f = 540 * np.exp(-t * 2.8) + 170
-        ph = np.cumsum(f) / SR
-        saw = 2 * (ph % 1) - 1
-        x = (saw * 0.7 + rng.normal(0, 0.5, n)) * env(n, 0.02, 0.1, 0.6, 0.1)
-        out.append(lowpass(x.astype(np.float32), 2200))
-        out.append(np.zeros(int(SR * 0.13), np.float32))
-    x = np.concatenate(out)
     return x / (np.abs(x).max() + 1e-6) * gain
 
 
@@ -172,9 +157,6 @@ def build_bed(scenes, path):
         if sid == "s1-wide":
             put(bell(gain=0.45), at + 0.4)
             put(bell(gain=0.35), at + 3.6)
-            put(crow(gain=0.3), at + 2.2)
-        elif sid == "s2-push":
-            put(crow(gain=0.2), at + 4.0)
         elif sid == "s3-reveal":
             for k in range(6):
                 put(footstep(gain=0.28 + 0.03 * k), at + 1.4 + k * 1.15)

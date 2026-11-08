@@ -308,12 +308,13 @@ def tree_img(seed, height, lean=0.0, dead=False):
     key = ("tree", seed, height, lean, dead)
     if key not in _imgs:
         hpx = int(height * REF)
-        wpx = int(hpx * 1.1)
-        im = Image.new("RGBA", (wpx, hpx + 20), (0, 0, 0, 0))
+        wpx = int(hpx * 1.9)
+        cv = int(hpx * 1.7)
+        im = Image.new("RGBA", (wpx, cv + 20), (0, 0, 0, 0))
         d = ImageDraw.Draw(im)
         rnd = random.Random(seed)
         col = (8, 10, 13, 255)
-        x0, y0 = wpx / 2, hpx + 10
+        x0, y0 = wpx / 2, cv + 10
         trunk = hpx * (0.36 if not dead else 0.42)
         tx, ty = x0 + lean * trunk, y0 - trunk
         tw = hpx * 0.055
@@ -324,6 +325,9 @@ def tree_img(seed, height, lean=0.0, dead=False):
         for k in range(4 if not dead else 3):
             a = math.pi / 2 + (k - 1.5) * 0.45 + rnd.uniform(-0.15, 0.15) - lean * 0.4
             branch(d, tx, ty, a, hpx * rnd.uniform(0.28, 0.36), tw * 1.1, 7 if not dead else 5, rnd, col)
+        bb = im.getbbox()
+        if bb:  # trim to what was drawn, keeping the ground line at the bottom
+            im = im.crop((bb[0], bb[1], bb[2], im.height))
         _imgs[key] = im.filter(ImageFilter.GaussianBlur(0.8))
     return _imgs[key]
 

@@ -195,6 +195,8 @@ def branch(d, x, y, ang, length, width, depth, rnd, color):
         return
     x2, y2 = x + math.cos(ang) * length, y - math.sin(ang) * length
     d.line((x, y, x2, y2), fill=color, width=max(1, int(width)))
+    r = max(0.5, width / 2)
+    d.ellipse((x2 - r, y2 - r, x2 + r, y2 + r), fill=color)
     for k in range(2 if depth > 2 else rnd.choice((1, 2))):
         a = ang + rnd.uniform(-0.75, 0.75) + (0.35 if k == 0 else -0.35)
         branch(d, x2, y2, a, length * rnd.uniform(0.62, 0.78), width * 0.68, depth - 1, rnd, color)

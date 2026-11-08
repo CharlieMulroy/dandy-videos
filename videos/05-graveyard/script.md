@@ -69,3 +69,10 @@ Revive your old projects. Use Dandy to keep them alive.
 
 v4 built Nov 7 (Opus session): all five items done. Painted rider cut by night/cut_rider.py into night/assets/rider/ and rigged in night/rider.py (the code-drawn rider is kept as night/rider_silhouette.py); environment in night/env.py; stone and ground texture in night_lib.painterly and env.draw_ground; light swell removed, pad resolves to A major under the rider. Staging change: the rider no longer stops dead (a painted gallop pose cannot stand still); he gallops in, eases to a slow canter and keeps drifting left while the reaper flees back into the fog.
 
+## v5 notes (Charlie on the v4 preview, Nov 7)
+
+1. Remove the off sound: it was the synthesised crow (picked from a labelled lineup of every sound). Done; the bell stays.
+2. Tree tops were clipped by their image canvas. Done; canvas grown and trimmed to the drawing, branch joints rounded.
+3. Background left above the rider's lantern arm and around the lantern. Done; arm top edge and lantern outline traced tight in cut_rider.py.
+4. The code-drawn reaper looks cheaper than the painted rider. Agreed route: Charlie generates a painted reaper in ChatGPT (front view, empty dark hood, scythe held clear, plain background); it gets cut and rigged like the rider (glide, robe ripple, eye glow added in code so it can fade on the retreat). Pending the image.
+

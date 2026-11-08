@@ -348,15 +348,12 @@ def s4(t, dur):
             sx, gy, s, d = pr
             draw_reaper(frame, sx, gy, 760 * s, t, eyes=1.0, fade=min(1.0, since / 0.5 + (1.0 if phase == 0 else 0.0)))
     extra = []
-    if t > STONE_T0:
-        extra.append(blank_stone_extra(smooth((t - STONE_T0) / STONE_RISE)))
     pulse = 0.0
     for ph in S4_PHASES[1:]:
         if ph - 0.5 < t < ph + 0.9:
             pulse = max(pulse, 1 - abs(t - ph - 0.2) / 0.7)
     draw_field(fr, cam, extra=extra, actors=[(rz, reaper)] + fog_actors(t + 24, cam, 1.0 + 0.2 * phase + 0.9 * pulse))
     draw_fog(fr, t + 27, cam, strength=0.85 + 0.2 * phase + 1.2 * pulse)
-    dirt_spray(fr, cam, t - STONE_T0)
     chat_panel(fr, t, 0.3, 4.4, "so the project is a budget app, it tracks my spending by category and")
     chat_panel(fr, t, 4.9, 9.0, "ok so, again, the project is a budget app that")
     chat_panel(fr, t, 9.5, 11.6, "", blank=True)
@@ -416,7 +413,7 @@ def s5(t, dur):
     if pr:  # the wide light sits behind the figures; only a small hot core goes over the lantern
         sx, gy, s, d = pr
         lantern_glow(fr, rider_glass_estimate(sx, gy, 680 * s), 820, 0.75 * light_strength, t)
-    draw_field(fr, cam, light=light, extra=[blank_stone_extra(1.0)], actors=[(gz, reaper), (rz_w, rider)] + fog_actors(t + 38, cam, 0.8, color=mix(FOG, PURPLE, 0.25 * light_strength)))
+    draw_field(fr, cam, light=light, actors=[(gz, reaper), (rz_w, rider)] + fog_actors(t + 38, cam, 0.8, color=mix(FOG, PURPLE, 0.25 * light_strength)))
     draw_fog(fr, t + 41, cam, strength=0.7, color=mix(FOG, PURPLE, 0.25 * light_strength))
     if lantern_xy:
         lantern_glow(fr, lantern_xy[0], 150, light_strength, t)

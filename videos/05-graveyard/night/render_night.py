@@ -229,19 +229,27 @@ def base(t, cam):
     return fr
 
 
+PUSH_V = 1.65
+
+
+def s2_x(t, dur=11.0):
+    period = 2 * 3.6 / PUSH_V
+    t_pass = 4.0 / PUSH_V
+    return -0.9 * math.cos(2 * math.pi * (t - t_pass) / period) * smooth(t / 2.0)
+
+
 def s1(t, dur):
     # wide and high: the whole field under the moon, fog over everything; the push starts slowly
-    z = -14 + 10 * (t / dur) ** 2.2
-    k = 6000 - 1400 * (t / dur) ** 2
+    u = t / dur
+    m1 = PUSH_V * dur / 10.0                      # end slope so the camera leaves at the same speed s2 walks at
+    z = -14 + 10 * ((-2 * u ** 3 + 3 * u ** 2) + m1 * (u ** 3 - u ** 2))
+    k = 6000 - 1400 * (3 * u ** 2 - 2 * u ** 3)
     cam = cam_at(0.0, z, k)
     fr = base(t, cam)
-    draw_fog(fr, t, cam, strength=1.4, part="haze")
-    draw_field(fr, cam, max_d=72.0, actors=fog_actors(t, cam, 2.2))
-    draw_fog(fr, t + 3, cam, strength=2.0)
+    draw_fog(fr, t, cam, strength=lerp(1.4, 1.2, u), part="haze")
+    draw_field(fr, cam, max_d=72.0, actors=fog_actors(t, cam, lerp(2.2, 1.7, u)))
+    draw_fog(fr, t + 3, cam, strength=lerp(2.0, 1.5, u))
     return fr
-
-
-PUSH_V = 1.65
 
 
 def s2(t, dur):
@@ -249,26 +257,31 @@ def s2(t, dur):
     z = -4 + PUSH_V * t
     k = lerp(4600, 900, smooth(t / (dur * 0.55)))
     # weave toward each named stone: Budget App (left, z=2) is passed at distance 2 when the camera is at z=0
-    period = 2 * 3.6 / PUSH_V
-    t_pass = 4.0 / PUSH_V
-    x = -0.9 * math.cos(2 * math.pi * (t - t_pass) / period) * smooth(t / 2.0)
+    x = s2_x(t)
     cam = cam_at(x, z, k)
     fr = base(t + 5, cam)
-    draw_fog(fr, t + 5, cam, strength=1.0, part="haze")
-    draw_field(fr, cam, actors=fog_actors(t + 5, cam, 1.1))
-    draw_fog(fr, t + 8, cam, strength=0.85)
+    ease_in = smooth(t / 3.0)                      # fog settles from the opening's strength to the push's
+    draw_fog(fr, t + 5, cam, strength=lerp(1.2, 1.0, ease_in), part="haze")
+    draw_field(fr, cam, actors=fog_actors(t + 5, cam, lerp(1.7, 1.0, ease_in)))
+    draw_fog(fr, t + 8, cam, strength=lerp(1.5, 0.85, ease_in))
     return fr
 
 
 def s3(t, dur):
     # pull back and up to a wide view; the reaper is walking the rows
-    q = smooth(min(1.0, t / 3.2))
-    z = lerp(-4 + PUSH_V * 11.0, 5.4, q)
+    T = 3.2
+    u = min(1.0, t / T)
+    q = smooth(u)
+    z0, x0 = -4 + PUSH_V * 11.0, s2_x(11.0)
+    vx0 = (s2_x(11.0 + 0.01) - s2_x(11.0 - 0.01)) / 0.02
+    h00, h10, h01 = 2 * u ** 3 - 3 * u ** 2 + 1, u ** 3 - 2 * u ** 2 + u, -2 * u ** 3 + 3 * u ** 2
+    z = z0 * h00 + PUSH_V * T * h10 + 5.4 * h01   # leaves the push at its own speed, then eases to the wide view
+    x = x0 * h00 + vx0 * T * h10
     k = lerp(900, 1300, q)
-    cam = cam_at(0.0, z, k)
+    cam = cam_at(x, z, k)
     fr = base(t + 16, cam)
     draw_fog(fr, t + 16, cam, strength=0.8, part="haze")
-    rx = lerp(-3.2, 1.4, smooth(t / dur))
+    rx = lerp(-3.2, -1.0, smooth(t / dur))
     rz = 11.5
 
     def reaper(frame):
@@ -277,7 +290,7 @@ def s3(t, dur):
             sx, gy, s, d = pr
             draw_reaper(frame, sx, gy, 760 * s, t, eyes=min(1.0, max(0.0, (t - 1.0) / 1.5)), step=(t * 0.9) % 1, fade=min(1.0, max(0.0, (t - 0.6) / 1.2)))
     draw_field(fr, cam, actors=[(rz, reaper)] + fog_actors(t + 16, cam, 1.0))
-    draw_fog(fr, t + 19, cam, strength=1.0)
+    draw_fog(fr, t + 19, cam, strength=0.85)
     display(fr, "CONTEXT ROT", H * 0.24, t, 4.6, size=150, glow=(60, 90, 80))
     return fr
 
@@ -310,8 +323,8 @@ def s4(t, dur):
     for ph in S4_PHASES[1:]:
         if ph - 0.5 < t < ph + 0.9:
             pulse = max(pulse, 1 - abs(t - ph - 0.2) / 0.7)
-    draw_field(fr, cam, extra=extra, actors=[(rz, reaper)] + fog_actors(t + 27, cam, 1.0 + 0.2 * phase + 0.9 * pulse))
-    draw_fog(fr, t + 27, cam, strength=1.0 + 0.2 * phase + 1.2 * pulse)
+    draw_field(fr, cam, extra=extra, actors=[(rz, reaper)] + fog_actors(t + 24, cam, 1.0 + 0.2 * phase + 0.9 * pulse))
+    draw_fog(fr, t + 27, cam, strength=0.85 + 0.2 * phase + 1.2 * pulse)
     chat_panel(fr, t, 0.3, 4.4, "so the project is a budget app, it tracks my spending by category and")
     chat_panel(fr, t, 4.9, 9.0, "ok so, again, the project is a budget app that")
     chat_panel(fr, t, 9.5, 12.8, "", blank=True)
@@ -350,8 +363,8 @@ def s5(t, dur):
     light = (rx_w - 0.4, rz_w, 1.3 * light_strength)
     # reaper: near-left, then backs off into the fog once the light reaches him
     retreat = smooth(min(1.0, max(0.0, (t - 2.0) / 4.5)))
-    gz = lerp(6.8, 19.0, retreat)
-    gx = lerp(-0.8, -7.0, retreat)
+    gz = lerp(S4_Z[2] - 0.35, 19.0, retreat)
+    gx = lerp(-0.75, -7.0, retreat)
     lantern_xy = []
 
     def reaper(frame):

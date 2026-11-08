@@ -235,9 +235,9 @@ def s1(t, dur):
     k = 6000 - 1400 * (t / dur) ** 2
     cam = cam_at(0.0, z, k)
     fr = base(t, cam)
-    draw_fog(fr, t, cam["x"], strength=0.5, push=z)
+    draw_fog(fr, t, cam, strength=1.7, part="far", split=26.0)
     draw_field(fr, cam, max_d=72.0)
-    draw_fog(fr, t + 3, cam["x"], strength=0.7, push=z)
+    draw_fog(fr, t + 3, cam, strength=1.9, part="near", split=26.0)
     return fr
 
 
@@ -254,9 +254,9 @@ def s2(t, dur):
     x = -0.9 * math.cos(2 * math.pi * (t - t_pass) / period) * smooth(t / 2.0)
     cam = cam_at(x, z, k)
     fr = base(t + 5, cam)
-    draw_fog(fr, t + 5, x, strength=0.45, push=z)
+    draw_fog(fr, t + 5, cam, strength=1.3, part="far")
     draw_field(fr, cam)
-    draw_fog(fr, t + 8, x, strength=0.5, push=z)
+    draw_fog(fr, t + 8, cam, strength=1.5, part="near")
     return fr
 
 
@@ -267,7 +267,7 @@ def s3(t, dur):
     k = lerp(900, 1300, q)
     cam = cam_at(0.0, z, k)
     fr = base(t + 16, cam)
-    draw_fog(fr, t + 16, 0, strength=0.5, push=z)
+    draw_fog(fr, t + 16, cam, strength=0.8, part="far")
     rx = lerp(-3.2, 1.4, smooth(t / dur))
     rz = 11.5
 
@@ -277,7 +277,7 @@ def s3(t, dur):
             sx, gy, s, d = pr
             draw_reaper(frame, sx, gy, 760 * s, t, eyes=min(1.0, max(0.0, (t - 1.0) / 1.5)), step=(t * 0.9) % 1, fade=min(1.0, max(0.0, (t - 0.6) / 1.2)))
     draw_field(fr, cam, actors=[(rz, reaper)])
-    draw_fog(fr, t + 19, 0, strength=0.75, push=z)
+    draw_fog(fr, t + 19, cam, strength=1.0, part="near")
     display(fr, "CONTEXT ROT", H * 0.24, t, 4.6, size=150, glow=(60, 90, 80))
     return fr
 
@@ -292,7 +292,7 @@ def s4(t, dur):
     fr = base(t + 24, cam)
     phase = 0 if t < S4_PHASES[1] else (1 if t < S4_PHASES[2] else 2)
     since = t - S4_PHASES[phase]
-    draw_fog(fr, t + 24, 0, strength=0.5 + 0.12 * phase, push=cam["z"])
+    draw_fog(fr, t + 24, cam, strength=0.8 + 0.15 * phase, part="far")
     rz = S4_Z[phase] - 0.35 * smooth(since / 4.4)
     rx = (-1.0, -0.9, -0.75)[phase]
 
@@ -311,7 +311,7 @@ def s4(t, dur):
     for ph in S4_PHASES[1:]:
         if ph - 0.5 < t < ph + 0.9:
             pulse = max(pulse, 1 - abs(t - ph - 0.2) / 0.7)
-    draw_fog(fr, t + 27, 0, strength=0.75 + 0.15 * phase + 0.9 * pulse, push=cam["z"])
+    draw_fog(fr, t + 27, cam, strength=1.0 + 0.2 * phase + 1.2 * pulse, part="near")
     chat_panel(fr, t, 0.3, 4.4, "so the project is a budget app, it tracks my spending by category and")
     chat_panel(fr, t, 4.9, 9.0, "ok so, again, the project is a budget app that")
     chat_panel(fr, t, 9.5, 12.8, "", blank=True)
@@ -341,7 +341,7 @@ def s5(t, dur):
     # the rider: purple light before the horse, the horse canters in from the right and slows, the reaper retreats
     cam = cam_at(0.0, 5.4, 1300)
     fr = base(t + 38, cam)
-    draw_fog(fr, t + 38, 0, strength=0.55, push=cam["z"])
+    draw_fog(fr, t + 38, cam, strength=0.9, part="far")
     # rider path in world units: gallops in from off the right, eases to a slow canter and keeps moving left
     rx_w, gait, speed = rider_motion(t)
     arrive = smooth(min(1.0, max(0.0, (t - 1.0) / 5.0)))
@@ -372,7 +372,7 @@ def s5(t, dur):
         sx, gy, s, d = pr
         lantern_glow(fr, rider_glass_estimate(sx, gy, 680 * s), 820, 0.75 * light_strength, t)
     draw_field(fr, cam, light=light, actors=[(gz, reaper), (rz_w, rider)])
-    draw_fog(fr, t + 41, 0, strength=0.42, color=mix(FOG, PURPLE, 0.25 * light_strength), push=cam["z"])
+    draw_fog(fr, t + 41, cam, strength=0.8, color=mix(FOG, PURPLE, 0.25 * light_strength), part="near")
     if lantern_xy:
         lantern_glow(fr, lantern_xy[0], 150, light_strength, t)
     display(fr, "unless the truth rides in with you", H * 0.26, t, 2.4, size=70, slam=False, exit_at=6.2, weight="Inter-Bold.otf")

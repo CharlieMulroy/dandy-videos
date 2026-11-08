@@ -240,35 +240,92 @@ def draw_landscape(frame, cam):
 
 
 # ---------- fog ----------
-_fog = {}
+# Ground fog lives in the world: a stack of soft sheets standing on the ground at fixed world depths. Each sheet is
+# sampled from one tileable noise in world x and height, so there are no screen-space bands, the fog parallaxes as
+# the camera pushes through it, and it thins smoothly with height. Computed at half resolution (it is all soft).
+_fog_tile = None
+FOG_TILE = 512
+FOG_STEP = 1.6          # world spacing between sheets
+FOG_REACH = 64.0        # sheets beyond this distance are not drawn
+FOG_TOP = 520.0         # fog height in stone-image pixels (about one stone) where it has mostly thinned out
 
 
-def fog_tex(seed):
-    if seed not in _fog:
-        w, h = 3000, 520
-        n = value_noise(w, h, 5, seed, octaves=5)
-        _fog[seed] = np.clip((n - 0.32) * 1.9, 0, 1).astype(np.float32)
-    return _fog[seed]
+def fog_tile():
+    global _fog_tile
+    if _fog_tile is None:
+        r = np.random.default_rng(7)
+        spec = np.fft.fft2(r.standard_normal((FOG_TILE, FOG_TILE)))
+        fx = np.fft.fftfreq(FOG_TILE)[None, :]
+        fy = np.fft.fftfreq(FOG_TILE)[:, None]
+        f = np.sqrt(fx ** 2 + fy ** 2)
+        f[0, 0] = 1.0
+        filt = 1.0 / f ** 1.9
+        filt[0, 0] = 0.0
+        n = np.real(np.fft.ifft2(spec * filt))
+        n = (n - n.min()) / (n.max() - n.min())
+        _fog_tile = n.astype(np.float32)
+    return _fog_tile
 
 
-def draw_fog(frame, t, cam, strength=1.0, color=FOG, push=0.0):
-    """Three fog layers at different depths; each a scrolled crop of a noise band over the ground."""
-    for seed, p, speed, top, height, alpha in ((1, 0.45, 26, HORIZON - 40, 300, 0.30), (2, 0.8, 44, HORIZON + 90, 420, 0.36), (3, 1.2, 70, HORIZON + 420, 560, 0.40)):
-        tex = fog_tex(seed)
-        th, tw = tex.shape
-        off = int(t * speed + cam * p * 0.8) % tw
-        voff = int(push * p * 90) % th
-        tex = np.concatenate([tex[voff:], tex[:voff]], axis=0)
-        band = np.concatenate([tex[:, off:], tex[:, :off]], axis=1)[:, :W]
-        if band.shape[1] < W:
-            band = np.concatenate([band, tex[:, : W - band.shape[1]]], axis=1)
-        yy = np.linspace(0, 1, th)[:, None]
-        band = band * (np.clip((yy - 0.05) / 0.45, 0, 1) * np.clip((1.0 - yy) / 0.25 + 0.2, 0, 1))
-        band = np.asarray(Image.fromarray((band * 255).astype(np.uint8)).resize((W, height), Image.BILINEAR)).astype(np.float32) / 255
-        arr = np.zeros((height, W, 4), np.uint8)
-        arr[..., :3] = color
-        arr[..., 3] = np.clip(band * alpha * strength * 255, 0, 255).astype(np.uint8)
-        frame.alpha_composite(Image.fromarray(arr, "RGBA"), (0, int(top)))
+def draw_fog(frame, t, cam, strength=1.0, color=FOG, push=0.0, part="all", split=9.0):
+    """World-anchored ground fog. part: "far" draws the sheets beyond `split` world units (use before the stones),
+    "near" those closer (use after them), "all" everything."""
+    import cv2
+    if not isinstance(cam, dict):
+        cam = dict(x=float(cam), z=float(push), k=1300.0)
+    tile = fog_tile()
+    hw, hh = W // 2, H // 2
+    xs = (np.arange(hw, dtype=np.float32) * 2 + 1 - W / 2)
+    ys = np.arange(hh, dtype=np.float32) * 2 + 1
+    trans = np.ones((hh, hw), np.float32)
+    first = int(math.floor((cam["z"] + 0.4) / FOG_STEP))
+    last = int(math.ceil((cam["z"] + FOG_REACH) / FOG_STEP))
+    for j in range(first, last + 1):
+        zj = j * FOG_STEP
+        d = zj - cam["z"]
+        if d < 0.4 or d > FOG_REACH:
+            continue
+        if part == "far" and d < split:
+            continue
+        if part == "near" and d >= split:
+            continue
+        s = F_SCALE / d
+        gy = HORIZON + cam["k"] / d                 # where this sheet meets the ground on screen
+        top_px = FOG_TOP * s * 2.4                  # rows above the ground line that still matter
+        y_hi = max(0, int((gy - top_px) / 2))
+        y_lo = min(hh, int((gy + 150 * s) / 2) + 2)
+        if y_lo <= y_hi:
+            continue
+        # fades: in at the camera, out into the distance, and a steadier sheet when it is far
+        fade = min(1.0, (d - 0.4) / 2.6) * (1.0 - (d / FOG_REACH) ** 1.6)
+        rnd = (j * 2654435761 % 1000) / 1000.0
+        rows = ys[y_hi:y_lo]
+        hgt = (gy - rows) / s                       # height above ground in stone-image pixels
+        xw = cam["x"] + xs * d / PX                 # world x of each column on this sheet
+        wind = t * 0.55 * (0.7 + 0.6 * rnd) + 0.35 * math.sin(t * 0.4 + j)
+        u = ((xw + wind + rnd * 40.0) * (FOG_TILE / 26.0)).astype(np.float32)
+        v = (hgt * (FOG_TILE / 1500.0) + rnd * FOG_TILE + 0.6 * t * (0.4 + rnd)).astype(np.float32)
+        mapx = np.broadcast_to(u[None, :], (len(rows), hw)).astype(np.float32)
+        mapy = np.broadcast_to(v[:, None], (len(rows), hw)).astype(np.float32)
+        n = cv2.remap(tile, mapx, mapy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
+        wisp = np.clip((n - 0.30) * 2.3, 0.0, 1.0)
+        prof = np.where(hgt >= 0, np.exp(-np.maximum(hgt, 0) / (FOG_TOP * 0.42)), np.exp(hgt / 55.0))[:, None]
+        a = wisp * prof * (0.125 * strength * fade)
+        trans[y_hi:y_lo] *= (1.0 - np.clip(a, 0.0, 0.9))
+    alpha = 1.0 - trans
+    # a low haze at the far horizon
+    hy = (ys - HORIZON)[:, None]
+    haze = np.exp(-(hy / 150.0) ** 2) * (0.22 * strength)
+    hn = cv2.resize(tile[:8, :], (hw, 1), interpolation=cv2.INTER_LINEAR)
+    haze = haze * (0.65 + 0.35 * hn) if part != "near" else haze * 0.0
+    alpha = 1.0 - (1.0 - alpha) * (1.0 - np.clip(haze, 0, 0.5))
+    alpha = cv2.resize(alpha, (W, H), interpolation=cv2.INTER_LINEAR)
+    # smooth the half-resolution result so no grid shows
+    alpha = cv2.GaussianBlur(alpha, (0, 0), 3.0)
+    arr = np.zeros((H, W, 4), np.uint8)
+    arr[..., :3] = color
+    arr[..., 3] = np.clip(alpha * 255, 0, 255).astype(np.uint8)
+    frame.alpha_composite(Image.fromarray(arr, "RGBA"))
 
 
 _stone_cache = {}

@@ -75,3 +75,6 @@ v4 built Nov 7 (Opus session): all five items done. Painted rider cut by night/c
 2. Tree tops were clipped by their image canvas. Done; canvas grown and trimmed to the drawing, branch joints rounded.
 3. Background left above the rider's lantern arm and around the lantern. Done; arm top edge and lantern outline traced tight in cut_rider.py.
 4. The code-drawn reaper looks cheaper than the painted rider. Agreed route: Charlie generates a painted reaper in ChatGPT (front view, empty dark hood, scythe held clear, plain background); it gets cut and rigged like the rider (glide, robe ripple, eye glow added in code so it can fade on the retreat). Done (v5): reaper-source.png rigged in night/reaper.py (rigid staff, blade and hands; robe ripple; sway; eye glow in code). Charlie also regenerated the rider with a transparent background (rider-source.png; the first one is kept as rider-source-v1.png), so cut_rider.py now uses the source alpha as the matte and the joints were re-traced for the new pose.
+
+## v6 notes
+- Fog rebuilt (`night_lib.draw_fog`): world-anchored ground sheets every 1.6 units sampled from one tileable noise in world x and height, density thinning with height, no screen-space bands; parallaxes with camera push. Calls pass the cam dict; paired calls use `part="far"` before the stones and `part="near"` after.

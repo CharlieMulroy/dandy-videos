@@ -229,6 +229,39 @@ def base(t, cam):
     return fr
 
 
+STONE_X, STONE_Z, STONE_T0, STONE_RISE = 0.15, 8.6, 11.6, 2.2
+
+
+def blank_stone_extra(rise_q):
+    """The blank stone that rises in week 6 (rise_q 0..1) and stays for the rest of the film."""
+    img = stone_image("round", "", "", blank=True)
+    return (STONE_X, STONE_Z, img, (1 - rise_q) * img.height * 0.9 * (F_SCALE / 3.2))
+
+
+def dirt_spray(fr, cam, since):
+    """Crumbs of earth thrown up where the stone breaks the ground, over the first ~1.8 s of the rise."""
+    pr = project(STONE_X, STONE_Z, cam)
+    if not pr or since < 0 or since > 2.4:
+        return
+    sx, gy, s, d = pr
+    lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    dr = ImageDraw.Draw(lay)
+    rng = random.Random(11)
+    for i in range(46):
+        born = rng.uniform(0.0, 1.5)
+        age = since - born
+        if age < 0 or age > 0.9:
+            continue
+        vx = rng.uniform(-260, 260) * s * 2.2
+        vy = rng.uniform(260, 620) * s * 2.2
+        x = sx + rng.uniform(-150, 150) * s + vx * age
+        y = gy - 6 - (vy * age - 900 * s * 2.2 * age * age)
+        rad = max(1.5, rng.uniform(3, 8) * s * 2.2)
+        a = int(210 * (1 - age / 0.9))
+        dr.ellipse((x - rad, y - rad, x + rad, y + rad), fill=(58, 46, 38, a))
+    fr.alpha_composite(lay.filter(ImageFilter.GaussianBlur(1.2)))
+
+
 PUSH_V = 1.65
 
 
@@ -315,19 +348,18 @@ def s4(t, dur):
             sx, gy, s, d = pr
             draw_reaper(frame, sx, gy, 760 * s, t, eyes=1.0, fade=min(1.0, since / 0.5 + (1.0 if phase == 0 else 0.0)))
     extra = []
-    if t > 10.6:
-        q = smooth((t - 10.6) / 2.4)
-        img = stone_image("round", "", "", blank=True)
-        extra.append((0.7, 8.6, img, (1 - q) * img.height * 0.9 * (F_SCALE / 3.2)))
+    if t > STONE_T0:
+        extra.append(blank_stone_extra(smooth((t - STONE_T0) / STONE_RISE)))
     pulse = 0.0
     for ph in S4_PHASES[1:]:
         if ph - 0.5 < t < ph + 0.9:
             pulse = max(pulse, 1 - abs(t - ph - 0.2) / 0.7)
     draw_field(fr, cam, extra=extra, actors=[(rz, reaper)] + fog_actors(t + 24, cam, 1.0 + 0.2 * phase + 0.9 * pulse))
     draw_fog(fr, t + 27, cam, strength=0.85 + 0.2 * phase + 1.2 * pulse)
+    dirt_spray(fr, cam, t - STONE_T0)
     chat_panel(fr, t, 0.3, 4.4, "so the project is a budget app, it tracks my spending by category and")
     chat_panel(fr, t, 4.9, 9.0, "ok so, again, the project is a budget app that")
-    chat_panel(fr, t, 9.5, 12.8, "", blank=True)
+    chat_panel(fr, t, 9.5, 11.6, "", blank=True)
     display(fr, "week 1: you explain it", H * 0.27, t, 0.9, size=62, slam=False, exit_at=4.3, weight="Inter-Bold.otf")
     display(fr, "week 3: you explain it again", H * 0.27, t, 5.4, size=62, slam=False, exit_at=8.9, weight="Inter-Bold.otf")
     display(fr, "week 6:", H * 0.27, t, 10.0, size=62, slam=False, exit_at=13.4, weight="Inter-Bold.otf")
@@ -384,7 +416,7 @@ def s5(t, dur):
     if pr:  # the wide light sits behind the figures; only a small hot core goes over the lantern
         sx, gy, s, d = pr
         lantern_glow(fr, rider_glass_estimate(sx, gy, 680 * s), 820, 0.75 * light_strength, t)
-    draw_field(fr, cam, light=light, actors=[(gz, reaper), (rz_w, rider)] + fog_actors(t + 38, cam, 0.8, color=mix(FOG, PURPLE, 0.25 * light_strength)))
+    draw_field(fr, cam, light=light, extra=[blank_stone_extra(1.0)], actors=[(gz, reaper), (rz_w, rider)] + fog_actors(t + 38, cam, 0.8, color=mix(FOG, PURPLE, 0.25 * light_strength)))
     draw_fog(fr, t + 41, cam, strength=0.7, color=mix(FOG, PURPLE, 0.25 * light_strength))
     if lantern_xy:
         lantern_glow(fr, lantern_xy[0], 150, light_strength, t)

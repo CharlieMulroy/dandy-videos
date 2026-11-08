@@ -237,7 +237,7 @@ def s1(t, dur):
     fr = base(t, cam)
     draw_fog(fr, t, cam, strength=1.7, part="far", split=26.0)
     draw_field(fr, cam, max_d=72.0)
-    draw_fog(fr, t + 3, cam, strength=1.9, part="near", split=26.0)
+    draw_fog(fr, t + 3, cam, strength=1.0, part="near", split=26.0)
     return fr
 
 
@@ -256,7 +256,7 @@ def s2(t, dur):
     fr = base(t + 5, cam)
     draw_fog(fr, t + 5, cam, strength=1.3, part="far")
     draw_field(fr, cam)
-    draw_fog(fr, t + 8, cam, strength=1.5, part="near")
+    draw_fog(fr, t + 8, cam, strength=0.85, part="near")
     return fr
 
 

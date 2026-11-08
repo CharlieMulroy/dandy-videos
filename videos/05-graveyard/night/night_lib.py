@@ -247,7 +247,7 @@ _fog_tile = None
 FOG_TILE = 512
 FOG_STEP = 1.6          # world spacing between sheets
 FOG_REACH = 64.0        # sheets beyond this distance are not drawn
-FOG_TOP = 520.0         # fog height in stone-image pixels (about one stone) where it has mostly thinned out
+FOG_TOP = 760.0         # fog height in stone-image pixels (about one stone) where it has mostly thinned out
 
 
 def fog_tile():
@@ -308,10 +308,25 @@ def draw_fog(frame, t, cam, strength=1.0, color=FOG, push=0.0, part="all", split
         mapx = np.broadcast_to(u[None, :], (len(rows), hw)).astype(np.float32)
         mapy = np.broadcast_to(v[:, None], (len(rows), hw)).astype(np.float32)
         n = cv2.remap(tile, mapx, mapy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
-        wisp = np.clip((n - 0.30) * 2.3, 0.0, 1.0)
+        wisp = np.clip((n - 0.20) * 2.0, 0.0, 1.0)
         prof = np.where(hgt >= 0, np.exp(-np.maximum(hgt, 0) / (FOG_TOP * 0.42)), np.exp(hgt / 55.0))[:, None]
         a = wisp * prof * (0.125 * strength * fade)
         trans[y_hi:y_lo] *= (1.0 - np.clip(a, 0.0, 0.9))
+    # a continuous mist lying on the whole ground plane, sampled by where each screen row meets the ground
+    if part != "far":
+        y0 = max(0, int((HORIZON + 4) / 2))
+        dy = np.maximum(ys[y0:] - HORIZON, 2.0)
+        dg = np.minimum(cam["k"] / dy, 90.0)[:, None]
+        xw = cam["x"] + xs[None, :] * dg / PX
+        zw = np.broadcast_to(cam["z"] + dg, xw.shape)
+        wind = t * 0.5
+        sc = FOG_TILE / 26.0
+        m1 = cv2.remap(tile, ((xw + wind) * sc).astype(np.float32), (zw * sc * 1.3 + t * 0.2 * sc).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
+        m2 = cv2.remap(tile, ((xw - wind * 0.6) * sc * 2.3 + 90).astype(np.float32), (zw * sc * 3.0 + 40).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
+        g = np.clip((0.65 * m1 + 0.35 * m2 - 0.25) * 2.2, 0.0, 1.0)
+        dens = g * (0.12 + 0.88 * (1.0 - np.exp(-dg / 11.0))) * np.minimum(1.0, dg / 1.8)
+        ga = np.clip(dens * 0.34 * strength, 0.0, 0.85)
+        trans[y0:] *= (1.0 - ga)
     alpha = 1.0 - trans
     # a low haze at the far horizon
     hy = (ys - HORIZON)[:, None]

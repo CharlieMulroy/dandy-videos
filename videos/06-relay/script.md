@@ -69,3 +69,12 @@ Start handing off.
 - No "state layer", no traction or VC lines, no project-management comparison, no harness or framework, no promises, no long dashes.
 - Purple only on the baton and the end card; gold only on the end card's trial line.
 - No Dandy Man in scenes or on the end card (invariants 4 and 5).
+
+## v1 build notes (Nov 8)
+
+- Code in videos/06-relay/track/: relay_lib.py (stadium strips with parallax, jointed runner silhouette with rim light and wet reflection, overhead oval, baton), render_relay.py (timeline, board, captions, end card), sfx_relay.py (sound bed). Run `python3 videos/06-relay/track/render_relay.py` (add `--preview` for 10 fps, `--stills` for two frames per shot).
+- Shots: s1a feet 0-1.3, s1b hand closes on air 1.3-2.15, s1c wide miss 2.15-3.0, s2a/b/c three legs 3.0-10.0, s3 overhead 10-20, s4a baton appears 20-22, s4b and s4c clean hand-offs 22-32, s5a anchor pulls away 32-35.5, s5b finish 35.5-40, end 40-44.5.
+- Board: LEG n OF 4 in red, white clock. In beat 2 the split runs, freezes red at each miss (10.41, 10.32, 10.19) and the leg never moves. From beat 4 a race clock runs; LEG advances at each clean hand-off; it stops at FINISH 37.84.
+- Finish pass from 04 (render/finish.py): spring zoom-out on the overhead, drifting camera, bloom on the floodlights and baton, grain, a little shake on the feet and the stumble.
+- Sound bed: pistol at 0 and at the baton, wet footfalls following each runner's cadence, breathing after each miss, scuffs on stumbles, a slap on each clean hand-off, a soft tone as the baton lights, a beep as each clock stops, and a low crowd murmur that swells at the finish. No narration; captions are burned in at the times in the table above.
+- Purple appears only on the baton (and its glow) and on the end card. Red is used only for the board's leg label, frozen misses and the overhead's failed hand-off rings.

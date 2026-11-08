@@ -1,66 +1,67 @@
 # 06 The New Hire
 
-**Takeaway:** An AI agent is the best employee you have ever hired, and it forgets everything about the job every single morning. Dandy is what it reads first. (Dandy: the last two beats only.)
+**Takeaway:** AI agents are the most capable employee you will ever have, and they forget the job every session. Dandy holds the state of the project so you get their full potential. (Dandy: the last two beats.)
 
-**Kind:** metaphor video (third kind). No Dandy Man. Own look: a painted office, warm morning light through the
-blinds, one desk, one whiteboard, the only purple is the Dandy ledger on the desk and the light it throws in the
-turn. Comic, not dark. Grows out of the "Employee with a cape" beat from the 00 render test and video 01: same idea,
-told as a full story about one hire. Video 04 explains context rot and 05 shows the body count; this one plays it for
-laughs in a workplace everyone recognises.
+**Kind:** metaphor video (third kind). No Dandy Man. Look: the Maya lofi style from video 02, moved to an office.
+Code-drawn SVG room layers (back wall, desk, figure, front props) rastered at 2x, a fixed camera that only ever
+drifts or pushes a little, hard cuts between still shots, and tiny ambient motion: coffee steam, a blinking cursor,
+light through the blinds, a slow sky change outside the window. The hire is a Maya-style figure, realistic but
+cartoonish, in a shirt and tie with a cape. No ChatGPT stills for now; the v1 prompts are parked at the bottom in
+case we want painted upgrades later.
 
-**Target length:** about 55 s (about 135 narrated words). Status: draft v1, Nov 8. Cast built the same way as the
-graveyard rider and reaper: painted stills generated in ChatGPT on a transparent background, cut into parts and
-rigged in code. Prompts for the stills are at the bottom of this file.
+**Target length:** about 38 s (about 85 narrated words). Status: draft v2, Nov 8. v1 was a 55 s workplace comedy
+with a painted cast; Charlie asked for shorter and straight to the point, still shots with a little motion, the
+Maya look, and an explicit turn: this employee is your AI agent, don't let your use of them be limited, unlock
+their potential with Dandy, one sentence on how.
 
-| # | Sec | Visual | On-screen text | Narration (plain, dry, straight-faced) |
+| # | Sec | Visual | On-screen text | Narration (plain, dry) |
 | --- | --- | --- | --- | --- |
-| 1 | 0-5 | Cold open, no logo. A quiet painted office at 9:00, dust in the light. A superhero landing by the desk: the new hire drops in from above, one knee down, cape settling. Button-down shirt and tie under the cape, lanyard, coffee in hand, not a drop spilled. | "DAY 1" | Your company just hired the best employee in the world. |
-| 2 | 5-13 | He can do anything. Fast cuts, all in the one office: the whiteboard fills itself with an architecture diagram as he points at it; three monitors light up with code at once; he carries a server rack under one arm; the keyboard smokes. A manager's hand sets down a stack of docs, he fans through it in a second and nods. | "backend before lunch" / "frontend after" / "read every doc you own" | He can do anything. Backend before lunch. Frontend after. Hand him every document you own and he has read it before you sit down. |
-| 3 | 13-22 | DAY 2. The same landing, the same coffee. He stands, looks at the full whiteboard, then at the manager, and a question mark forms where a thought bubble would be. A chat window at the lower right: "Morning! So. What are we building?" The manager's hand, off-screen, points at the whiteboard. | "DAY 2" / "Morning! So. What are we building?" | There is one problem. Every morning he forgets. All of it. What the project is. What he built. What he decided. What is left. |
-| 4 | 22-33 | The weeks. DAY 3, DAY 5, DAY 9 on hard cuts. Sticky notes multiply over the monitor bezels, then the wall, then the whiteboard. The manager's hand re-explains with a marker. He rebuilds the login page: v1, v2 in a different colour, v3 in a third, three windows side by side, none matching. A sticky note reads "DO NOT rebuild login" and he is reading it while rebuilding login. The manager's coffee cup count on the desk goes from one to four. | "DAY 3" / "DAY 5" / "DAY 9" / "login v1 · v2 · v3" | So you explain it again. He rebuilds the login page, a little differently. You leave notes. He misses them, or they are wrong by Tuesday. By week two you spend more time briefing him than he spends building. |
-| 5 | 33-44 | The turn. DAY 10. The desk is cleared except for one thing: a slim purple ledger, the only purple in the film, glowing faintly. He lands, sees it, and opens it before he says a word. On its pages, a graph of the product: what it is, what is done, what is next, what he decided and why, in his own handwriting, dated yesterday. The sticky notes peel off the walls and drift away. He nods once, cracks his knuckles, and sits. | "reads this first. every morning." / "written by him. yesterday." | Unless the first thing he does each morning is read the truth about the project. Not your notes. His. Written as he worked, kept current by him, read before he touches anything. |
-| 6 | 44-52 | Resolution into the end card. He is working, three monitors, the whiteboard diagram growing where it left off. The manager's hand lifts a single coffee cup and leaves the frame. The purple light from the ledger spreads and settles behind the end card: wordmark, dandylabs.dev, 14-day free trial. | "picks up where he left off" / "Same superpowers. Now he remembers." | Same superpowers. Now he remembers. Dandy is what your agent reads first. |
+| 1 | 0-4 | Cold open. Lofi office, morning light in beams through the blinds. The hire at his desk, cape over the back of the chair, mug steaming. One slow push in. | "the new hire" | Meet your new hire. He can do anything. |
+| 2 | 4-11 | Three still shots, about 2.3 s each, one small motion in each. (a) The whiteboard: a full architecture diagram already drawn, he stands beside it with a marker, the last arrow draws itself. (b) The desk: three monitors, code scrolling slowly on all of them, his hands on the keyboard. (c) A stack of binders on the desk, he holds the top one open, pages flip once. | "designs it before lunch" / "builds it after" / "reads everything you have" | Designs the whole system before lunch. Builds it after. Reads every document you have in seconds. |
+| 3 | 11-18 | Back to the shot-1 framing, next morning: the light is a touch different, the whiteboard behind him is wiped to a few grey smears, two sticky notes on the monitor bezel. On the screen, a chat window: "Morning! So, what are we working on?" Cursor blinks. He looks at the board. | "day 2" | He has one flaw. Every morning, he forgets. The project, the plan, what he built yesterday. All of it. |
+| 4 | 18-25 | The turn. Same shot, the room holds. The colour drains a little from everything except him, and big centred type lands. Then a small second line. | "this is your AI agent" / "powerful. and starting from zero every session." | That employee is your AI agent. Extremely powerful. And starting from zero every single session. |
+| 5 | 25-33 | Push in on the monitor (the Maya screen move). A Dandy panel opens, the only purple in the film: a project card, "Budget app: auth done, billing next, decided: Postgres." The sticky notes peel off the bezel and drift away. Chat: "Reading Dandy. Auth is done, billing is next. Starting there." | "reads the state first" / "writes back what changed" | Don't let that limit what they can do. Dandy holds the state of your project. The agent reads it before it starts, and writes back what it changed. Nothing is forgotten. |
+| 6 | 33-38 | End card, the panel's purple settling behind it: wordmark, dandylabs.dev, 14-day free trial. | "Unlock their full potential." | Unlock their full potential. Use Dandy. |
 
 ## Narration, read straight through
 
-Your company just hired the best employee in the world.
+Meet your new hire. He can do anything.
 
-He can do anything. Backend before lunch. Frontend after. Hand him every document you own and he has read it before you sit down.
+Designs the whole system before lunch. Builds it after. Reads every document you have in seconds.
 
-There is one problem. Every morning he forgets. All of it. What the project is. What he built. What he decided. What is left.
+He has one flaw. Every morning, he forgets. The project, the plan, what he built yesterday. All of it.
 
-So you explain it again. He rebuilds the login page, a little differently. You leave notes. He misses them, or they are wrong by Tuesday. By week two you spend more time briefing him than he spends building.
+That employee is your AI agent. Extremely powerful. And starting from zero every single session.
 
-Unless the first thing he does each morning is read the truth about the project. Not your notes. His. Written as he worked, kept current by him, read before he touches anything.
+Don't let that limit what they can do. Dandy holds the state of your project. The agent reads it before it starts, and writes back what it changed. Nothing is forgotten.
 
-Same superpowers. Now he remembers. Dandy is what your agent reads first.
+Unlock their full potential. Use Dandy.
 
-## Sticky notes and on-screen gags (the bench; use five or six)
+## Build notes (for the scene spec)
 
-- "DO NOT rebuild login" (he is reading it while rebuilding login)
-- "the project is a BUDGET APP" underlined three times
-- "ask Priya before touching the schema" / below it, in his hand: "who is Priya"
-- "we use Postgres" / "we use Postgres!!" / "POSTGRES"
-- "yesterday you said no to this"
-- "read this first" (buried under four other notes)
-- on the whiteboard, the same box drawn three times in three colours, labelled "auth", "login", "sign in"
+- Reuse from videos/02-maya/lofi: the layer pipeline (gen_room.py pattern, SVG layers rastered at SCALE 2), room_frame camera with WIDE and SCREEN_CAM style presets, draw_steam, draw_screen chat window, sticky-note peel from NOTES_PEEL, caption and end_card. New: an office back wall (blinds, whiteboard, shelf), a desk with three monitors, the hire figure in three poses (at desk, at whiteboard, holding binder), a cape.
+- Six shots, all fixed camera except the shot-1 push and the shot-5 screen push. Ambient motion only: steam, cursor, light beams, one drawing arrow, slow code scroll, one page flip.
+- The turn (beat 4) is a grade change plus type, not a scene change: desaturate the room 30 percent over 0.6 s, keep the figure at full colour, slam the headline.
+- Purple appears only in the Dandy panel and the end card. Gold: nothing except the end card line.
+- Sound: a soft lofi bed like 02, a page-flip, a marker squeak, a chat pop, the Dandy chime at the panel.
 
 ## Messaging check
 
-- Leads with the problem; the pitch is two sentences at the end.
-- Approved framing used: planning tools and notes failed because a human kept them current; here the agent keeps the record current itself ("Not your notes. His.").
-- Says what Dandy is in one plain phrase, "what your agent reads first"; no "state layer" lecture (that is video 03).
-- No Jira or project-management-tool comparison, no harness or framework, no promises, no long dashes.
-- No Dandy Man anywhere, including the end card (metaphor kind).
-- The word "memory" is deliberately avoided in the narration: the product is a record he reads, not a brain upgrade.
+- Leads with the hire and his flaw; the product arrives at 25 s with two sentences.
+- Says what Dandy is in plain words (holds the state of your project) and how it fixes the flaw (reads before it starts, writes back what changed): the approved "agents keep it current" framing.
+- No comparison to project management tools, no harness or framework, no promises, no long dashes, no Dandy Man.
 
 ## Open questions for Charlie
 
-1. Does the hire need a name? The script works without one ("he"); a name on the lanyard would be a gag on its own.
-2. Is the manager a hand and a coffee cup only, or a second painted figure? A hand keeps the cast to one puppet and the viewer in the manager's seat.
-3. Final line: "Dandy is what your agent reads first." Alternatives: "Give your agent somewhere to write it down." / "Hire the superpowers. Keep the context."
+1. "this is your AI agent" as the on-screen turn, or the softer "that employee is an AI agent"?
+2. Final line: "Unlock their full potential. Use Dandy." or "Unlock their full potential. dandylabs.dev."?
+3. Does the hire need the cape at all in this style, or is a very good employee in a shirt and tie enough? The cape sells "superpowered" in one glance; it also risks looking like a Halloween costume at Maya scale.
 
-## Painted stills: prompts for ChatGPT
+## Parked: v1 painted-still prompts
+
+Not needed for v2. Kept in case we want painted upgrades of the figure or the room later.
+
+### Painted stills: prompts for ChatGPT (v1)
 
 Same method as the graveyard rider and reaper. Every still on a transparent background (or, if the model cannot, a
 flat solid green #00FF00 that I can key out), painterly realistic, consistent lighting (soft warm key from the upper

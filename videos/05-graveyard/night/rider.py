@@ -29,7 +29,7 @@ SW, SH = RIG["size"]
 LEG_ORDER = ("fl_far", "hl_far", "hl_near", "fl_near")      # all behind the body: the body hides the joints
 # gait: (amplitude in degrees, phase offset). Hind legs lead; forelegs follow about half a stride later.
 GAIT = dict(hl_far=(13.0, 0.0), hl_near=(12.0, 0.55), fl_far=(15.0, math.pi), fl_near=(17.0, math.pi + 0.55))
-BODY_CENTRE = (640.0, 640.0)   # pitch pivot, source px (under the saddle)
+BODY_CENTRE = (640.0, 620.0)   # pitch pivot, source px (under the saddle)
 FOOT_X = 640.0                 # the source x placed at sx
 
 _src = None
@@ -56,7 +56,7 @@ def _at_scale(ws):
         X, Y = xx / ws, yy / ws
         cloak = np.clip((X - 690) / 660, 0, 1) ** 1.6 * np.clip((540 - Y) / 60, 0, 1)
         tail = np.clip((X - 1040) / 380, 0, 1) ** 1.4 * np.clip((Y - 440) / 30, 0, 1)
-        mane = 0.35 * np.clip((Y - 262) / 12, 0, 1) * np.clip((338 - Y) / 30, 0, 1) * np.clip((X - 170) / 60, 0, 1) * np.clip((470 - X) / 60, 0, 1)
+        mane = 0.35 * np.clip((Y - 272) / 12, 0, 1) * np.clip((370 - Y) / 30, 0, 1) * np.clip((X - 160) / 60, 0, 1) * np.clip((500 - X) / 60, 0, 1)
         _scaled[key] = dict(parts=parts, xx=xx, yy=yy, X=X, cloak=cloak, tail=tail, mane=mane, size=size)
     return _scaled[key]
 

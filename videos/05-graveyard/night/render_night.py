@@ -31,9 +31,10 @@ sys.path.insert(0, os.path.join(ROOT, "render"))
 import env  # noqa: E402
 import sfx_night  # noqa: E402
 from rider import draw_rider, rider_glass_estimate  # noqa: E402
+from reaper import draw_reaper  # noqa: E402
 from finish import finish  # noqa: E402
 from night_lib import (F_SCALE, PX, project, CONTRACT, EYES, FOG, FPS, GOLD, H, HORIZON, NIGHT, PURPLE, SAFE, TEXT, W, alpha_mul, chat_panel, display,  # noqa: E402
-                       draw_fog, draw_landscape, draw_moon, draw_reaper, ease, font, lerp, mix, sky, smooth, stone_image, wrap)
+                       draw_fog, draw_landscape, draw_moon, ease, font, lerp, mix, sky, smooth, stone_image, wrap)
 
 def cam_at(x, z, k):
     return dict(x=x, z=z, k=k)

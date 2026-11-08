@@ -29,7 +29,7 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "render"))
 import sfx_night  # noqa: E402
-from rider import draw_rider  # noqa: E402
+from rider import draw_rider, rider_glass_estimate  # noqa: E402
 from finish import finish  # noqa: E402
 from night_lib import (CONTRACT, EYES, FOG, FPS, GOLD, H, HORIZON, NIGHT, PURPLE, SAFE, TEXT, W, alpha_mul, chat_panel, display,  # noqa: E402
                        draw_fog, draw_landscape, draw_moon, draw_reaper, ease, font, lerp, mix, sky, smooth, stone_image, wrap)
@@ -147,7 +147,7 @@ def draw_field(frame, cam, light=None, extra=(), max_d=42.0, actors=()):
         if light is not None:
             lx, lz, ls = light
             dist2 = (x - lx) ** 2 + (z - lz) ** 2 * 0.6
-            tint_k = min(0.55, ls / (1 + dist2 * 0.7))
+            tint_k = min(0.3, 0.6 * ls / (1 + dist2 * 1.1))
         im = stone_at_scale(img, s, haze_k, tint_k)
         fade = 1.0 if d > 0.9 else max(0.0, (d - 0.5) / 0.4)
         y = int(gy - im.height * 0.94 + rise)
@@ -328,14 +328,30 @@ def s4(t, dur):
     return fr
 
 
+RIDER_X0, RIDER_V0, RIDER_VMIN = 9.0, 2.4, 0.12
+
+
+def rider_motion(t):
+    """World x, gait phase and stride size at time t. Speed falls from a gallop to a slow canter between 1 s and
+    6 s; the stride rate follows the ground speed so the hooves do not skate."""
+    def vf(u):
+        return RIDER_VMIN + (1 - RIDER_VMIN) * (1 - smooth(min(1.0, max(0.0, (u - 1.0) / 5.0))))
+    n = max(1, int(t * 60))
+    us = np.linspace(0, t, n + 1)
+    v = np.array([vf(u) for u in us])
+    dist = np.trapezoid(v, us) * RIDER_V0 if t > 0 else 0.0
+    phase = 2 * math.pi * np.trapezoid(0.8 + 1.4 * v, us) if t > 0 else 0.0
+    return RIDER_X0 - dist, phase, 0.3 + 0.7 * v[-1]
+
+
 def s5(t, dur):
     # the rider: purple light before the horse, the horse canters in from the right and slows, the reaper retreats
     cam = cam_at(0.0, 5.4, 1300)
     fr = base(t + 38, cam)
     draw_fog(fr, t + 38, 0, strength=0.55, push=cam["z"])
-    # rider path in world units: enters at x=+5.2, settles at x=+0.4; z a little nearer than the reaper
-    arrive = smooth(min(1.0, max(0.0, (t - 1.2) / 5.0)))
-    rx_w = lerp(6.0, 0.0, arrive)
+    # rider path in world units: gallops in from off the right, eases to a slow canter and keeps moving left
+    rx_w, gait, speed = rider_motion(t)
+    arrive = smooth(min(1.0, max(0.0, (t - 1.0) / 5.0)))
     rz_w = 8.3
     light_strength = ease((t - 0.3) / 1.6)
     light = (rx_w - 0.4, rz_w, 1.3 * light_strength)
@@ -355,15 +371,17 @@ def s5(t, dur):
         pr = project(rx_w, rz_w, cam)
         if pr:
             sx, gy, s, d = pr
-            speed = 1.0 - arrive ** 2
-            gait = 2 * math.pi * 1.9 * (t - 0.45 * max(0.0, t - 1.2) * arrive)
             xy = draw_rider(frame, sx, gy, 680 * s, gait, t, speed=speed, lantern=light_strength)
             if xy:
                 lantern_xy.append(xy)
+    pr = project(rx_w, rz_w, cam)
+    if pr:  # the wide light sits behind the figures; only a small hot core goes over the lantern
+        sx, gy, s, d = pr
+        lantern_glow(fr, rider_glass_estimate(sx, gy, 680 * s), 820, 0.75 * light_strength, t)
     draw_field(fr, cam, light=light, actors=[(gz, reaper), (rz_w, rider)])
+    draw_fog(fr, t + 41, 0, strength=0.42, color=mix(FOG, PURPLE, 0.25 * light_strength), push=cam["z"])
     if lantern_xy:
-        lantern_glow(fr, lantern_xy[0], 900, light_strength, t)
-    draw_fog(fr, t + 41, 0, strength=0.6, color=mix(FOG, PURPLE, 0.35 * light_strength), push=cam["z"])
+        lantern_glow(fr, lantern_xy[0], 150, light_strength, t)
     display(fr, "unless the truth rides in with you", H * 0.26, t, 2.4, size=70, slam=False, exit_at=6.2, weight="Inter-Bold.otf")
     display(fr, "written down, read first, every session", H * 0.26, t, 6.7, size=70, slam=False, exit_at=dur - 0.3, weight="Inter-Bold.otf")
     return fr

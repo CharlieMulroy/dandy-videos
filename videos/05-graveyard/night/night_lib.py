@@ -267,53 +267,67 @@ def fog_tile():
     return _fog_tile
 
 
-def draw_fog(frame, t, cam, strength=1.0, color=FOG, push=0.0, part="all", split=9.0):
-    """World-anchored ground fog. part: "far" draws the sheets beyond `split` world units (use before the stones),
-    "near" those closer (use after them), "all" everything."""
+def _grid():
+    hw, hh = W // 2, H // 2
+    xs = (np.arange(hw, dtype=np.float32) * 2 + 1 - W / 2)
+    ys = np.arange(hh, dtype=np.float32) * 2 + 1
+    return hw, hh, xs, ys
+
+
+def fog_actors(t, cam, strength=1.0, color=FOG, reach=34.0):
+    """Fog sheets as depth-ordered actors for draw_field: each sheet is drawn between the stones in front of and
+    behind it, so fog never pops or cuts through a tombstone."""
+    import cv2
+    tile = fog_tile()
+    hw, hh, xs, ys = _grid()
+    out = []
+    first = int(math.floor((cam["z"] + 0.4) / FOG_STEP))
+    last = int(math.ceil((cam["z"] + reach) / FOG_STEP))
+    for j in range(first, last + 1):
+        zj = j * FOG_STEP
+        if zj - cam["z"] < 0.4 or zj - cam["z"] > reach:
+            continue
+
+        def draw(frame, j=j, zj=zj):
+            d = zj - cam["z"]
+            s = F_SCALE / d
+            gy = HORIZON + cam["k"] / d
+            y_hi = max(0, int((gy - FOG_TOP * s * 2.4) / 2))
+            y_lo = min(hh, int((gy + 150 * s) / 2) + 2)
+            if y_lo <= y_hi or gy < HORIZON - 4:
+                return
+            fade = min(1.0, (d - 0.4) / 2.6) * (1.0 - (d / reach) ** 1.5)
+            rnd = (j * 2654435761 % 1000) / 1000.0
+            rows = ys[y_hi:y_lo]
+            hgt = (gy - rows) / s
+            xw = cam["x"] + xs * d / PX
+            wind = t * 0.55 * (0.7 + 0.6 * rnd) + 0.35 * math.sin(t * 0.4 + j)
+            u = ((xw + wind + rnd * 40.0) * (FOG_TILE / 26.0)).astype(np.float32)
+            v = (hgt * (FOG_TILE / 1500.0) + rnd * FOG_TILE + 0.6 * t * (0.4 + rnd)).astype(np.float32)
+            n = cv2.remap(tile, np.broadcast_to(u[None, :], (len(rows), hw)).astype(np.float32), np.broadcast_to(v[:, None], (len(rows), hw)).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
+            wisp = np.clip((n - 0.20) * 2.0, 0.0, 1.0)
+            prof = np.where(hgt >= 0, np.exp(-np.maximum(hgt, 0) / (FOG_TOP * 0.42)), np.exp(hgt / 55.0))[:, None]
+            al = np.clip(wisp * prof * (0.11 * strength * fade * float(np.clip(1300.0 / cam["k"], 0.6, 1.0))), 0.0, 0.8)
+            al = cv2.resize(al, (W, (y_lo - y_hi) * 2), interpolation=cv2.INTER_LINEAR)
+            al = cv2.GaussianBlur(al, (0, 0), 2.5)
+            arr = np.zeros((al.shape[0], W, 4), np.uint8)
+            arr[..., :3] = color
+            arr[..., 3] = (al * 255).astype(np.uint8)
+            frame.alpha_composite(Image.fromarray(arr, "RGBA"), (0, y_hi * 2))
+        out.append((zj, draw))
+    return out
+
+
+def draw_fog(frame, t, cam, strength=1.0, color=FOG, push=0.0, part="ground"):
+    """part "ground": the continuous mist lying on the ground plus the horizon haze. part "haze": haze only."""
     import cv2
     if not isinstance(cam, dict):
         cam = dict(x=float(cam), z=float(push), k=1300.0)
     tile = fog_tile()
-    hw, hh = W // 2, H // 2
-    xs = (np.arange(hw, dtype=np.float32) * 2 + 1 - W / 2)
-    ys = np.arange(hh, dtype=np.float32) * 2 + 1
+    hw, hh, xs, ys = _grid()
     trans = np.ones((hh, hw), np.float32)
-    first = int(math.floor((cam["z"] + 0.4) / FOG_STEP))
-    last = int(math.ceil((cam["z"] + FOG_REACH) / FOG_STEP))
-    for j in range(first, last + 1):
-        zj = j * FOG_STEP
-        d = zj - cam["z"]
-        if d < 0.4 or d > FOG_REACH:
-            continue
-        if part == "far" and d < split:
-            continue
-        if part == "near" and d >= split:
-            continue
-        s = F_SCALE / d
-        gy = HORIZON + cam["k"] / d                 # where this sheet meets the ground on screen
-        top_px = FOG_TOP * s * 2.4                  # rows above the ground line that still matter
-        y_hi = max(0, int((gy - top_px) / 2))
-        y_lo = min(hh, int((gy + 150 * s) / 2) + 2)
-        if y_lo <= y_hi:
-            continue
-        # fades: in at the camera, out into the distance, and a steadier sheet when it is far
-        fade = min(1.0, (d - 0.4) / 2.6) * (1.0 - (d / FOG_REACH) ** 1.6)
-        rnd = (j * 2654435761 % 1000) / 1000.0
-        rows = ys[y_hi:y_lo]
-        hgt = (gy - rows) / s                       # height above ground in stone-image pixels
-        xw = cam["x"] + xs * d / PX                 # world x of each column on this sheet
-        wind = t * 0.55 * (0.7 + 0.6 * rnd) + 0.35 * math.sin(t * 0.4 + j)
-        u = ((xw + wind + rnd * 40.0) * (FOG_TILE / 26.0)).astype(np.float32)
-        v = (hgt * (FOG_TILE / 1500.0) + rnd * FOG_TILE + 0.6 * t * (0.4 + rnd)).astype(np.float32)
-        mapx = np.broadcast_to(u[None, :], (len(rows), hw)).astype(np.float32)
-        mapy = np.broadcast_to(v[:, None], (len(rows), hw)).astype(np.float32)
-        n = cv2.remap(tile, mapx, mapy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
-        wisp = np.clip((n - 0.20) * 2.0, 0.0, 1.0)
-        prof = np.where(hgt >= 0, np.exp(-np.maximum(hgt, 0) / (FOG_TOP * 0.42)), np.exp(hgt / 55.0))[:, None]
-        a = wisp * prof * (0.125 * strength * fade)
-        trans[y_hi:y_lo] *= (1.0 - np.clip(a, 0.0, 0.9))
-    # a continuous mist lying on the whole ground plane, sampled by where each screen row meets the ground
-    if part != "far":
+    hk = float(np.clip(1300.0 / cam["k"], 0.5, 1.0))   # seen from high up the same mist reads thinner
+    if part == "ground":
         y0 = max(0, int((HORIZON + 4) / 2))
         dy = np.maximum(ys[y0:] - HORIZON, 2.0)
         dg = np.minimum(cam["k"] / dy, 90.0)[:, None]
@@ -324,18 +338,14 @@ def draw_fog(frame, t, cam, strength=1.0, color=FOG, push=0.0, part="all", split
         m1 = cv2.remap(tile, ((xw + wind) * sc).astype(np.float32), (zw * sc * 1.3 + t * 0.2 * sc).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
         m2 = cv2.remap(tile, ((xw - wind * 0.6) * sc * 2.3 + 90).astype(np.float32), (zw * sc * 3.0 + 40).astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP)
         g = np.clip((0.65 * m1 + 0.35 * m2 - 0.25) * 2.2, 0.0, 1.0)
-        dens = g * (0.12 + 0.88 * (1.0 - np.exp(-dg / 11.0))) * np.minimum(1.0, dg / 1.8)
-        ga = np.clip(dens * 0.34 * strength, 0.0, 0.85)
-        trans[y0:] *= (1.0 - ga)
-    alpha = 1.0 - trans
-    # a low haze at the far horizon
+        dens = g * (0.12 + 0.88 * (1.0 - np.exp(-dg / 11.0))) * np.minimum(1.0, dg / 1.8) * np.clip((75.0 - dg) / 30.0, 0.0, 1.0)
+        trans[y0:] *= (1.0 - np.clip(dens * 0.34 * strength * hk, 0.0, 0.85))
     hy = (ys - HORIZON)[:, None]
-    haze = np.exp(-(hy / 150.0) ** 2) * (0.22 * strength)
+    haze = np.exp(-(hy / 150.0) ** 2) * (0.22 * min(strength, 1.6) * hk)
     hn = cv2.resize(tile[:8, :], (hw, 1), interpolation=cv2.INTER_LINEAR)
-    haze = haze * (0.65 + 0.35 * hn) if part != "near" else haze * 0.0
-    alpha = 1.0 - (1.0 - alpha) * (1.0 - np.clip(haze, 0, 0.5))
+    haze = haze * (0.65 + 0.35 * hn)
+    alpha = 1.0 - trans * (1.0 - np.clip(haze, 0, 0.5))
     alpha = cv2.resize(alpha, (W, H), interpolation=cv2.INTER_LINEAR)
-    # smooth the half-resolution result so no grid shows
     alpha = cv2.GaussianBlur(alpha, (0, 0), 3.0)
     arr = np.zeros((H, W, 4), np.uint8)
     arr[..., :3] = color

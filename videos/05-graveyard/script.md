@@ -79,3 +79,4 @@ v4 built Nov 7 (Opus session): all five items done. Painted rider cut by night/c
 ## v6 notes
 - Fog rebuilt (`night_lib.draw_fog`): world-anchored ground sheets every 1.6 units sampled from one tileable noise in world x and height, density thinning with height, no screen-space bands; parallaxes with camera push. Calls pass the cam dict; paired calls use `part="far"` before the stones and `part="near"` after.
 - v7: added a continuous ground-plane mist (sampled by where each screen row meets the ground, in world x/z) in the "near" pass, taller sheets (FOG_TOP 760), fuller wisp threshold; sheets fade softly below their ground line.
+- v8: fog sheets are depth-ordered actors inside draw_field (no near/far split, so no popping or cutting through stones); ground mist and haze scale down with camera height so the high opening is not a bright wall; sheets limited to 34 units, far field relies on ground mist + haze.

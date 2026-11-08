@@ -9,7 +9,7 @@ light through the blinds, a slow sky change outside the window. The hire is a Ma
 cartoonish, in a shirt and tie with a cape. No ChatGPT stills for now; the v1 prompts are parked at the bottom in
 case we want painted upgrades later.
 
-**Target length:** about 38 s (about 85 narrated words). Status: draft v2, Nov 8. v1 was a 55 s workplace comedy
+**Target length:** about 38 s (about 95 narrated words). Status: v2 approved Nov 8 (turn line, final line and cape chosen). v1 was a 55 s workplace comedy
 with a painted cast; Charlie asked for shorter and straight to the point, still shots with a little motion, the
 Maya look, and an explicit turn: this employee is your AI agent, don't let your use of them be limited, unlock
 their potential with Dandy, one sentence on how.
@@ -19,9 +19,9 @@ their potential with Dandy, one sentence on how.
 | 1 | 0-4 | Cold open. Lofi office, morning light in beams through the blinds. The hire at his desk, cape over the back of the chair, mug steaming. One slow push in. | "the new hire" | Meet your new hire. He can do anything. |
 | 2 | 4-11 | Three still shots, about 2.3 s each, one small motion in each. (a) The whiteboard: a full architecture diagram already drawn, he stands beside it with a marker, the last arrow draws itself. (b) The desk: three monitors, code scrolling slowly on all of them, his hands on the keyboard. (c) A stack of binders on the desk, he holds the top one open, pages flip once. | "designs it before lunch" / "builds it after" / "reads everything you have" | Designs the whole system before lunch. Builds it after. Reads every document you have in seconds. |
 | 3 | 11-18 | Back to the shot-1 framing, next morning: the light is a touch different, the whiteboard behind him is wiped to a few grey smears, two sticky notes on the monitor bezel. On the screen, a chat window: "Morning! So, what are we working on?" Cursor blinks. He looks at the board. | "day 2" | He has one flaw. Every morning, he forgets. The project, the plan, what he built yesterday. All of it. |
-| 4 | 18-25 | The turn. Same shot, the room holds. The colour drains a little from everything except him, and big centred type lands. Then a small second line. | "this is your AI agent" / "powerful. and starting from zero every session." | That employee is your AI agent. Extremely powerful. And starting from zero every single session. |
+| 4 | 18-25 | The turn. Same shot, the room holds. The colour drains a little from everything except him, and big centred type lands. Then a small second line. | "This is your AI agent" / "Powerful. And starting from zero every session." | That employee is your AI agent. Extremely powerful. And starting from zero every single session. |
 | 5 | 25-33 | Push in on the monitor (the Maya screen move). A Dandy panel opens, the only purple in the film: a project card, "Budget app: auth done, billing next, decided: Postgres." The sticky notes peel off the bezel and drift away. Chat: "Reading Dandy. Auth is done, billing is next. Starting there." | "reads the state first" / "writes back what changed" | Don't let that limit what they can do. Dandy holds the state of your project. The agent reads it before it starts, and writes back what it changed. Nothing is forgotten. |
-| 6 | 33-38 | End card, the panel's purple settling behind it: wordmark, dandylabs.dev, 14-day free trial. | "Unlock their full potential." | Unlock their full potential. Use Dandy. |
+| 6 | 33-38 | End card, the panel's purple settling behind it: the hat logo, the wordmark, dandylabs.dev, 14-day free trial. | "Unlock their full potential." / "Use Dandy." | Unlock their full potential. Use Dandy. |
 
 ## Narration, read straight through
 
@@ -51,11 +51,11 @@ Unlock their full potential. Use Dandy.
 - Says what Dandy is in plain words (holds the state of your project) and how it fixes the flaw (reads before it starts, writes back what changed): the approved "agents keep it current" framing.
 - No comparison to project management tools, no harness or framework, no promises, no long dashes, no Dandy Man.
 
-## Open questions for Charlie
+## Decisions (Nov 8)
 
-1. "this is your AI agent" as the on-screen turn, or the softer "that employee is an AI agent"?
-2. Final line: "Unlock their full potential. Use Dandy." or "Unlock their full potential. dandylabs.dev."?
-3. Does the hire need the cape at all in this style, or is a very good employee in a shirt and tie enough? The cape sells "superpowered" in one glance; it also risks looking like a Halloween costume at Maya scale.
+1. On-screen turn: "This is your AI agent".
+2. Final line: "Unlock their full potential. Use Dandy." on the end card with the hat logo, wordmark and dandylabs.dev.
+3. The hire keeps the cape for the superpowered read; revisit if it looks odd at lofi scale.
 
 ## Parked: v1 painted-still prompts
 
@@ -97,3 +97,11 @@ objects, no text.
 
 Checks before handing stills to the renderer: cape and shirt the same colours in every pose, feet visible, no
 ground shadow, no stray background colour at the edges (hold them over a white and a black background to see).
+
+## v1 build notes (Nov 8)
+
+- Built in videos/06-new-hire/lofi/: gen_office.py writes the SVG layers (back, front, hire-typing/confused/binder/board, binder); render_office.py composes the shots on the Maya pipeline (SCALE 2 room, camera crop, shared finish pass).
+- Office palette is blue-grey wall, warm wood, red cape; brand purple only in the Dandy panel on the main monitor (with a soft purple spill) and the end card.
+- Shots: s1-hire 4.0, s2-design 2.4, s3-build 2.3, s4-docs 2.3, s5-day2 7.0, s6-turn 7.0, s7-dandy 8.0, end 5.0 (38 s). Timings move to voiceover/office.json once narration is recorded.
+- Each shot has one small motion: push-in, last arrow drawing, code scroll, page flip, ticking second hand, "?" bubble, grade change, panel slide and sticky-note peel. Ambient: steam, light beams, dust.
+- Preview is silent; sound bed and narration come with the recording.

@@ -16,46 +16,42 @@ Type is clean and large, one short line at a time. Nothing hot or dramatic; this
 **Audience:** individual builders, many of them non-technical. One term is introduced (token) and defined in
 passing. No mechanism beyond what the desk shows.
 
-**Target length:** about 52 s (about 120 narrated words). Status: draft v1, Nov 8, for Charlie's review. No render
+**Target length:** about 55 s (about 135 narrated words). Status: draft v1, Nov 8, for Charlie's review. No render
 until the words are approved.
 
 | # | Sec | Visual | On-screen text | Narration (plain, calm, a little dry) |
 | --- | --- | --- | --- | --- |
 | 1 | 0-5 | Cold open on an empty desk from above, one lamp of warm light. A label pins to its corner. | "the context window" | Every AI chat has a desk. It's called the context window. |
-| 2 | 5-14 | Cards land one by one: a blue card (you), a grey one (the model), a cream sheet (a pasted file), more of each, in a tidy grid. A thin ruler along the edge ticks up as they land, labelled in tokens. | "everything you say" / "everything it says" / "every file you paste" / "measured in tokens" | Everything you say. Everything it says back. Every file you paste in. It all lands on the desk, and it's measured in tokens, roughly chunks of words. That desk is all the model can see. Nothing else exists. |
-| 3 | 14-25 | The desk is full. New cards keep landing at the top, and the bottom row slides off the edge, tips, and falls into the dark. One falling card is tagged "the decision from an hour ago", another "the file it read this morning". The model's new reply lands, oblivious. | "fixed size" / "oldest pages slide off" | The desk has a fixed size. When it fills up, the oldest pages slide off the edge. The decision you made an hour ago. The file it read this morning. Gone, usually without a word. |
-| 4 | 25-36 | Pull back a little: the desk is covered, cards overlapping, half of them dimmed. Two cards are pulled forward side by side: "use Postgres" and "switched to SQLite", one old and faded, one new; the model's reply quotes the faded one. | "crowded desk, sloppy work" | And even before it's full, a crowded desk makes it sloppy. It skims. It mixes up what's current and what's old. That's why a long chat gets dumber the longer it runs. |
-| 5 | 36-46 | A clean sweep: the cards slide away and the desk is bare and bright again. One blue card lands squarely in the middle: a short brief. | "a fresh chat is a clean desk" / "sharp. and blank." | So a fresh chat isn't a failure. It's a clean desk. Fast and sharp, and completely blank. Whatever you want it to know, you have to put back on the desk. |
-| 6 | 46-52 | The notebook beside the desk opens: a few neat lines. Cards on the desk come and go; the notebook stays. In the Dandy variant it turns purple here and its light settles behind the end card. | "the desk is for working" / "keep the record off the desk" | The desk is for working. Keep the record somewhere that doesn't slide off. |
-| 7 | 52-56 | End card without Dandy Man: hat, wordmark, dandylabs.dev, 14-day free trial. | | (variant A, no mention) nothing. (variant B) That's what Dandy is for. |
+| 2 | 5-13 | Cards land one by one: a blue card (you), a grey one (the model), a cream sheet (a pasted file), more of each, in a tidy grid. A thin ruler along the edge ticks up as they land, labelled in tokens. | "everything you say" / "everything it says" / "every file you paste" / "measured in tokens" | Everything you say, everything it says, every file you paste: it all lands on the desk, measured in tokens, rough chunks of words. And that desk is all the model can see. |
+| 3 | 13-24 | The desk is full. New cards keep landing at the top, and the bottom row slides off the edge, tips, and falls into the dark. One falling card is tagged "the decision from an hour ago", another "the file it read this morning". The model's new reply lands, oblivious. | "fixed size" / "oldest pages slide off" | The desk has a fixed size. When it fills, the oldest pages slide off. The decision from an hour ago. The file it read this morning. Gone, without a word. |
+| 4 | 24-34 | Pull back a little: the desk is covered, cards overlapping, half of them dimmed. Two cards are pulled forward side by side: "use Postgres" and "switched to SQLite", one old and faded, one new; the model's reply quotes the faded one. | "crowded desk, sloppy work" | Even before it's full, a crowded desk makes it sloppy. It mixes up what's current and what's old. That's why a long chat gets dumber. |
+| 5 | 34-44 | A clean sweep: the cards slide away and the desk is bare and bright again. One blue card lands squarely in the middle: a short brief. | "a fresh chat is a clean desk" / "sharp. and blank." | So a fresh chat isn't a failure. It's a clean desk. Sharp, and blank. Whatever it needs to know, you put back on the desk. |
+| 6 | 44-50 | The notebook beside the desk opens: a few neat lines. Cards on the desk come and go; the notebook stays. In the Dandy variant it turns purple here and its light settles behind the end card. | "the desk is for working" / "keep the record off the desk" | The desk is for working. Keep the record somewhere that doesn't slide off. |
+| 7 | 50-54 | End card without Dandy Man: hat, wordmark, dandylabs.dev, 14-day free trial. | | (variant A, no mention) nothing. (variant B) That's what Dandy is for. |
 
 ## Narration, read straight through
 
 Every AI chat has a desk.
 It's called the context window.
 
-Everything you say.
-Everything it says back.
-Every file you paste in.
-It all lands on the desk, and it's measured in tokens, roughly chunks of words.
-That desk is all the model can see.
-Nothing else exists.
+Everything you say, everything it says, every file you paste:
+it all lands on the desk, measured in tokens, rough chunks of words.
+And that desk is all the model can see.
 
 The desk has a fixed size.
-When it fills up, the oldest pages slide off the edge.
-The decision you made an hour ago.
+When it fills, the oldest pages slide off.
+The decision from an hour ago.
 The file it read this morning.
-Gone, usually without a word.
+Gone, without a word.
 
-And even before it's full, a crowded desk makes it sloppy.
-It skims.
+Even before it's full, a crowded desk makes it sloppy.
 It mixes up what's current and what's old.
-That's why a long chat gets dumber the longer it runs.
+That's why a long chat gets dumber.
 
 So a fresh chat isn't a failure.
 It's a clean desk.
-Fast and sharp, and completely blank.
-Whatever you want it to know, you have to put back on the desk.
+Sharp, and blank.
+Whatever it needs to know, you put back on the desk.
 
 The desk is for working.
 Keep the record somewhere that doesn't slide off.
@@ -80,4 +76,4 @@ Keep the record somewhere that doesn't slide off.
 
 1. Variant A (no Dandy in the narration, the end card alone carries the brand) or variant B (one closing line, "That's what Dandy is for")? I'd ship A: the end card already says it, and the video travels further as pure teaching.
 2. The desk look is my proposal for the style. The alternative is a chalk-on-slate diagram look, more classroom than desk. Happy to sketch both as stills before building.
-3. Length: 120 words is about 52 s at your pace. If you want it under 45 s, beat 2 can lose "Nothing else exists" and beat 4 can lose "It skims."
+3. Length: 135 words is about 55 s at your pace. If you want it under 45 s, beat 3 can drop the two example lines (the decision, the file) and beat 5 can drop "Sharp, and blank."

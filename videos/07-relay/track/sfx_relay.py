@@ -142,7 +142,7 @@ def build_bed(events, runs, total, path, crowd_swell=None):
     for at, name, gain, pan in events:
         put(SOUNDS[name](gain), at, pan)
     peak = max(np.abs(L).max(), np.abs(R).max(), 1e-6)
-    st = np.stack([L, R], 1)[:int(SR * total)] / peak * 0.89
+    st = np.stack([L, R], 1)[:int(SR * total)] / peak * 0.63   # about 3 dB under the first cut, leaving room for the voice
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)

@@ -1,6 +1,6 @@
-"""Renderer for video 06, The Relay. Vertical 1080x1920 only.
+"""Renderer for video 07, The Relay. Vertical 1080x1920 only.
 
-Usage:  python3 videos/06-relay/track/render_relay.py [--preview] [--stills] [--final]
+Usage:  python3 videos/07-relay/track/render_relay.py [--preview] [--stills] [--final]
 
 Timeline (global seconds, shot ids in SHOTS):
   s1a 0.0-1.3   feet at full speed, tight and low, splashes on the wet track
@@ -669,7 +669,7 @@ def render(preview=False, stills=False, final=False):
     wav = os.path.join(out, "relay-bed.wav")
     ev, runs = sound_plan()
     sfx_relay.build_bed(ev, runs, TOTAL, wav, crowd_swell=SHOT_START["s5b"] + FINISH_CROSS)
-    mp4 = os.path.join(out, "06-relay-vertical.mp4")
+    mp4 = os.path.join(out, "07-relay-vertical.mp4")
     fps = FPS // step
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png"), "-i", wav,
            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18" if final else "20", "-preset", "slow" if final else "medium",

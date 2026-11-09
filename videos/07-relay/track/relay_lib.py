@@ -1,4 +1,4 @@
-"""Drawing for video 06, The Relay: a night track meet, all in code.
+"""Drawing for video 07, The Relay: a night track meet, all in code.
 
 Side view: a dark sky with floodlight towers, empty stands, a barrier, and a wet track whose lanes recede in
 perspective; the floodlights streak down the wet surface. Layers are pre-rendered as tileable strips and scrolled
@@ -339,6 +339,7 @@ def draw_runner(frame, x, ground_y, s, pose, facing=1, hand=None, baton=0.0, ref
         return None
     near = np.zeros((bh, bw), np.uint8)
     far = np.zeros((bh, bw), np.uint8)
+    fist = np.zeros((bh, bw), np.uint8)       # the fist around the baton, drawn after it so the hand holds it
 
     def P(k):
         jx, jy = J[k]
@@ -395,10 +396,12 @@ def draw_runner(frame, x, ground_y, s, pose, facing=1, hand=None, baton=0.0, ref
             cv2.line(near, (int((px - bx0) * 4), int((py - by0) * 4)), (int((tx - bx0) * 4), int((ty - by0) * 4)), 255,
                      max(1, int(0.016 * s)), cv2.LINE_AA, shift=2)
         else:
-            cv2.circle(near, (int((px + dx * 0.02 * s - bx0) * 4), int((py + dy * 0.02 * s - by0) * 4)), int(0.034 * s * 4), 255, -1, cv2.LINE_AA, shift=2)
+            fist_img = fist if baton > 0 else near
+            cv2.circle(fist_img, (int((px + dx * 0.02 * s - bx0) * 4), int((py + dy * 0.02 * s - by0) * 4)), int(0.036 * s * 4), 255, -1, cv2.LINE_AA, shift=2)
     nf = near.astype(np.float32) / 255
     ff = far.astype(np.float32) / 255
-    allm = np.maximum(nf, ff)
+    fm = fist.astype(np.float32) / 255
+    allm = np.maximum(np.maximum(nf, ff), fm)
     if reflect:
         gy = ground_y - by0
         rh = min(bh - 1, gy), int(s * 0.9)
@@ -426,6 +429,14 @@ def draw_runner(frame, x, ground_y, s, pose, facing=1, hand=None, baton=0.0, ref
         comp(frame, RIM, np.clip(rimm * 1.25, 0, 1), bx0, by0)
     if baton > 0:
         draw_baton(frame, sw, ang, facing, s, baton)
+        if fm.any():
+            # the fist closes over the middle of the baton; its rim picks up the floodlight and a touch of purple
+            comp(frame, BODY, fm, bx0, by0)
+            d = int(min(7, max(2, s * 0.011)))
+            lit = np.clip(fm - np.roll(np.roll(allm, d, axis=0), facing * d, axis=1), 0, 1)
+            comp(frame, RIM, np.clip(cv2.GaussianBlur(lit, (0, 0), 1.0) * rim * tone * 1.2, 0, 1), bx0, by0)
+            edge = np.clip(fm - cv2.erode(fm, np.ones((3, 3), np.uint8), iterations=max(1, d // 2)), 0, 1)
+            comp(frame, BATON, np.clip(edge * 0.45 * baton, 0, 1), bx0, by0)
     return sw
 
 

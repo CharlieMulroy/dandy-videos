@@ -77,3 +77,12 @@ Keep the record somewhere that doesn't slide off.
 1. Variant A (no Dandy in the narration, the end card alone carries the brand) or variant B (one closing line, "That's what Dandy is for")? I'd ship A: the end card already says it, and the video travels further as pure teaching.
 2. The desk look is my proposal for the style. The alternative is a chalk-on-slate diagram look, more classroom than desk. Happy to sketch both as stills before building.
 3. Length: 135 words is about 55 s at your pace. If you want it under 45 s, beat 3 can drop the two example lines (the decision, the file) and beat 5 can drop "Sharp, and blank."
+
+## Build notes
+
+### v1 (first preview)
+- Renderer: `desk/render_desk.py`. Warm wooden desk on slate, lamp pool, token ruler along the left edge, closed notebook top right. Cards are index cards: blue = you, grey = model, cream = file.
+- Scenes: s1 empty desk (5 s), s2 cards land with ruler filling (8 s), s3 desk fills to 24 cards then the oldest rows tip off the bottom edge with tags (11 s), s4 crowded desk, "use Postgres" faded beside "switched to SQLite", model card "Setting up Postgres" with a red strike and "the old one" (10 s), s5 sweep clean, brief card lands (10 s), s6 notebook opens over the desk with the written record, cards keep cycling (6 s), end card without Dandy Man (4.5 s). Total 54.5 s.
+- Beat labels sit in the top safe area at 44 px. Captions placeholder-timed from the beat table; real timings come from `voiceover/desk.json` once narration is recorded.
+- Sound bed only: card taps, slides, the fall off the edge, a sweep, a page turn, end tone. No narration (Charlie records).
+- Copy QA passes (max 12 words per caption after splitting the tokens line).

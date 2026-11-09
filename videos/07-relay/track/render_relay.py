@@ -631,7 +631,7 @@ def sound_plan():
     return ev, runs
 
 
-def render(preview=False, stills=False, final=False):
+def render(preview=False, stills=False, final=False, audio_only=False):
     out = os.path.join(VIDEO, "out")
     os.makedirs(out, exist_ok=True)
     problems = copy_qa()
@@ -642,6 +642,8 @@ def render(preview=False, stills=False, final=False):
     if problems:
         print("QA FAILED:", problems)
         return False
+    if audio_only:
+        return remux_audio(out)
     tmp = tempfile.mkdtemp(prefix="dandy-relay-")
     step = 3 if preview else 1
     n = 0
@@ -680,6 +682,18 @@ def render(preview=False, stills=False, final=False):
     mp4 = os.path.join(out, "07-relay-vertical.mp4")
     fps = FPS // step
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png"), "-i", wav]
+    cmd += audio_args()
+    cmd += ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18" if final else "20", "-preset", "slow" if final else "medium",
+            "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", mp4]
+    subprocess.run(cmd, check=True)
+    shutil.rmtree(tmp)
+    print(f"rendered {mp4} ({n} frames, {TOTAL:.1f} s)")
+    return True
+
+
+def audio_args():
+    """ffmpeg inputs and mapping for the voice over the ducked bed (inputs 0 video, 1 bed already given)."""
+    cmd = []
     if VO:
         # voice: trimmed to the offset, high-passed, brought to about -16 LUFS; the bed ducks 8 dB under it
         cmd += ["-i", os.path.join(ROOT, VO["file"])]
@@ -689,11 +703,23 @@ def render(preview=False, stills=False, final=False):
               f"[v][bd]amix=inputs=2:normalize=0:duration=longest,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 1.2}:d=1.2,"
               f"alimiter=limit=0.89:level=0[a]")
         cmd += ["-filter_complex", fc, "-map", "0:v", "-map", "[a]"]
-    cmd += ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18" if final else "20", "-preset", "slow" if final else "medium",
-            "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", mp4]
+    else:
+        cmd += ["-map", "0:v", "-map", "1:a"]
+    return cmd
+
+
+def remux_audio(out):
+    """Rebuild the sound bed and mix, keep the rendered picture as it is."""
+    mp4 = os.path.join(out, "07-relay-vertical.mp4")
+    wav = os.path.join(out, "relay-bed.wav")
+    ev, runs = sound_plan()
+    sfx_relay.build_bed(ev, runs, TOTAL, wav, crowd_swell=SHOT_START["s5b"] + FINISH_CROSS)
+    src = os.path.join(out, "07-relay-video-only.mp4")
+    shutil.copy(mp4, src)
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", src, "-i", wav] + audio_args() + ["-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", mp4]
     subprocess.run(cmd, check=True)
-    shutil.rmtree(tmp)
-    print(f"rendered {mp4} ({n} frames, {TOTAL:.1f} s)")
+    os.remove(src)
+    print(f"remuxed audio into {mp4}")
     return True
 
 
@@ -702,5 +728,6 @@ if __name__ == "__main__":
     ap.add_argument("--preview", action="store_true")
     ap.add_argument("--stills", action="store_true")
     ap.add_argument("--final", action="store_true")
+    ap.add_argument("--audio-only", action="store_true", help="rebuild the sound and remux onto the last render")
     a = ap.parse_args()
-    sys.exit(0 if render(a.preview, a.stills, a.final) else 1)
+    sys.exit(0 if render(a.preview, a.stills, a.final, a.audio_only) else 1)

@@ -113,6 +113,8 @@ def crowd(total, gain=0.12, swell_at=None):
     return norm(x * mod, gain)
 
 
+FOOTFALL_GAIN = 0.7   # Charlie, Nov 8: footsteps 30% quieter
+
 SOUNDS = dict(footfall=footfall, scuff=scuff, breath=breath, pistol=pistol, slap=slap, tone=tone, beep=beep, whoosh=whoosh)
 
 
@@ -136,7 +138,7 @@ def build_bed(events, runs, total, path, crowd_swell=None):
         k = 0
         tt = start
         while tt < end:
-            put(footfall(gain * rng.uniform(0.8, 1.05), wet=rng.uniform(0.7, 1.2)), tt, 0.25 if k % 2 else -0.25)
+            put(footfall(gain * FOOTFALL_GAIN * rng.uniform(0.8, 1.05), wet=rng.uniform(0.7, 1.2)), tt, 0.25 if k % 2 else -0.25)
             k += 1
             tt += 1.0 / rate * rng.uniform(0.96, 1.04)
     for at, name, gain, pan in events:

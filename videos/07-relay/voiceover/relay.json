@@ -1,0 +1,13 @@
+{
+  "file": "videos/07-relay/voiceover/charlie-raw.wav",
+  "offset_s": 3.2,
+  "note": "Charlie's Descript export (Relay_Finished.wav, Nov 8). The first 3.2 s are trimmed so 'Every session is brilliant' lands at 4.0 s. Lines found by energy segmentation plus pocketsphinx; times below are video seconds.",
+  "lines": [
+    [4.03, 5.55, "Every session is brilliant."], [6.76, 8.30, "Every session starts cold."],
+    [11.01, 12.05, "Look at the whole track."], [12.96, 14.17, "Every lane drops it."], [14.93, 15.99, "Some stop running."],
+    [16.82, 18.72, "Nobody is carrying what the last runner knew."], [21.39, 22.62, "Dandy is the baton."],
+    [23.54, 26.57, "It holds where the project is, what changed, and what's next."],
+    [27.73, 29.41, "So the next runner starts at speed."], [29.98, 30.93, "Not from the blocks."],
+    [31.80, 33.60, "Stop restarting."], [34.27, 36.25, "Start handing off."]
+  ]
+}

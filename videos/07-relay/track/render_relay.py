@@ -437,7 +437,9 @@ def handoff_shot(t, dur, ex_at, leg_from, leg_to, base, show_from_baton=True):
 
 
 def race_clock(tg):
-    return 0.44 + (tg - 20.0) * 2.2
+    """Race time on the board from the pistol at 20 s; scaled so the baton crosses the line at 37.84."""
+    cross = SHOT_START["s5b"] + FINISH_CROSS
+    return 0.44 + (tg - 20.0) * (37.84 - 0.44) / (cross - 20.0)
 
 
 # ---------------------------------------------------------------- s5: away and home
@@ -534,7 +536,7 @@ SHOTS = [
     ("s4a", 2.0, lambda t, d: shot_hand(t, d, baton_at=0.45)),
     ("s4b", 4.75, lambda t, d: handoff_shot(t, d, 1.9, 1, 2, 120000)),
     ("s4c", 5.25, lambda t, d: handoff_shot(t, d, 1.5, 2, 3, 150000)),
-    ("s5a", 3.5, lambda t, d: shot_away(t, d)),
+    ("s5a", 2.7, lambda t, d: shot_away(t, d)),
     ("s5b", 4.5, lambda t, d: shot_finish(t, d)),
     ("end", 4.5, None),
 ]
@@ -552,6 +554,12 @@ CAPTIONS = [(4.0, 6.6, "Every session is brilliant."), (6.8, 9.6, "Every session
             (23.4, 27.4, "It holds where the project is, what changed, and what's next."),
             (27.6, 29.8, "So the next runner starts at speed."), (29.9, 31.8, "Not from the blocks."),
             (34.0, 38.8, "Stop restarting. Start handing off.")]
+VO_PATH = os.path.join(VIDEO, "voiceover", "relay.json")
+VO = None
+if os.path.exists(VO_PATH):
+    with open(VO_PATH) as _f:
+        VO = json.load(_f)
+    CAPTIONS = [(s - 0.05, e + 0.35, txt) for s, e, txt in VO["lines"]]
 BOARD_TEXT = ["LEG 1 OF 4", "LEG 2 OF 4", "LEG 3 OF 4", "LEG 4 OF 4", "FINISH"]
 
 # finish-pass settings per shot: (shake, bloom, grain, vignette, drift)
@@ -671,9 +679,18 @@ def render(preview=False, stills=False, final=False):
     sfx_relay.build_bed(ev, runs, TOTAL, wav, crowd_swell=SHOT_START["s5b"] + FINISH_CROSS)
     mp4 = os.path.join(out, "07-relay-vertical.mp4")
     fps = FPS // step
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png"), "-i", wav,
-           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18" if final else "20", "-preset", "slow" if final else "medium",
-           "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", mp4]
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png"), "-i", wav]
+    if VO:
+        # voice: trimmed to the offset, high-passed, brought to about -16 LUFS; the bed ducks 8 dB under it
+        cmd += ["-i", os.path.join(ROOT, VO["file"])]
+        fc = (f"[2:a]atrim=start={VO['offset_s']},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,"
+              f"highpass=f=70,volume={VO.get('voice_db', 7.5)}dB,asplit=2[v][vk];"
+              f"[1:a]volume={VO.get('bed_db', -2.0)}dB[b];[b][vk]sidechaincompress=threshold=0.03:ratio=5:attack=20:release=350[bd];"
+              f"[v][bd]amix=inputs=2:normalize=0:duration=longest,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 1.2}:d=1.2,"
+              f"alimiter=limit=0.89:level=0[a]")
+        cmd += ["-filter_complex", fc, "-map", "0:v", "-map", "[a]"]
+    cmd += ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18" if final else "20", "-preset", "slow" if final else "medium",
+            "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", mp4]
     subprocess.run(cmd, check=True)
     shutil.rmtree(tmp)
     print(f"rendered {mp4} ({n} frames, {TOTAL:.1f} s)")

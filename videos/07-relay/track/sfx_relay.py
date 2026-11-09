@@ -122,14 +122,16 @@ def build_bed(events, runs, total, path, crowd_swell=None):
     n = int(SR * total) + SR
     L = np.zeros(n, np.float32)
     R = np.zeros(n, np.float32)
+    FL = np.zeros(n, np.float32)
+    FR = np.zeros(n, np.float32)
 
-    def put(x, at, pan):
+    def put(x, at, pan, l=L, r=R):
         i = int(at * SR)
         if i >= n:
             return
         x = x[:n - i]
-        L[i:i + len(x)] += x * math.cos((pan + 1) * math.pi / 4) * 1.41
-        R[i:i + len(x)] += x * math.sin((pan + 1) * math.pi / 4) * 1.41
+        l[i:i + len(x)] += x * math.cos((pan + 1) * math.pi / 4) * 1.41
+        r[i:i + len(x)] += x * math.sin((pan + 1) * math.pi / 4) * 1.41
 
     c = crowd(total + 1, 0.10, crowd_swell)
     L[:len(c)] += c
@@ -138,12 +140,15 @@ def build_bed(events, runs, total, path, crowd_swell=None):
         k = 0
         tt = start
         while tt < end:
-            put(footfall(gain * FOOTFALL_GAIN * rng.uniform(0.8, 1.05), wet=rng.uniform(0.7, 1.2)), tt, 0.25 if k % 2 else -0.25)
+            put(footfall(gain * rng.uniform(0.8, 1.05), wet=rng.uniform(0.7, 1.2)), tt, 0.25 if k % 2 else -0.25, FL, FR)
             k += 1
             tt += 1.0 / rate * rng.uniform(0.96, 1.04)
     for at, name, gain, pan in events:
         put(SOUNDS[name](gain), at, pan)
-    peak = max(np.abs(L).max(), np.abs(R).max(), 1e-6)
+    # normalise against the full-level mix so FOOTFALL_GAIN changes only the footsteps, not the rest of the bed
+    peak = max(np.abs(L + FL).max(), np.abs(R + FR).max(), 1e-6)
+    L += FL * FOOTFALL_GAIN
+    R += FR * FOOTFALL_GAIN
     st = np.stack([L, R], 1)[:int(SR * total)] / peak * 0.63   # about 3 dB under the first cut, leaving room for the voice
     with wave.open(path, "wb") as w:
         w.setnchannels(2)

@@ -3,8 +3,10 @@
 Code-generated marketing videos for Dandy (dandylabs.dev).
 
 Every video is rendered by the same Python template from a scene spec, using the shared
-Style Contract and Cast. Rules live in Dandy (product "Dandy Marketing", id 35809f49-b7df-47fd-bdfb-5429ea6b7576);
-this repo holds the files those rules point at. Dandy invariants 2, 3 and 4 are enforced by
+Style Contract and Cast. Rules live in Dandy (product "Dandy Video Studio", id 76b2c63d-6c85-40f9-ad13-f11094f0897d, from Nov 11, 2026);
+this repo holds the files those rules point at. The Studio graph models the machine once (rules, shared engine,
+one node per look, release); each video is a row in `videos/catalog.json`, not a set of nodes. The older product
+"Dandy Marketing" (id 35809f49-b7df-47fd-bdfb-5429ea6b7576) holds the per-video chains for 01 to 09 as history. Dandy invariants 2, 3 and 4 are enforced by
 `render/checks.py`; report each run's results back to Dandy after rendering.
 
 ```
@@ -21,7 +23,9 @@ Rendered MP4s are not committed; they go to the shared drive and Dandy stores th
 
 ## Picking this up in a new session
 
-1. Read the Dandy product "Dandy Marketing" (get_product) for the rules and the state of each video.
+1. Read the Dandy product "Dandy Video Studio" (get_product) for the rules and the machine, and `videos/catalog.json` for the state of each video.
+   A new video adds a catalog row, and a Look node in Dandy only if it needs a new visual style. Keep both current as work happens.
+   Rendered MP4s go to the Google Drive folder "Dandy videos"; put the link in the catalog row.
 2. Clone this repo. `pip install cairosvg pillow pocketsphinx`; ffmpeg and the Inter font must be present.
 3. Smoke test: `python3 render/render.py videos/00-render-test --preview` must pass QA.
 4. New video: copy `videos/01-why-dandy/` as a template (script.md, scenes.json, captions.json, voiceover/).

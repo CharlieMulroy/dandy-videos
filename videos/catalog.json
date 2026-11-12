@@ -1,0 +1,173 @@
+{
+  "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
+  "updated": "2026-11-11",
+  "videos": [
+    {
+      "number": "01",
+      "slug": "01-why-dandy",
+      "title": "Why Dandy Exists",
+      "kind": "informational",
+      "look": "House Classroom",
+      "script_path": "videos/01-why-dandy/script.md",
+      "renderer_path": "render/render.py",
+      "duration_s": 44.6,
+      "script_status": "approved",
+      "narration_status": "recorded",
+      "render_status": "final",
+      "posted": {
+        "platforms": null,
+        "links": {}
+      },
+      "notes": "Posted as of Nov 11; platforms and links to confirm."
+    },
+    {
+      "number": "02",
+      "slug": "02-maya",
+      "title": "Maya",
+      "kind": "use_case",
+      "look": "Lofi Room and Office",
+      "script_path": "videos/02-maya/script.md",
+      "renderer_path": "videos/02-maya/lofi/render_lofi.py",
+      "duration_s": 30,
+      "script_status": "approved",
+      "narration_status": "recorded",
+      "render_status": "final",
+      "posted": {
+        "platforms": null,
+        "links": {}
+      },
+      "notes": "Posted as of Nov 11; platforms and links to confirm."
+    },
+    {
+      "number": "03",
+      "slug": "03-the-gap",
+      "title": "The Gap",
+      "kind": "informational",
+      "look": "House Classroom",
+      "script_path": "videos/03-the-gap/script.md",
+      "renderer_path": "render/render.py",
+      "duration_s": 50,
+      "script_status": "approved",
+      "narration_status": "recorded",
+      "render_status": "final",
+      "posted": {
+        "platforms": [
+          "instagram",
+          "linkedin",
+          "tiktok"
+        ],
+        "links": {}
+      },
+      "notes": "Posted Nov 3. Music mixed into the audio by Charlie."
+    },
+    {
+      "number": "04",
+      "slug": "04-context-rot",
+      "title": "Context Rot",
+      "kind": "general_concept",
+      "look": "Void",
+      "script_path": "videos/04-context-rot/script.md",
+      "renderer_path": "videos/04-context-rot/void/render_void.py",
+      "duration_s": 55,
+      "script_status": "draft",
+      "narration_status": "pending",
+      "render_status": "preview",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      },
+      "notes": "Paused; to be picked back up."
+    },
+    {
+      "number": "05",
+      "slug": "05-graveyard",
+      "title": "The Graveyard",
+      "kind": "metaphor",
+      "look": "Night Graveyard",
+      "script_path": "videos/05-graveyard/script.md",
+      "renderer_path": "videos/05-graveyard/night/render_night.py",
+      "duration_s": 54,
+      "script_status": "approved",
+      "narration_status": "recorded",
+      "render_status": "final",
+      "posted": {
+        "platforms": null,
+        "links": {}
+      },
+      "notes": "Being posted Nov 11; platforms and links to confirm."
+    },
+    {
+      "number": "06",
+      "slug": "06-new-hire",
+      "title": "The New Hire",
+      "kind": "metaphor",
+      "look": "Lofi Room and Office",
+      "script_path": "videos/06-new-hire/script.md",
+      "renderer_path": "videos/06-new-hire/lofi/render_office.py",
+      "duration_s": 38,
+      "script_status": "approved",
+      "narration_status": "recorded",
+      "render_status": "final",
+      "posted": {
+        "platforms": null,
+        "links": {}
+      },
+      "notes": "Posted as of Nov 11; platforms and links to confirm."
+    },
+    {
+      "number": "07",
+      "slug": "07-relay",
+      "title": "The Relay",
+      "kind": "metaphor",
+      "look": "Night Track",
+      "script_path": "videos/07-relay/script.md",
+      "renderer_path": "videos/07-relay/track/render_relay.py",
+      "duration_s": 44,
+      "script_status": "approved",
+      "narration_status": "recorded",
+      "render_status": "final",
+      "posted": {
+        "platforms": null,
+        "links": {}
+      },
+      "notes": "Posted as of Nov 11 (YouTube Shorts on Nov 9); other platforms and links to confirm."
+    },
+    {
+      "number": "08",
+      "slug": "08-context-windows",
+      "title": "Context Windows",
+      "kind": "general_concept",
+      "look": "Desk",
+      "script_path": "videos/08-context-windows/script.md",
+      "renderer_path": "videos/08-context-windows/desk/render_desk.py",
+      "duration_s": 54.5,
+      "script_status": "draft",
+      "narration_status": "pending",
+      "render_status": "preview",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      },
+      "notes": "Variant A (no Dandy in the narration). Waiting on narration."
+    },
+    {
+      "number": "09",
+      "slug": "09-diamonds",
+      "title": "Just the Diamonds",
+      "kind": "metaphor",
+      "look": "Vault",
+      "script_path": "videos/09-diamonds/script.md",
+      "renderer_path": "videos/09-diamonds/vault/render_diamonds.py",
+      "duration_s": 26.5,
+      "script_status": "approved",
+      "narration_status": "pending",
+      "render_status": "preview",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      },
+      "notes": "Preview v1 approved as the final look Nov 11. Waiting on narration. Drive copy is a compressed preview.",
+      "drive_link": "https://drive.google.com/file/d/1VajpQlIR17SsB8P7F1PVIZBo1yMk6IsQ/view"
+    }
+  ]
+}

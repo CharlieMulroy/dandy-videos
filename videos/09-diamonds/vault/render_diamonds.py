@@ -625,18 +625,22 @@ HOP_T0, HOP_GAP = 1.0, 0.38
 HOP_SEQ = [0, 2, 1, 3, 2, 0, 3, 1]
 
 
+HOP_TIMES = [1.0, 1.4, 1.8, 2.2, 2.6, 3.0]   # scene-relative arrivals; voiceover json "hops" sets them on the music's kicks
+
+
 def s5_target(k):
     g = S5_GEMS[HOP_SEQ[k % len(HOP_SEQ)]]
     return g[0], g[1] - 6
 
 
 def s5_cursor(t):
-    if t < HOP_T0:
-        a, b = (540, 760), s5_target(0)
-        return _arc(a, b, smooth(t / HOP_T0), h=0)
-    k = int((t - HOP_T0) // HOP_GAP)
-    p = ease_out(((t - HOP_T0) % HOP_GAP) / 0.14)
-    return _arc(s5_target(k), s5_target(k + 1), p, h=40)
+    T = HOP_TIMES
+    if t < T[0]:
+        return _arc((540, 760), s5_target(0), smooth(t / T[0]), h=0)
+    k = max(i for i in range(len(T)) if T[i] <= t)
+    if k + 1 < len(T) and t > T[k + 1] - 0.12:
+        return _arc(s5_target(k), s5_target(k + 1), ease_out((t - (T[k + 1] - 0.12)) / 0.12), h=40)
+    return s5_target(k)
 
 
 def s5(t, dur):
@@ -646,15 +650,20 @@ def s5(t, dur):
         y = fall_y(t, at, gy)
         if y is None:
             continue
-        near = clamp(1 - math.hypot(cx - gx, cy - gy) / 50) if t > HOP_T0 else 0
+        hit = max([h for h in HOP_TIMES if h <= t], default=None)
+        near = clamp(1 - math.hypot(cx - gx, cy - gy) / 50) * (1 - clamp((t - hit) / 0.3)) if hit is not None else 0
         draw_gem(img, gx, y, 70, glint=0.5 + 0.4 * math.sin(t * 2.8 + gx), flash=near)
     cursor(img, s5_cursor, t, trail=5, trail_dt=0.025)
     labels(img, t, [("just the diamonds", 0.6)])
     return img
 
 
+END_IN = (0.5, 1.0, 0.6, 0.9, 0.25, 0.5)   # logo at, bg fade, logo fade, lines at, line gap, line fade
+
+
 def end_card(last, t):
-    p = ease_out(t / 1.0)
+    logo_at, bg_fade, logo_fade, lines_at, line_gap, line_fade = END_IN
+    p = ease_out(t / bg_fade)
     bg = last.filter(ImageFilter.GaussianBlur(int(16 * p)))
     bg.alpha_composite(Image.new("RGBA", bg.size, PURPLE_BG + (int(222 * p),)))
     glow = Image.new("RGBA", bg.size, (0, 0, 0, 0))
@@ -662,7 +671,7 @@ def end_card(last, t):
     bg.alpha_composite(glow.filter(ImageFilter.GaussianBlur(130)))
     d = ImageDraw.Draw(bg)
     sizes = CONTRACT["type"]["vertical"]
-    a = ease_out((t - 0.5) / 0.6)
+    a = ease_out((t - logo_at) / logo_fade) if t >= logo_at else 0
     if a > 0:
         hat = Image.open(os.path.join(ROOT, "motifs", "logo-hat-light.png")).convert("RGBA")
         hh = int(H * 0.11)
@@ -677,7 +686,7 @@ def end_card(last, t):
         yy = ty + fh.size * 1.1 + 60
         gold = tuple(int(PAL["accent_gold"][i:i + 2], 16) for i in (1, 3, 5))
         for i, line in enumerate(CONTRACT["copy_rules"]["end_card_lines"]):
-            b = ease_out((t - 0.9 - 0.25 * i) / 0.5)
+            b = ease_out((t - lines_at - line_gap * i) / line_fade)
             fl = font("Inter-Medium.otf", sizes["body" if i == 0 else "caption"])
             lw = d.textlength(line, font=fl)
             d.text((W / 2 - lw / 2, yy), line, font=fl, fill=(gold if i == 1 else PURPLE_SOFT) + (int(255 * b),))
@@ -708,11 +717,16 @@ def apply_timing():
         return None
     with open(p) as f:
         vo = json.load(f)
+    global CAPTIONS
     for i, (sid, dur, fn) in enumerate(SCENES):
         if sid in vo.get("durations", {}):
             SCENES[i] = (sid, float(vo["durations"][sid]), fn)
             DUR[sid] = SCENES[i][1]
-    global CAPTIONS
+    global END_IN
+    if "hops" in vo:
+        HOP_TIMES[:] = vo["hops"]
+    if "end_in" in vo:
+        END_IN = tuple(vo["end_in"])
     if "lines" in vo:
         CAPTIONS = [(s - 0.05, e + 0.3, tx) for s, e, tx in vo["lines"]]
     return vo
@@ -909,11 +923,10 @@ def build_bed(path, total, starts):
     put(snd_ting(0.3, 2093), s4 + DROP_T + 0.25, pan=0.4)
     for gx, gy, at in S5_GEMS:
         put(snd_ting(0.16, 1760 + (gx - 400)), s5 + at + 0.35, pan=(gx - 540) / 400)
-    k = 0
-    while HOP_T0 + k * HOP_GAP + 0.12 < DUR['s5'] - 0.1:
-        put(snd_tick(0.22), s5 + HOP_T0 + k * HOP_GAP + 0.12)
-        k += 1
-    put(snd_tone(0.22), starts["end"] + 0.5)
+    for h in HOP_TIMES:
+        if h < DUR['s5'] - 0.05:
+            put(snd_tick(0.22), s5 + h)
+    put(snd_tone(0.3), starts["end"] + END_IN[0])
     peak = max(np.abs(L).max(), np.abs(R).max(), 1e-6)
     st = np.stack([L, R], 1)[:int(SR * total)] / peak * 0.6
     with wave.open(path, "wb") as w:
@@ -979,8 +992,11 @@ def render(preview=False, stills=False, final=False, audio_only=False):
     cmd = ["ffmpeg", "-y", "-loglevel", "error"] + vid_in + ["-i", wav]
     if vo and vo.get("file") and not preview:
         cmd += ["-i", os.path.join(ROOT, vo["file"])]
+        hp = "" if vo.get("mixed") else "highpass=f=70,"
+        ff = vo.get("file_fade_out")
+        tail = f"afade=t=out:st={ff[0]}:d={ff[1]}," if ff else ""
         fc = (f"[2:a]atrim=start={vo.get('offset_s', 0)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,"
-              f"highpass=f=70,volume={vo.get('voice_db', 7.5)}dB,apad=whole_dur={total},asplit=2[v][vk];[1:a]volume={vo.get('bed_db', 0)}dB[b];"
+              f"{hp}{tail}volume={vo.get('voice_db', 7.5)}dB,apad=whole_dur={total},asplit=2[v][vk];[1:a]volume={vo.get('bed_db', 0)}dB[b];"
               f"[b][vk]sidechaincompress=threshold=0.03:ratio=4:attack=20:release=350[bd];"
               f"[v][bd]amix=inputs=2:normalize=0:duration=longest,atrim=0:{total},afade=t=out:st={total - 1.2}:d=1.2,alimiter=limit=0.89:level=0[a]")
         cmd += ["-filter_complex", fc, "-map", "0:v", "-map", "[a]"]

@@ -158,15 +158,15 @@
       "look": "Vault",
       "script_path": "videos/09-diamonds/script.md",
       "renderer_path": "videos/09-diamonds/vault/render_diamonds.py",
-      "duration_s": 23.4,
+      "duration_s": 24.1,
       "script_status": "approved",
       "narration_status": "recorded",
-      "render_status": "preview",
+      "render_status": "final",
       "posted": {
         "platforms": [],
         "links": {}
       },
-      "notes": "Narrated cut rendered Nov 12 from Charlie's take (voice only: the export had no music). Waiting on a re-export with the music and beat drop for the final. Drive link is the earlier silent preview.",
+      "notes": "Final rendered Nov 12 with Charlie's narration and music master: cursor hops land on the music's kicks and the end card cuts in on the beat drop at 21.47 s. Awaiting Charlie's sign-off and posting. Drive link is the earlier silent preview; the final is over the connector's upload size limit.",
       "drive_link": "https://drive.google.com/file/d/1VajpQlIR17SsB8P7F1PVIZBo1yMk6IsQ/view"
     }
   ]

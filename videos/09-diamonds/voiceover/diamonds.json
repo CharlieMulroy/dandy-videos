@@ -1,16 +1,16 @@
 {
- "file": "videos/09-diamonds/voiceover/charlie-music.wav",
+ "file": "videos/09-diamonds/voiceover/charlie-with-music.wav",
  "offset_s": 0.0,
- "note": "Charlie's Descript export 'Fun_Diamonds.wav' (Nov 12). Voice only, mono: the export carries no music, and its last 1.9 s are silence left for a beat drop. Line times from the speech-band envelope and align.py chunk bounds.",
+ "note": "Charlie's Descript export 'Fun_Diamond_Music.wav' (Nov 12): voice with his music bed, mono. Same timing as charlie-voice-only.wav (cross-correlation lag 0). The music builds on kicks at 19.60, 20.05, 20.55, 20.90 and 21.25 s and drops at 21.47 s; the file ends at 22.61 s. The cursor hops land on the kicks and the end card cuts in on the drop.",
  "voice_db": 2.0,
- "bed_db": -7.0,
+ "bed_db": -12.0,
  "durations": {
   "s1": 3.3,
   "s2": 3.15,
   "s3": 5.95,
   "s4": 5.75,
-  "s5": 2.35,
-  "end": 3.0
+  "s5": 3.32,
+  "end": 2.7
  },
  "lines": [
   [
@@ -63,5 +63,26 @@
    20.15,
    "It holds just the diamonds."
   ]
+ ],
+ "mixed": true,
+ "file_fade_out": [
+  22.4,
+  0.2
+ ],
+ "hops": [
+  1.0,
+  1.45,
+  1.9,
+  2.4,
+  2.75,
+  3.1
+ ],
+ "end_in": [
+  0.0,
+  0.18,
+  0.2,
+  0.3,
+  0.2,
+  0.3
  ]
 }

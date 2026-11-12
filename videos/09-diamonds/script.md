@@ -15,7 +15,7 @@ cuts, no slow builds.
 
 **Audience:** individual builders using Claude Code. No terms to define.
 
-**Target length:** 23.5 s as recorded (50 narrated words). Still the shortest video so far. Status: v3 approved Nov 11, narrated Nov 12; was for
+**Target length:** 24.1 s as recorded (50 narrated words). Still the shortest video so far. Status: v3 approved Nov 11, narrated and scored Nov 12; was for
 Charlie's review. No render until the words are approved.
 
 | # | Sec | Visual | On-screen text | Narration |

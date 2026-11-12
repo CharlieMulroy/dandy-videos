@@ -1,0 +1,67 @@
+{
+ "file": "videos/09-diamonds/voiceover/charlie-music.wav",
+ "offset_s": 0.0,
+ "note": "Charlie's Descript export 'Fun_Diamonds.wav' (Nov 12). Voice only, mono: the export carries no music, and its last 1.9 s are silence left for a beat drop. Line times from the speech-band envelope and align.py chunk bounds.",
+ "voice_db": 2.0,
+ "bed_db": -7.0,
+ "durations": {
+  "s1": 3.3,
+  "s2": 3.15,
+  "s3": 5.95,
+  "s4": 5.75,
+  "s5": 2.35,
+  "end": 3.0
+ },
+ "lines": [
+  [
+   0.68,
+   2.85,
+   "Claude Code has a huge context window."
+  ],
+  [
+   3.68,
+   5.88,
+   "But it starts slipping long before it's full."
+  ],
+  [
+   6.62,
+   8.65,
+   "Because most of what's in there is junk."
+  ],
+  [
+   9.35,
+   10.05,
+   "Old file reads."
+  ],
+  [
+   10.45,
+   11.05,
+   "Error logs."
+  ],
+  [
+   11.45,
+   12.05,
+   "Dead ends."
+  ],
+  [
+   12.75,
+   14.15,
+   "So point it at Dandy:"
+  ],
+  [
+   14.58,
+   15.85,
+   "a live map of your project,"
+  ],
+  [
+   16.25,
+   17.7,
+   "kept current by your agent."
+  ],
+  [
+   18.35,
+   20.15,
+   "It holds just the diamonds."
+  ]
+ ]
+}

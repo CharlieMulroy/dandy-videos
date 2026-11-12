@@ -61,7 +61,7 @@ CASE = (470, 540, 975, 1190)         # the Dandy case, screen coords
 SHRINK = (0.58, -83.0, 373.0)        # column transform in s4: scale, offset x, offset y
 NODES = [(600, 690), (860, 820), (620, 960), (850, 1085)]      # case map: decided, built, next, the new one
 NODE_TAGS = ["what's decided", "what's built", "what's next"]
-EDGES = [(0, 1, 2.95), (0, 2, 3.35), (1, 2, 3.45), (1, 3, 6.15), (2, 3, 6.3)]   # (a, b, draw start in s4)
+EDGES = [(0, 1, 2.95), (0, 2, 3.35), (1, 2, 3.45), (1, 3, 5.4), (2, 3, 5.5)]   # (a, b, draw start in s4)
 
 
 def font(name, size):
@@ -114,7 +114,7 @@ def _chip_poly(rnd, r):
 
 
 ROW_Y0, ROW_DY, ROWS, PER_ROW = INNER[3] - 30, 52, 6, 9
-POUR_T0, POUR_SPAN = 0.15, 2.3
+POUR_T0, POUR_SPAN = 0.15, 1.75
 # the three buried diamonds: (x, y, row); they lift into the case as decided, built, next
 GEMS = [(385, 996, 4), (672, 1048, 3), (470, 1152, 1)]
 GEM_SIZE = 64
@@ -431,7 +431,7 @@ def s1(t, dur):
     return img
 
 
-SLOW_AT = 2.3
+SLOW_AT = 1.75
 
 
 def s2_phase(t):
@@ -441,7 +441,7 @@ def s2_phase(t):
 def s2_path(t):
     ph = s2_phase(t + 3.0)
     x = 540 + 165 * math.sin(4.1 * ph)
-    y = lerp(760, 1010, smooth((t - 1.4) / 1.3)) + lerp(250, 70, smooth((t - 1.4) / 1.3)) * math.sin(2.9 * ph + 1.0)
+    y = lerp(760, 1010, smooth((t - 1.0) / 1.0)) + lerp(250, 70, smooth((t - 1.0) / 1.0)) * math.sin(2.9 * ph + 1.0)
     return x, y
 
 
@@ -451,13 +451,13 @@ def s2(t, dur):
     img = place(world(t, meter), 1, 0, 0)
     slow = smooth((t - SLOW_AT) / 0.6)
     cursor(img, s2_path, t, trail=int(lerp(8, 3, slow)), dim=slow)
-    labels(img, t, [("not even half full", 2.4)])
+    labels(img, t, [("not even half full", 1.85)])
     return img
 
 
 Z_C, Z_S, Z_MAX = (540, 1060), (540, 860), 1.45
 # anchors for the junk tags: target points, resolved to the nearest piece
-_TAG_TARGETS = [("old file reads", (331, 941), 2.25), ("error logs", (725, 1000), 3.05), ("dead ends", (560, 1105), 3.85)]
+_TAG_TARGETS = [("old file reads", (331, 941), 2.85), ("error logs", (725, 1000), 3.95), ("dead ends", (560, 1105), 4.95)]
 
 
 def _nearest(pt):
@@ -481,7 +481,7 @@ def s3_xf(t):
 
 def s3_cursor_world(t):
     gx, gy, _ = GEMS[1]
-    x = lerp(330, 790, clamp(t / 5.0))
+    x = lerp(330, 790, clamp(t / DUR['s3']))
     return x, gy - 6 + 26 * math.sin(t * 1.7) + (gx - x) * 0.02
 
 
@@ -507,7 +507,7 @@ def s4_xf(t):
 
 GEM_LIFT = [1.75, 2.2, 2.65]       # gems 0, 1, 2 lift into nodes 0, 1, 2
 LIFT_DUR = 0.7
-READ_T, WORK_T, CARRY_T, DROP_T = 3.75, 4.75, 5.45, 6.05
+READ_T, WORK_T, CARRY_T, DROP_T = 3.6, 4.3, 4.85, 5.3
 CURSOR_REST = (770, 612)
 
 
@@ -616,7 +616,7 @@ def s4(t, dur):
         y = lerp(NODES[3][1] - 36, NODES[3][1], p * p)
         draw_gem(img, NODES[3][0], y, lerp(44, 74, spring(clamp((t - DROP_T) / 0.45))), glint=0.6, flash=0.6 * (1 - clamp((t - DROP_T - 0.2) / 0.5)))
     cursor(img, s4_cursor, t, trail=7)
-    labels(img, t, [("point it at Dandy", 0.3), ("a live map of your project", 2.1), ("kept current by your agent", 4.15)])
+    labels(img, t, [("point it at Dandy", 0.3), ("a live map of your project", 2.1), ("kept current by your agent", 3.85)])
     return img
 
 
@@ -688,6 +688,7 @@ def end_card(last, t):
 PURPLE_BG = tuple(int(PAL["background"][i:i + 2], 16) for i in (1, 3, 5))
 
 SCENES = [("s1", 3.0, s1), ("s2", 4.0, s2), ("s3", 5.0, s3), ("s4", 7.0, s4), ("s5", 4.0, s5), ("end", 3.5, None)]
+DUR = {sid: d for sid, d, _ in SCENES}
 CAPTIONS = [
     (0.35, 2.8, "Claude Code has a huge context window."),
     (3.3, 6.7, "But it starts slipping long before it's full."),
@@ -710,9 +711,10 @@ def apply_timing():
     for i, (sid, dur, fn) in enumerate(SCENES):
         if sid in vo.get("durations", {}):
             SCENES[i] = (sid, float(vo["durations"][sid]), fn)
+            DUR[sid] = SCENES[i][1]
     global CAPTIONS
     if "lines" in vo:
-        CAPTIONS = [(s - 0.05, e + 0.35, tx) for s, e, tx in vo["lines"]]
+        CAPTIONS = [(s - 0.05, e + 0.3, tx) for s, e, tx in vo["lines"]]
     return vo
 
 
@@ -791,25 +793,25 @@ def layout_qa(starts):
     col_box = (COL[0], COL[1], COL[2] + 50, COL[3] + 18)
     scenes = []
     sc = [dict(name="label", bbox=lab("Claude Code's context window")), dict(name="column", bbox=col_box)]
-    scenes.append(dict(id="s1", duration=3.0, laid_out=sc + caps("s1", 3.0)))
-    sc = [dict(name="label", bbox=lab("not even half full"), enter_at=2.4), dict(name="column", bbox=col_box)]
-    scenes.append(dict(id="s2", duration=4.0, laid_out=sc + caps("s2", 4.0)))
+    scenes.append(dict(id="s1", duration=DUR["s1"], laid_out=sc + caps("s1", DUR["s1"])))
+    sc = [dict(name="label", bbox=lab("not even half full"), enter_at=1.85), dict(name="column", bbox=col_box)]
+    scenes.append(dict(id="s2", duration=DUR["s2"], laid_out=sc + caps("s2", DUR["s2"])))
     sc = []
-    z = s3_xf(5.0)
+    z = s3_xf(DUR['s3'])
     for txt, i, at in JUNK_TAGS:
         p = PIECES[i]
         x, y = xf((p.x, p.y), *z)
         sc.append(dict(name=f"tag {txt}", bbox=tag_box(x, y - 62, txt, 30), enter_at=at))
-    scenes.append(dict(id="s3", duration=5.0, laid_out=sc + caps("s3", 5.0)))
+    scenes.append(dict(id="s3", duration=DUR["s3"], laid_out=sc + caps("s3", DUR["s3"])))
     sc0 = xf(COL[:2], *SHRINK) + xf((COL[2] + 50, COL[3] + 18), *SHRINK)
     sc = [dict(name="label", bbox=lab("a live map of your project")), dict(name="column", bbox=sc0),
           dict(name="case", bbox=(CASE[0], CASE[1], CASE[2], CASE[3] + 8))]
-    scenes.append(dict(id="s4", duration=7.0, laid_out=sc + caps("s4", 7.0)))
+    scenes.append(dict(id="s4", duration=DUR["s4"], laid_out=sc + caps("s4", DUR["s4"])))
     # node tags sit inside the case: check them against each other only
     inner = [dict(name=f"node tag {NODE_TAGS[i]}", bbox=tag_box(NODES[i][0], NODES[i][1] + 66, NODE_TAGS[i], 26)) for i in range(3)]
-    scenes.append(dict(id="s4-case", duration=7.0, laid_out=inner))
+    scenes.append(dict(id="s4-case", duration=DUR["s4"], laid_out=inner))
     sc = [dict(name="label", bbox=lab("just the diamonds")), dict(name="column", bbox=col_box)]
-    scenes.append(dict(id="s5", duration=4.0, laid_out=sc + caps("s5", 4.0)))
+    scenes.append(dict(id="s5", duration=DUR["s5"], laid_out=sc + caps("s5", DUR["s5"])))
     return [f"{s}: {m}" for s, m in check_layout(scenes, CONTRACT["canvases"]["vertical"], CONTRACT)]
 
 
@@ -902,13 +904,13 @@ def build_bed(path, total, starts):
         put(snd_ting(0.26, 1568 + 196 * i), s4 + st + LIFT_DUR, pan=0.4)
     for k in range(3):
         put(snd_tick(0.25), s4 + READ_T + 0.33 * (k + 1))
-    for k in range(4):
-        put(snd_clack(0.14), s4 + WORK_T + 0.4 + k * 0.16, pan=-0.5)
+    for k in range(3):
+        put(snd_clack(0.14), s4 + WORK_T + 0.3 + k * 0.12, pan=-0.5)
     put(snd_ting(0.3, 2093), s4 + DROP_T + 0.25, pan=0.4)
     for gx, gy, at in S5_GEMS:
         put(snd_ting(0.16, 1760 + (gx - 400)), s5 + at + 0.35, pan=(gx - 540) / 400)
     k = 0
-    while HOP_T0 + k * HOP_GAP < 4.0:
+    while HOP_T0 + k * HOP_GAP + 0.12 < DUR['s5'] - 0.1:
         put(snd_tick(0.22), s5 + HOP_T0 + k * HOP_GAP + 0.12)
         k += 1
     put(snd_tone(0.22), starts["end"] + 0.5)
@@ -978,7 +980,7 @@ def render(preview=False, stills=False, final=False, audio_only=False):
     if vo and vo.get("file") and not preview:
         cmd += ["-i", os.path.join(ROOT, vo["file"])]
         fc = (f"[2:a]atrim=start={vo.get('offset_s', 0)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,"
-              f"highpass=f=70,volume={vo.get('voice_db', 7.5)}dB,asplit=2[v][vk];[1:a]volume={vo.get('bed_db', 0)}dB[b];"
+              f"highpass=f=70,volume={vo.get('voice_db', 7.5)}dB,apad=whole_dur={total},asplit=2[v][vk];[1:a]volume={vo.get('bed_db', 0)}dB[b];"
               f"[b][vk]sidechaincompress=threshold=0.03:ratio=4:attack=20:release=350[bd];"
               f"[v][bd]amix=inputs=2:normalize=0:duration=longest,atrim=0:{total},afade=t=out:st={total - 1.2}:d=1.2,alimiter=limit=0.89:level=0[a]")
         cmd += ["-filter_complex", fc, "-map", "0:v", "-map", "[a]"]

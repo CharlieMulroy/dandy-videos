@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-11",
+  "updated": "2026-11-12",
   "videos": [
     {
       "number": "01",
@@ -158,15 +158,15 @@
       "look": "Vault",
       "script_path": "videos/09-diamonds/script.md",
       "renderer_path": "videos/09-diamonds/vault/render_diamonds.py",
-      "duration_s": 26.5,
+      "duration_s": 23.4,
       "script_status": "approved",
-      "narration_status": "pending",
+      "narration_status": "recorded",
       "render_status": "preview",
       "posted": {
         "platforms": [],
         "links": {}
       },
-      "notes": "Preview v1 approved as the final look Nov 11. Waiting on narration. Drive copy is a compressed preview.",
+      "notes": "Narrated cut rendered Nov 12 from Charlie's take (voice only: the export had no music). Waiting on a re-export with the music and beat drop for the final. Drive link is the earlier silent preview.",
       "drive_link": "https://drive.google.com/file/d/1VajpQlIR17SsB8P7F1PVIZBo1yMk6IsQ/view"
     }
   ]

@@ -37,6 +37,8 @@ W, H = 1080, 1920
 SAFE = (int(W * 0.08), CONTRACT["layout"]["vertical_safe_top_px"], W - int(W * 0.08), H - CONTRACT["layout"]["vertical_safe_bottom_px"])
 
 VOID, ORANGE, EMBER, CYAN, TEXT, RED = (7, 6, 15), (255, 122, 26), (255, 179, 71), (53, 224, 255), (246, 242, 236), (255, 77, 77)
+# The beacon is Dandy holding the project's information, so it wears the brand purple (primary, highlight, a lighter tint for type).
+DANDY, DANDY_HI, DANDY_LIGHT = (96, 31, 183), (124, 77, 255), (176, 148, 255)
 HOLE = (540, 760)  # centre of the hole in most scenes
 HOLE_R = 230
 
@@ -409,14 +411,15 @@ def beacon(frame, t, at, xy, strength=1.0):
     layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
     r = 70 + 10 * math.sin(t * 3)
-    d.ellipse((cx - r * 2.6, cy - r * 2.6, cx + r * 2.6, cy + r * 2.6), fill=CYAN + (int(70 * p),))
+    d.ellipse((cx - r * 2.6, cy - r * 2.6, cx + r * 2.6, cy + r * 2.6), fill=DANDY_HI + (int(105 * p),))
     layer = layer.filter(ImageFilter.GaussianBlur(40))
     d = ImageDraw.Draw(layer)
     for k in range(8):
         ang = k * math.pi / 4 + t * 0.4
-        d.line([(cx, cy), (cx + math.cos(ang) * r * 2.2, cy + math.sin(ang) * r * 2.2)], fill=CYAN + (int(120 * p),), width=4)
+        d.line([(cx, cy), (cx + math.cos(ang) * r * 2.2, cy + math.sin(ang) * r * 2.2)], fill=DANDY_LIGHT + (int(140 * p),), width=4)
     d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=TEXT + (int(255 * p),))
-    d.ellipse((cx - r * 0.55, cy - r * 0.55, cx + r * 0.55, cy + r * 0.55), fill=CYAN + (int(255 * p),))
+    d.ellipse((cx - r * 0.62, cy - r * 0.62, cx + r * 0.62, cy + r * 0.62), fill=DANDY_HI + (int(255 * p),))
+    d.ellipse((cx - r * 0.3, cy - r * 0.3, cx + r * 0.3, cy + r * 0.3), fill=DANDY + (int(255 * p),))
     frame.alpha_composite(layer)
 
 
@@ -543,8 +546,8 @@ def s5(t):
     beacon(fr, t, 0.4, bc)
     for i, name in enumerate(("Budget app", "Portfolio site", "Chatbot", "the schema")):
         orbit(fr, CARDS[name], t, 1.0 + i * 0.3, bc, 330, i * math.pi / 2, speed=0.45)
-    display(fr, "keep the truth outside the chat", H * 0.16, t, 0.6, size=62, slam=False, glow=CYAN)
-    display(fr, "where every session reads first", H * 0.56, t, 3.2, size=48, slam=False, color=CYAN)
+    display(fr, "keep the truth outside the chat", H * 0.16, t, 0.6, size=62, slam=False, glow=DANDY_HI)
+    display(fr, "where every session reads first", H * 0.56, t, 3.2, size=48, slam=False, color=DANDY_LIGHT)
     return fr
 
 

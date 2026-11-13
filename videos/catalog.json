@@ -168,6 +168,63 @@
       },
       "notes": "Final rendered Nov 12 with Charlie's narration and music master: cursor hops land on the music's kicks and the end card cuts in on the beat drop at 21.47 s. Awaiting Charlie's sign-off and posting. Drive link is the earlier silent preview; the final is over the connector's upload size limit.",
       "drive_link": "https://drive.google.com/file/d/1VajpQlIR17SsB8P7F1PVIZBo1yMk6IsQ/view"
+    },
+    {
+      "number": "10",
+      "slug": "10-what-is-dandy",
+      "title": "What is Dandy?",
+      "script_path": "videos/10-what-is-dandy/script.md",
+      "duration_s": 30.0,
+      "script_status": "draft",
+      "narration_status": "pending",
+      "render_status": "preview",
+      "series": "pinned",
+      "notes": "Pinned series 1 of 3. Preview v1 rendered Nov 12 with the script draft while Charlie was away; words and look await his review. Thumbnail at out/10-thumbnail.png (frame one, holds 0.5 s). Scenes in videos/10-what-is-dandy/render_what.py.",
+      "kind": "informational",
+      "look": "Void Stage",
+      "renderer_path": "render/stage.py",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      }
+    },
+    {
+      "number": "11",
+      "slug": "11-how-dandy-works",
+      "title": "How does Dandy work?",
+      "script_path": "videos/11-how-dandy-works/script.md",
+      "duration_s": null,
+      "script_status": "draft",
+      "narration_status": "pending",
+      "render_status": "none",
+      "series": "pinned",
+      "notes": "Pinned series 2 of 3. Outline draft only; waits on Charlie's notes on video 10. Mechanics worth a read by Nick before recording.",
+      "kind": "informational",
+      "look": "Void Stage",
+      "renderer_path": "render/stage.py",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      }
+    },
+    {
+      "number": "12",
+      "slug": "12-why-dandy",
+      "title": "Why use Dandy?",
+      "script_path": "videos/12-why-dandy/script.md",
+      "duration_s": null,
+      "script_status": "draft",
+      "narration_status": "pending",
+      "render_status": "none",
+      "series": "pinned",
+      "notes": "Pinned series 3 of 3. Outline draft only; waits on Charlie's notes on video 10.",
+      "kind": "informational",
+      "look": "Void Stage",
+      "renderer_path": "render/stage.py",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      }
     }
   ]
 }

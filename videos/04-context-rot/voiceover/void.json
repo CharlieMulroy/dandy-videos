@@ -1,0 +1,52 @@
+{
+ "file": "videos/04-context-rot/voiceover/charlie-with-music.wav",
+ "mixed": true,
+ "offset_s": 0.0,
+ "sfx_gain": 0.35,
+ "file_fade_out": [
+  50.75,
+  0.2
+ ],
+ "note": "Charlie's Descript export 'Blac_Hole_beteter.wav' (Nov 12): voice with his music bed, mono, 50.95 s; the last word ends at the end of the file. Word times from pocketsphinx forced alignment against the script (the read follows the script as written). The end card holds 1.3 s past the last word over a soft ring-out, since the export has no music tail.",
+ "durations": {
+  "s1-hook": 4.9,
+  "s2-name": 3.85,
+  "s3-why": 17.35,
+  "s4-damage": 10.2,
+  "s5-fix": 10.5,
+  "end": 5.5
+ },
+ "cues": {
+  "s2_context": 0.5,
+  "s2_rot": 1.05,
+  "s3_label1": 1.2,
+  "s3_fill": [
+   3.5,
+   2.1
+  ],
+  "s3_fill_text": 3.6,
+  "s3_drain": 6.6,
+  "s3_gone_text": 6.7,
+  "s3_part1_exit": 8.0,
+  "s3_part2": 8.4,
+  "s3_part3": 12.9,
+  "s3_stale": 2.0,
+  "s3_keep": 2.5,
+  "s4_tally": [
+   0.5,
+   1.9,
+   4.2,
+   8.0
+  ],
+  "s4_bar": 8.7,
+  "s5_head": 1.8,
+  "s5_cards": 2.0,
+  "s5_sub": 5.2,
+  "s5_shrink": [
+   4.0,
+   6.0
+  ],
+  "end_solved": 3.4,
+  "end_logo": 2.3
+ }
+}

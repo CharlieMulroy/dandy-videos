@@ -6,7 +6,7 @@
 No Dandy Man. Own look: a black hole in a dark void, hot orange and cyan, bold display type, stylized and
 fast. The first two seconds have to earn the next fifty: the hole is already eating when the video starts.
 
-**Target length:** 55 s (about 135 narrated words). Status: draft v1, written while Charlie was out; not yet reviewed.
+**Target length:** 52 s as recorded (about 135 narrated words). Status: recorded by Charlie as written on Nov 12; final rendered Nov 13.
 
 | # | Sec | Visual | On-screen text | Narration (plain, a little dark, not jokey) |
 | --- | --- | --- | --- | --- |

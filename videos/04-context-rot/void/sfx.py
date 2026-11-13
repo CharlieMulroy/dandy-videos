@@ -100,7 +100,7 @@ def rumble(dur, gain=0.35):
     return x / (np.abs(x).max() + 1e-6) * gain
 
 
-def build_bed(scenes, path):
+def build_bed(scenes, path, cue=None):
     """scenes: list of (id, duration). Places the effects for each scene id; writes a stereo 48 kHz WAV."""
     total = sum(d for _, d in scenes)
     mix = np.zeros(int(SR * (total + 1)), np.float32)
@@ -111,6 +111,7 @@ def build_bed(scenes, path):
         if i < len(mix):
             mix[i:j] += sound[: j - i]
 
+    c = cue or {}
     off = 0.0
     for sid, dur in scenes:
         if sid != "end":
@@ -124,27 +125,31 @@ def build_bed(scenes, path):
                 put(whoosh(0.5, up=False, gain=0.35), off + start + 1.6)
         elif sid == "s2-name":
             put(whoosh(0.6, up=True, gain=0.7), off + 0.1)
-            put(impact(gain=1.0), off + 0.32)
-            put(impact(gain=1.0), off + 0.6)
+            put(impact(gain=1.0), off + c.get("s2_context", 0.3) + 0.02)
+            put(impact(gain=1.0), off + c.get("s2_rot", 0.55) + 0.05)
             for start in (0.2, 1.6, 3.2):
                 put(whoosh(0.5, up=False, gain=0.3), off + start + 1.8)
         elif sid == "s3-why":
+            f0, fd = c.get("s3_fill", (0.6, 3.0))
             for k in range(14):
-                put(tick(gain=0.35, pitch=1400 + k * 60), off + 0.7 + k * 0.2)
-            put(whoosh(0.9, up=False, gain=0.6), off + 4.6)
+                put(tick(gain=0.35, pitch=1400 + k * 60), off + f0 + 0.1 + k * (fd - 0.2) / 14)
+            put(whoosh(0.9, up=False, gain=0.6), off + c.get("s3_drain", 4.6))
             for k in range(6):
-                put(tick(gain=0.4, pitch=900), off + 7.2 + 2.4 + k * 0.5)
-            put(thud(gain=0.8), off + 11.8 + 1.7)
+                put(tick(gain=0.4, pitch=900), off + c.get("s3_part2", 7.2) + 2.4 + k * 0.5)
+            put(thud(gain=0.8), off + c.get("s3_part3", 11.8) + c.get("s3_stale", 1.6) + 0.1)
         elif sid == "s4-damage":
-            for k in range(4):
-                put(impact(0.35, gain=0.6 if k < 2 else 0.9), off + 0.8 + k * 2.6)
-            put(whoosh(1.4, up=False, gain=0.5), off + 10.0)
+            for k, at in enumerate(c.get("s4_tally", [0.8, 3.4, 6.0, 8.6])):
+                put(impact(0.35, gain=0.6 if k < 2 else 0.9), off + at)
+            put(whoosh(1.4, up=False, gain=0.5), off + c.get("s4_bar", 10.0))
         elif sid == "s5-fix":
             put(chime(gain=0.6, base=880), off + 0.45)
             put(swell(5.0, gain=0.45), off + 0.4)
-            put(chime(gain=0.3, base=1320), off + 3.2)
+            put(chime(gain=0.3, base=1320), off + c.get("s5_sub", 3.2))
         elif sid == "end":
-            put(chime(gain=0.5, base=660), off + 0.95)
+            put(chime(gain=0.5, base=660), off + c.get("end_logo", 0.9) + 0.05)
+            if c.get("end_solved", 0.3) > 1.0:
+                put(impact(gain=0.7), off + c["end_solved"] + 0.02)
+                put(chime(gain=1.6, base=440), off + c["end_solved"] + 0.2)   # rings out under the hold after the last word
         off += dur
     mix = mix[: int(SR * total)]
     peak = np.abs(mix).max() + 1e-6

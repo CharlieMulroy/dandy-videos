@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-12",
+  "updated": "2026-11-13",
   "videos": [
     {
       "number": "01",
@@ -68,15 +68,15 @@
       "look": "Void",
       "script_path": "videos/04-context-rot/script.md",
       "renderer_path": "videos/04-context-rot/void/render_void.py",
-      "duration_s": 55,
-      "script_status": "draft",
-      "narration_status": "pending",
-      "render_status": "preview",
+      "duration_s": 52.3,
+      "script_status": "approved",
+      "narration_status": "recorded",
+      "render_status": "final",
       "posted": {
         "platforms": [],
         "links": {}
       },
-      "notes": "Picked back up Nov 12: Charlie is recording the narration. The beacon in the last beat (Dandy holding the project's information) is now Dandy purple instead of cyan, at his request. Script is still the unreviewed draft."
+      "notes": "Final rendered Nov 13 with Charlie's narration and music master (recorded Nov 12, read as scripted). Scenes and captions cut to his read; the beacon in the last beat is Dandy purple. End card holds 1.3 s past the last word over a soft ring-out. Awaiting his sign-off and posting. Not in Drive (over the upload size limit)."
     },
     {
       "number": "05",

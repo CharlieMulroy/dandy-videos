@@ -373,12 +373,12 @@ def sticky(frame, t, at, xy, stale_at):
     frame.alpha_composite(im, (int(xy[0] - im.width / 2), int(xy[1] - im.height / 2)))
 
 
-def tally(frame, t, lines, x, y, start, gap=1.9):
+def tally(frame, t, lines, x, y, start, gap=1.9, times=None):
     d = ImageDraw.Draw(frame, "RGBA")
     f = font("Inter-Bold.otf", 52)
     fv = font("Inter-Black.otf", 64)
     for i, (label, value, color) in enumerate(lines):
-        at = start + i * gap
+        at = times[i] if times else start + i * gap
         if t < at:
             continue
         p = ease((t - at) / 0.4)
@@ -450,8 +450,8 @@ def end_card(t):
     draw_hole(fr, t, strength=max(0.0, 0.5 - t * 0.25), speed=0.5)
     sizes = CONTRACT["type"]["vertical"]
     d = ImageDraw.Draw(fr, "RGBA")
-    display(fr, "We solved it.", H * 0.22, t, 0.3, size=96, glow=ORANGE)
-    a = ease((t - 0.9) / 0.6)
+    display(fr, "We solved it.", H * 0.22, t, CUE["end_solved"], size=96, glow=ORANGE)
+    a = ease((t - CUE["end_logo"]) / 0.6)
     if a > 0:
         hat = hat_img(int(H * 0.10))
         hy = H * 0.40
@@ -464,7 +464,7 @@ def end_card(t):
         d.text((W / 2 - tw / 2, ty), "Dandy", font=fh, fill=TEXT + (int(255 * a),))
         yy = ty + fh.size * 1.1 + 50
         for i, line in enumerate(CONTRACT["copy_rules"]["end_card_lines"]):
-            b = ease((t - 1.3 - 0.25 * i) / 0.5)
+            b = ease((t - CUE["end_logo"] - 0.4 - 0.25 * i) / 0.5)
             fl = font("Inter-Regular.otf" if i == 0 else "Inter-Medium.otf", sizes["body" if i == 0 else "caption"])
             lw = d.textlength(line, font=fl)
             col = BRAND and (tuple(int(BRAND["accent_gold"].lstrip("#")[k:k + 2], 16) for k in (0, 2, 4)) if i == 1 else (200, 190, 220))
@@ -474,6 +474,10 @@ def end_card(t):
 
 
 # ---------- scenes ----------
+# Scene-relative cue times. These defaults are the pre-narration cut; voiceover/void.json "cues" moves them onto Charlie's read.
+CUE = dict(s2_context=0.3, s2_rot=0.55, s3_label1=0.3, s3_fill=(0.6, 3.0), s3_fill_text=1.2, s3_drain=4.6, s3_gone_text=4.7, s3_part1_exit=6.6,
+           s3_part2=7.2, s3_part3=11.8, s3_stale=1.6, s3_keep=1.8, s4_tally=[0.8, 3.4, 6.0, 8.6], s4_bar=10.0, s5_head=0.6, s5_cards=1.0,
+           s5_sub=3.2, s5_shrink=(0.0, 5.0), end_solved=0.3, end_logo=0.9)
 CARDS = {name: card_image(name) for name in ("Budget app", "Week 3", "Portfolio site", "the schema", "Chatbot", "auth flow")}
 
 
@@ -496,8 +500,8 @@ def s2(t):
     for i, (name, start, frm) in enumerate((("Week 3", 0.2, (980, 300)), ("auth flow", 1.6, (120, 1400)), ("Chatbot", 3.2, (960, 1500)))):
         fall_in(fr, CARDS[name], t, start, 2.8, frm)
         eat_flash(fr, t, start + 2.5)
-    display(fr, "CONTEXT", H * 0.17, t, 0.3, size=150, glow=ORANGE)
-    display(fr, "ROT", H * 0.615, t, 0.55, size=170, glow=CYAN)
+    display(fr, "CONTEXT", H * 0.17, t, CUE["s2_context"], size=150, glow=ORANGE)
+    display(fr, "ROT", H * 0.615, t, CUE["s2_rot"], size=170, glow=CYAN)
     return fr
 
 
@@ -507,22 +511,23 @@ def s3(t):
     draw_hole(fr, t + 11, center=hole, radius=150, speed=1.2)
     draw_particles(fr, t + 11, center=hole, n=50, seed=3)
     # gauge: fills 0.5-3.5, drains at 4.6; second gauge (long session) fills 7.5-9.5 and overflows at 9.6
-    if t < 7.2:
-        draw_gauge(fr, t, 160, 420, 170, 760, lambda tt: (tt - 0.6) / 3.0, drain_at=4.6, center=hole)
-        token_stream(fr, t, 0.6, 3.4, (640, 520), (245, 1100))
-        display(fr, "every session starts empty", H * 0.12, t, 0.3, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False, exit_at=6.6)
-        display(fr, "you explain, it fills", H * 0.665, t, 1.2, size=52, align="left", x=390, width=560, slam=False, exit_at=4.4, color=CYAN)
-        display(fr, "session ends: gone", H * 0.665, t, 4.7, size=52, align="left", x=390, width=560, slam=False, exit_at=6.6, color=ORANGE)
-    elif t < 11.8:
-        tt = t - 7.2
+    f0, fd = CUE["s3_fill"]
+    if t < CUE["s3_part2"]:
+        draw_gauge(fr, t, 160, 420, 170, 760, lambda tt: (tt - f0) / fd, drain_at=CUE["s3_drain"], center=hole)
+        token_stream(fr, t, f0, f0 + fd - 0.2, (640, 520), (245, 1100))
+        display(fr, "every session starts empty", H * 0.12, t, CUE["s3_label1"], size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False, exit_at=CUE["s3_part1_exit"])
+        display(fr, "you explain, it fills", H * 0.665, t, CUE["s3_fill_text"], size=52, align="left", x=390, width=560, slam=False, exit_at=CUE["s3_drain"] - 0.2, color=CYAN)
+        display(fr, "session ends: gone", H * 0.665, t, CUE["s3_gone_text"], size=52, align="left", x=390, width=560, slam=False, exit_at=CUE["s3_part1_exit"], color=ORANGE)
+    elif t < CUE["s3_part3"]:
+        tt = t - CUE["s3_part2"]
         draw_gauge(fr, tt, 160, 420, 170, 760, lambda u: 0.3 + u / 2.2, overflow_at=2.4, center=hole)
         display(fr, "one long session", H * 0.12, tt, 0.0, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False, exit_at=4.3)
         display(fr, "oldest things fall out first", H * 0.665, tt, 2.5, size=52, align="left", x=390, width=560, slam=False, color=ORANGE, exit_at=4.3)
     else:
-        tt = t - 11.8
-        sticky(fr, tt, 0.0, (540, 780), stale_at=1.6)
+        tt = t - CUE["s3_part3"]
+        sticky(fr, tt, 0.0, (540, 780), stale_at=CUE["s3_stale"])
         display(fr, "notes go stale", H * 0.12, tt, 0.0, size=66, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0] - 40, slam=False)
-        display(fr, "someone has to keep them current", H * 0.63, tt, 1.8, size=48, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0], slam=False, color=EMBER)
+        display(fr, "someone has to keep them current", H * 0.63, tt, CUE["s3_keep"], size=48, align="left", x=SAFE[0], width=SAFE[2] - SAFE[0], slam=False, color=EMBER)
     return fr
 
 
@@ -532,22 +537,22 @@ def s4(t):
     draw_particles(fr, t + 27, center=(540, 1500), n=70, seed=5)
     display(fr, "the damage", H * 0.15, t, 0.0, size=72, align="left", x=SAFE[0], slam=False, color=EMBER)
     tally(fr, t, [("re-explained", "4x", TEXT), ("rebuilt", "2 features", TEXT), ("two agents, one file", "!", RED), ("hours lost this week", "6", ORANGE)],
-          SAFE[0], H * 0.23, 0.8, gap=2.6)
-    progress_bar(fr, t, 10.0, SAFE[0], H * 0.545, SAFE[2] - SAFE[0])
+          SAFE[0], H * 0.23, 0.8, times=CUE["s4_tally"])
+    progress_bar(fr, t, CUE["s4_bar"], SAFE[0], H * 0.545, SAFE[2] - SAFE[0])
     return fr
 
 
 def s5(t):
     fr = background().convert("RGBA")
-    shrink = ease(t / 5.0)
+    shrink = ease((t - CUE["s5_shrink"][0]) / CUE["s5_shrink"][1])
     draw_hole(fr, t + 41, center=(540, 1500), radius=int(190 * (1 - 0.6 * shrink)), speed=1.0, strength=1 - 0.5 * shrink)
     draw_particles(fr, t + 41, center=(540, 1500), n=40, seed=5, strength=1 - shrink)
     bc = (540, 720)
     beacon(fr, t, 0.4, bc)
     for i, name in enumerate(("Budget app", "Portfolio site", "Chatbot", "the schema")):
-        orbit(fr, CARDS[name], t, 1.0 + i * 0.3, bc, 330, i * math.pi / 2, speed=0.45)
-    display(fr, "keep the truth outside the chat", H * 0.16, t, 0.6, size=62, slam=False, glow=DANDY_HI)
-    display(fr, "where every session reads first", H * 0.56, t, 3.2, size=48, slam=False, color=DANDY_LIGHT)
+        orbit(fr, CARDS[name], t, CUE["s5_cards"] + i * 0.3, bc, 330, i * math.pi / 2, speed=0.45)
+    display(fr, "keep the truth outside the chat", H * 0.16, t, CUE["s5_head"], size=62, slam=False, glow=DANDY_HI)
+    display(fr, "where every session reads first", H * 0.56, t, CUE["s5_sub"], size=48, slam=False, color=DANDY_LIGHT)
     return fr
 
 
@@ -584,7 +589,10 @@ def apply_timing():
     path = os.path.join(VIDEO, "voiceover", "void.json")
     if os.path.exists(path):
         with open(path) as f:
-            timing = json.load(f).get("durations", {})
+            data = json.load(f)
+        timing = data.get("durations", {})
+        for k, v in data.get("cues", {}).items():
+            CUE[k] = tuple(v) if isinstance(CUE.get(k), tuple) else v
         for sc in SCENES:
             if sc["id"] in timing:
                 sc["dur"] = float(timing[sc["id"]])
@@ -612,8 +620,10 @@ AUDIO_PRE = ("highpass=f=130,asendcmd=c='0.0 afftdn sn start; 0.6 afftdn sn stop
              "agate=threshold=0.02:ratio=4:attack=8:release=200:knee=4,acompressor=threshold=-20dB:ratio=3:attack=8:release=120")
 
 
-def audio_chain(path, mixed=False):
+def audio_chain(path, mixed=False, fade=None):
     pre = "" if mixed else AUDIO_PRE + ","
+    if fade:   # a master that stops mid-note gets a short fade so it does not click off
+        pre += f"afade=t=out:st={fade[0]}:d={fade[1]},"
     out = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "info", "-i", path, "-af", pre + "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
                          capture_output=True, text=True).stderr
     m = json.loads(out[out.rfind("{"):out.rfind("}") + 1])
@@ -666,7 +676,7 @@ def render(preview=False, final=False, stills=False):
     fps = FPS // 3 if preview else FPS
     mp4 = os.path.join(out, f"04-context-rot-vertical{'-final' if final else ''}.mp4")
     total = sum(s["dur"] for s in SCENES)
-    bed = sfx.build_bed([(s["id"], s["dur"]) for s in SCENES], os.path.join(out, "sfx-bed.wav"))
+    bed = sfx.build_bed([(s["id"], s["dur"]) for s in SCENES], os.path.join(out, "sfx-bed.wav"), CUE)
     cmd = ["ffmpeg", "-nostdin", "-y", "-loglevel", "error", "-framerate", str(fps), "-i", os.path.join(tmp, "f%06d.png"), "-i", bed]
     apath = os.path.join(VIDEO, "voiceover", "void.json")
     audio = {}
@@ -675,10 +685,10 @@ def render(preview=False, final=False, stills=False):
             audio = json.load(f)
     voice = audio.get("file") if not preview else None
     music = audio.get("music")
-    parts, mix, idx = ["[1:a]volume=0.9[sfx]"], ["[sfx]"], 2
+    parts, mix, idx = [f"[1:a]volume={audio.get('sfx_gain', 0.9)}[sfx]"], ["[sfx]"], 2
     if voice:
         cmd += ["-ss", str(audio.get("offset_s", 0)), "-i", os.path.join(ROOT, voice)]
-        parts.append(f"[{idx}:a]{audio_chain(os.path.join(ROOT, voice), bool(audio.get('mixed')))}[voice]")
+        parts.append(f"[{idx}:a]{audio_chain(os.path.join(ROOT, voice), bool(audio.get('mixed')), audio.get('file_fade_out'))}[voice]")
         idx += 1
     if music:
         cmd += ["-stream_loop", "-1", "-i", os.path.join(ROOT, music)]

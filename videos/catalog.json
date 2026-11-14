@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-13",
+  "updated": "2026-11-14",
   "videos": [
     {
       "number": "01",
@@ -193,12 +193,12 @@
       "slug": "11-how-dandy-works",
       "title": "How does Dandy work?",
       "script_path": "videos/11-how-dandy-works/script.md",
-      "duration_s": null,
+      "duration_s": 34.0,
       "script_status": "draft",
       "narration_status": "pending",
-      "render_status": "none",
+      "render_status": "preview",
       "series": "pinned",
-      "notes": "Pinned series 2 of 3. Outline draft only; waits on Charlie's notes on video 10. Mechanics worth a read by Nick before recording.",
+      "notes": "Pinned series 2 of 3. Preview v1 rendered Nov 14 from the outline while Charlie was away; he had thoughts on this video that were not in his message, so words and visuals are expected to change. Thumbnail at out/11-thumbnail.png. Scenes in videos/11-how-dandy-works/render_how.py. Mechanics worth a read by Nick before recording.",
       "kind": "informational",
       "look": "Void Stage",
       "renderer_path": "render/stage.py",

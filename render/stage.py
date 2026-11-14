@@ -115,6 +115,9 @@ HALO = _radial(240, ORB, 2.2, 160)
 CORE = _radial(36, (255, 255, 255), 1.2, 255)
 GLOW_P = _radial(480, PURPLE_HI, 1.9, 150)
 GLOW_G = _radial(300, GOLD, 2.2, 120)
+CHECKER = (150, 232, 255)
+HALO_C = _radial(240, CHECKER, 2.2, 170)
+GLOW_W = _radial(300, WARN, 2.2, 120)
 
 
 def put_sprite(img, spr, cx, cy, scale=1.0, alpha=1.0):
@@ -194,7 +197,14 @@ def void(tg):
 
 
 # ---------------------------------------------------------------- pieces of the visuals
-def orb(img, x, y, t, alpha=1.0, dim=0.0):
+def orb(img, x, y, t, alpha=1.0, dim=0.0, kind="agent"):
+    """The agent as a small light. kind="check" is the second, cooler light that reviews a finished piece."""
+    if kind == "check":
+        put_sprite(img, HALO_C, x, y, scale=0.8 * (1 + 0.05 * math.sin(t * 5)), alpha=alpha)
+        put_sprite(img, CORE, x, y, scale=1.2, alpha=alpha)
+        if alpha > 0.05:
+            ImageDraw.Draw(img, "RGBA").ellipse((x - 30, y - 30, x + 30, y + 30), outline=CHECKER + (int(230 * alpha),), width=3)
+        return
     put_sprite(img, HALO, x, y, scale=0.85 * (1 - 0.3 * dim) * (1 + 0.05 * math.sin(t * 5)), alpha=alpha * (1 - 0.45 * dim))
     put_sprite(img, CORE, x, y, scale=1.35, alpha=alpha * (1 - 0.3 * dim))
 
@@ -230,14 +240,14 @@ def card(img, box, text, alpha=1.0, slide=0.0, size=48):
 
 
 NODE_W, NODE_H = 270, 130
-STATE_COL = {"done": PURPLE_HI, "building": GOLD, "next": SOFT}
+STATE_COL = {"done": PURPLE_HI, "building": GOLD, "next": SOFT, "checking": CHECKER}
 
 
 def node_box(x, y):
     return (x, y, x + NODE_W, y + NODE_H)
 
 
-def node(img, x, y, title, alpha=1.0, state=None, pulse=0.0, slide=0.0, state_alpha=1.0):
+def node(img, x, y, title, alpha=1.0, state=None, pulse=0.0, slide=0.0, state_alpha=1.0, flag=0.0):
     """One piece of the project map: a title, and optionally where it stands (done, building, next)."""
     if alpha <= 0:
         return
@@ -252,6 +262,9 @@ def node(img, x, y, title, alpha=1.0, state=None, pulse=0.0, slide=0.0, state_al
     if state in STATE_COL:
         edge = mix(SOFT, STATE_COL[state], state_alpha)
     edge = mix(edge, (255, 255, 255), 0.6 * pulse)
+    if flag > 0:
+        put_sprite(img, GLOW_W, cx, cy, scale=0.95, alpha=0.55 * flag * alpha)
+        edge = mix(edge, WARN, flag)
     d.rounded_rectangle((x + 4, y + 10, x + NODE_W + 4, y + NODE_H + 12), radius=20, fill=(0, 0, 0, int(100 * alpha)))
     d.rounded_rectangle((x, y, x + NODE_W, y + NODE_H), radius=20, fill=mix(CARD, PURPLE, 0.25 * pulse) + (int(250 * alpha),),
                         outline=edge + (int(255 * alpha),), width=3)
@@ -270,9 +283,18 @@ def node(img, x, y, title, alpha=1.0, state=None, pulse=0.0, slide=0.0, state_al
             d.line((ix - 6, iy, ix - 1, iy + 5, ix + 6, iy - 5), fill=(255, 255, 255, a), width=3)
         elif state == "building":
             d.ellipse((ix - 11, iy - 11, ix + 11, iy + 11), fill=col + (a,))
+        elif state == "checking":
+            d.ellipse((ix - 11, iy - 11, ix + 11, iy + 11), outline=col + (a,), width=3)
+            d.ellipse((ix - 4, iy - 4, ix + 4, iy + 4), fill=col + (a,))
         else:
             d.ellipse((ix - 11, iy - 11, ix + 11, iy + 11), outline=col + (a,), width=3)
         d.text((ix + 23, iy - 18), state, font=fs, fill=mix(col, TEXT, 0.35) + (a,))
+    if flag > 0:   # a flag in the corner: this piece is touched by a change upstream
+        bx, by, r = x + NODE_W - 8, y + 8, 24 * (0.6 + 0.4 * ease_out(flag))
+        fa = int(255 * flag * alpha)
+        d.ellipse((bx - r, by - r, bx + r, by + r), fill=WARN + (fa,), outline=(255, 255, 255, fa), width=3)
+        fb = font("Inter-ExtraBold.otf", 32)
+        d.text((bx - fb.getlength("!") / 2, by - 21), "!", font=fb, fill=(255, 255, 255, fa))
 
 
 def anchors(a, b):
@@ -300,6 +322,63 @@ def edge(img, a, b, p=1.0, alpha=1.0, hot=0.0):
 
 def map_glow(img, alpha=1.0):
     put_sprite(img, GLOW_P, 540, 560, scale=2.4, alpha=0.42 * alpha)
+
+
+def edge_pulse(img, a, b, p, color=(255, 255, 255)):
+    """A dot of light travelling along a connection from box a to box b (p 0..1)."""
+    if p <= 0 or p >= 1:
+        return
+    (x0, y0), (x1, y1) = anchors(a, b)
+    x, y = lerp(x0, x1, p), lerp(y0, y1, p)
+    put_sprite(img, HALO, x, y, scale=0.3, alpha=0.9)
+    ImageDraw.Draw(img, "RGBA").ellipse((x - 8, y - 8, x + 8, y + 8), fill=color + (255,))
+
+
+def tool_card(img, box, label, icon, t, alpha=1.0, slide=0.0, lit=0.0):
+    """A large card standing for a tool: the agent's light or the Dandy hat above a label."""
+    if alpha <= 0:
+        return
+    x0, y0, x1, y1 = box
+    y0, y1 = y0 + slide, y1 + slide
+    cx = (x0 + x1) / 2
+    if lit > 0:
+        put_sprite(img, GLOW_P, cx, (y0 + y1) / 2, scale=1.3, alpha=0.7 * lit * alpha)
+    d = ImageDraw.Draw(img, "RGBA")
+    d.rounded_rectangle((x0 + 5, y0 + 12, x1 + 5, y1 + 14), radius=30, fill=(0, 0, 0, int(100 * alpha)))
+    d.rounded_rectangle((x0, y0, x1, y1), radius=30, fill=mix(CARD, PURPLE, 0.3 * lit) + (int(250 * alpha),),
+                        outline=mix(SOFT, PURPLE_HI, lit) + (int(255 * alpha),), width=3)
+    lines = wrap(label, font("Inter-Bold.otf", 38), x1 - x0 - 40)
+    iy = y0 + (y1 - y0 - len(lines) * 46 - 20) / 2
+    if icon == "hat":
+        h = hat(120)
+        if alpha < 1:
+            h = h.copy()
+            h.putalpha(h.split()[3].point(lambda v: int(v * alpha)))
+        img.paste(h, (int(cx - h.width / 2), int(iy - 60)), h)
+    else:
+        orb(img, cx, iy, t, alpha=alpha)
+    d = ImageDraw.Draw(img, "RGBA")
+    fnt = font("Inter-Bold.otf", 38)
+    for i, line in enumerate(lines):
+        d.text((cx - fnt.getlength(line) / 2, y1 - 30 - (len(lines) - i) * 46), line, font=fnt, fill=TEXT + (int(255 * alpha),))
+
+
+def cable(img, box_a, box_b, p, spark=0.0, alpha=1.0):
+    """Two halves of a cable grow from the cards and plug together in the middle (p 0..1); spark flashes at the join."""
+    if p <= 0 or alpha <= 0:
+        return
+    y = (box_a[1] + box_a[3]) / 2
+    xa, xb = box_a[2], box_b[0]
+    mid = (xa + xb) / 2
+    d = ImageDraw.Draw(img, "RGBA")
+    ea, eb = lerp(xa, mid - 6, p), lerp(xb, mid + 6, p)
+    for x0, x1 in ((xa, ea), (eb, xb)):
+        d.line((x0, y, x1, y), fill=PURPLE_HI + (int(120 * alpha),), width=16)
+        d.line((x0, y, x1, y), fill=SOFT + (int(255 * alpha),), width=6)
+    d.rounded_rectangle((ea - 22, y - 16, ea, y + 16), radius=6, fill=TEXT + (int(255 * alpha),))
+    d.rounded_rectangle((eb, y - 16, eb + 22, y + 16), radius=6, fill=TEXT + (int(255 * alpha),))
+    if spark > 0:
+        put_sprite(img, HALO, mid, y, scale=0.9 * spark + 0.3, alpha=spark)
 
 
 def phrase_lines(text):
@@ -331,19 +410,28 @@ def phrase(img, text, t, at=0.0, until=1e9):
 TITLE_SIZE = 150
 
 
+def title_size(lines):
+    """The largest title size, up to TITLE_SIZE, at which the widest line still fits the safe width."""
+    size = TITLE_SIZE
+    while size > 90 and max(font("Inter-ExtraBold.otf", size).getlength(l) for l in lines) > SAFE[2] - SAFE[0] - 20:
+        size -= 4
+    return size
+
+
 def title_boxes(lines):
-    fnt = font("Inter-ExtraBold.otf", TITLE_SIZE)
-    out, y = [], 380
+    size = title_size(lines)
+    fnt = font("Inter-ExtraBold.otf", size)
+    out, y = [], 380 + (TITLE_SIZE - size) * 1.1
     for line in lines:
         w = fnt.getlength(line)
-        out.append((W / 2 - w / 2, y, W / 2 + w / 2, y + TITLE_SIZE * 1.12))
-        y += TITLE_SIZE * 1.12
+        out.append((W / 2 - w / 2, y, W / 2 + w / 2, y + size * 1.12))
+        y += size * 1.12
     return out
 
 
 def title_card(img, lines, tg, out=0.0, accent_last=True):
     """The thumbnail: the question in large type over Dandy Man. `out` (0..1) lifts the title away."""
-    fnt = font("Inter-ExtraBold.otf", TITLE_SIZE)
+    fnt = font("Inter-ExtraBold.otf", title_size(lines))
     a = 1 - ease_out(out)
     if a <= 0:
         return

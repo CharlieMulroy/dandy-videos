@@ -195,12 +195,12 @@ def ruler(img, fill_frac, label=True):
     col = mix((120, 200, 150), WARN, clamp((fill_frac - 0.7) / 0.3))
     d.rounded_rectangle((x0 + 28, fy, x0 + 44, bot), radius=7, fill=col + (235,))
     if label:
-        f = font("Inter-Medium.otf", 22)
+        f = font("Inter-Medium.otf", 20)
         txt = f"{int(clamp(fill_frac) * 128)}k tokens"
         lay = Image.new("RGBA", (260, 40), (0, 0, 0, 0))
         ImageDraw.Draw(lay).text((0, 4), txt, font=f, fill=(236, 228, 210, 230))
         lay = lay.rotate(90, expand=True)
-        img.alpha_composite(lay, (x0 + 50 - 20, int((top + bot) / 2 - lay.height / 2)))
+        img.alpha_composite(lay, (x0 + 44, int((top + bot) / 2 - lay.height / 2)))   # just to the right of the bar, never on it
 
 
 def tag(img, x, y, text, alpha=1.0, color=TEXT, size=26):
@@ -211,8 +211,14 @@ def tag(img, x, y, text, alpha=1.0, color=TEXT, size=26):
     d.text((x - tw / 2, y - size * 0.62), text, font=f, fill=color + (int(255 * alpha),))
 
 
+SHOW_LABELS = True
+
+
 def label(img, text, alpha=1.0):
-    """The beat's on-screen line, large, in the top safe area above the desk."""
+    """The beat's on-screen line, large, in the top safe area above the desk. Off when the timing file says so
+    (a narrated cut already has captions under the desk, and two lines of text at once is one too many)."""
+    if not SHOW_LABELS:
+        return
     tag(img, (DESK[0] + DESK[2]) / 2, 345, text, alpha=alpha, size=44)
 
 
@@ -513,7 +519,8 @@ def apply_timing():
     for i, (sid, dur, fn) in enumerate(SCENES):
         if sid in vo.get("durations", {}):
             SCENES[i] = (sid, float(vo["durations"][sid]), fn)
-    global CAPTIONS, S2_T0, S2_GAP, PUSH_T0, PUSH_GAP, PUSH_TAGS
+    global CAPTIONS, S2_T0, S2_GAP, PUSH_T0, PUSH_GAP, PUSH_TAGS, SHOW_LABELS
+    SHOW_LABELS = bool(vo.get("top_labels", True))
     if "lines" in vo:
         ln = vo["lines"]
         CAPTIONS = [(s - 0.05, min(e + 0.35, ln[i + 1][0] - 0.08) if i + 1 < len(ln) else e + 0.35, tx) for i, (s, e, tx) in enumerate(ln)]

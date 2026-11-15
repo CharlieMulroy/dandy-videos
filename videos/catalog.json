@@ -231,19 +231,19 @@
       "slug": "13-crash-out-login",
       "title": "Crash-Out: We already have a login page",
       "kind": "crash_out (proposed)",
-      "look": "Night room plus Dandy Man (not built)",
+      "look": "night room with Dandy Man",
       "script_path": "videos/13-crash-out-login/script.md",
-      "renderer_path": null,
-      "duration_s": null,
+      "renderer_path": "videos/13-crash-out-login/room/render_crash.py",
+      "duration_s": 24.4,
       "script_status": "draft",
       "narration_status": "pending",
-      "render_status": "none",
+      "render_status": "preview",
       "posted": {
         "platforms": [],
         "links": {}
       },
       "series": "crash-out",
-      "notes": "Charlie's idea (Nov 14) to put more weight on openings: someone crashing out over a project, then Dandy Man comes in to sell Dandy. Test script only; the fifth kind and its rule are not in Dandy until he approves."
+      "notes": "Crash-out test. First render Nov 14 with placeholder timing and no narration; awaiting Charlie's review of words and look. Narration is Dandy Man only (38 words)."
     }
   ]
 }

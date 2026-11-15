@@ -720,7 +720,7 @@ def render_video(spec, preview=False, stills=False, final=False):
     qa = spec["qa_scenes"](starts, durs, captions)
     problems = [f"{s}: {m}" for s, m in run_all(qa, CONTRACT["canvases"]["vertical"], CONTRACT)]
     with open(os.path.join(out, f"qa-{spec['look_tag']}-vertical.json"), "w") as f:
-        json.dump(dict(canvas="vertical", look="void stage", duration=total, problems=problems,
+        json.dump(dict(canvas="vertical", look=spec.get("look", "void stage"), duration=total, problems=problems,
                        checks=["check_layout", "check_copy", "check_gold", "check_end_card"],
                        end_card="with Dandy Man", scenes=[dict(id=s, start=round(starts[s], 2), duration=d) for s, d, _ in scenes]), f, indent=2)
     if problems:
@@ -750,7 +750,7 @@ def render_video(spec, preview=False, stills=False, final=False):
                         drift=0.0 if held else 0.35 * smooth((tg - still_s) / 1.2), zoom=1.03)
             fr = fr.convert("RGB")
             draw_caption(fr, captions, tg)
-            if n == 0 and not stills:
+            if n == 0 and not stills and spec.get("thumbnail", True):
                 fr.save(os.path.join(out, f"{spec['slug'].split('-')[0]}-thumbnail.png"))
             if stills:
                 fr.convert("RGB").save(os.path.join(out, f"still-{sid}-{t:04.1f}.png"))

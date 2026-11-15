@@ -236,21 +236,25 @@ def desk_frame():
 def s1(t, dur):
     img = desk_frame()
     ruler(img, 0.0, label=False)
-    p = ease_out((t - 1.6) / 0.6)
+    p = ease_out((t - CUE["s1_label"]) / 0.6)
     if p > 0:
         label(img, "the context window", alpha=p)
     return img
 
 
 N_S2 = 17
-S2_GAP = 0.42
+S2_T0, S2_GAP = 0.6, 0.42
+# Scene-relative cue times. These are the placeholder values; voiceover/desk.json "cues" overrides them from Charlie's read.
+CUE = dict(s1_label=1.6, s2_labels=[(0.6, 1.5), (2.3, 1.5), (4.0, 1.5), (5.6, 99)], s3_labels=[(0.2, 1.8), (2.9, 99)],
+           s4_label=0.4, s4_pull=3.0, s4_reply=6.4, s4_strike=7.3, s5_labels=[(1.3, 3.4), (5.1, 99)], s5_brief=3.4,
+           s6_labels=[(0.3, 2.6), (3.1, 99)], s6_open=0.6, s6_write=(1.6, 2.2))
 
 
 def s2_cards(t):
     """Cards present at the end of s2 (and their landing times), used by s3 too."""
     out = []
     for i in range(N_S2):
-        out.append((i % COLS, i // COLS, KIND_SEQ[i], 0.6 + i * S2_GAP))
+        out.append((i % COLS, i // COLS, KIND_SEQ[i], S2_T0 + i * S2_GAP))
     return out
 
 
@@ -266,8 +270,8 @@ def s2(t, dur):
         x, y = slot(col, row)
         card(None, x, y + dy, kind, scale=sc, alpha=a, rot=(-3 + (col * 7 % 6)) * (1 - p * 0.6), img=img)
     ruler(img, n / 24.0)
-    for k, (lab, at) in enumerate((("everything you say", 0.6), ("everything it says", 2.3), ("every file you paste", 4.0), ("measured in tokens", 5.6))):
-        a = ease_out((t - at) / 0.4) * (1 - ease_out((t - at - 1.5) / 0.3)) if k < 3 else ease_out((t - at) / 0.4)
+    for lab, (at, off) in zip(("everything you say", "everything it says", "every file you paste", "measured in tokens"), CUE["s2_labels"]):
+        a = ease_out((t - at) / 0.4) * (1 - ease_out((t - at - off) / 0.3))
         if a > 0:
             label(img, lab, alpha=a)
     return img
@@ -317,9 +321,9 @@ def s3(t, dur):
         tj = PUSH_T0 + j * PUSH_GAP + 0.25
         a = ease_out((t - tj) / 0.3) * (1 - ease_out((t - tj - 1.3) / 0.35))
         if a > 0:
-            tag(img, (DESK[0] + DESK[2]) / 2 + 40, DESK[3] + 70, ptag, alpha=a)
+            tag(img, (DESK[0] + DESK[2]) / 2 + 40, DESK[3] - 64, ptag, alpha=a, size=34)
     ruler(img, min(1.0, (N_S2 + sum(1 for *_, at in S3_FILL if t >= at)) / 24.0))
-    for lab, at, off in (("fixed size", 0.2, 1.8), ("oldest pages slide off", 2.9, 99)):
+    for lab, (at, off) in zip(("fixed size", "oldest pages slide off"), CUE["s3_labels"]):
         a = ease_out((t - at) / 0.4) * (1 - ease_out((t - at - off) / 0.3))
         if a > 0:
             label(img, lab, alpha=a)
@@ -338,7 +342,7 @@ def s4(t, dur):
         card(None, x, y, kind, rot=rot, dim=dim, img=img)
     ruler(img, 1.0)
     # two decisions pulled forward
-    q = ease_out((t - 3.0) / 0.7)
+    q = ease_out((t - CUE["s4_pull"]) / 0.7)
     if q > 0:
         img.alpha_composite(Image.new("RGBA", (W, H), (10, 13, 20, int(150 * q))))
         cx = (DESK[0] + 70 + DESK[2]) / 2
@@ -348,19 +352,19 @@ def s4(t, dur):
         card(None, lerp(cx + 120, cx + 175, q), lerp(cy - 90, cy, q), "you", scale=sc, rot=lerp(5, 2, q), dim=0.0, big_text="switched to SQLite", img=img)
         tag(img, cx - 175, cy - 150, "an hour ago", alpha=q * 0.9, size=30)
         tag(img, cx + 175, cy - 150, "just now", alpha=q * 0.9, size=30)
-    p = land(t, 6.4, 0.6)
+    p = land(t, CUE["s4_reply"], 0.6)
     if p is not None:
         dy, sc, a = landing_offset(p)
         cx = (DESK[0] + 70 + DESK[2]) / 2
         cy = (DESK[1] + DESK[3]) / 2 + 200
         card(None, cx, cy + dy, "model", scale=2.0 * sc, alpha=a, big_text="Setting up Postgres", img=img)
-        u = ease_out((t - 7.3) / 0.4)
+        u = ease_out((t - CUE["s4_strike"]) / 0.4)
         if u > 0:
             d = ImageDraw.Draw(img, "RGBA")
             w = CARD_W * 2.0
             d.line((cx - w * 0.33, cy + 36, cx - w * 0.33 + w * 0.64 * u, cy + 36), fill=WARN + (230,), width=6)
             tag(img, cx, cy + 110, "the old one", alpha=u * 0.9, size=30, color=WARN)
-    a = ease_out((t - 0.4) / 0.4)
+    a = ease_out((t - CUE["s4_label"]) / 0.4)
     if a > 0:
         label(img, "crowded desk, sloppy work", alpha=a)
     # the pull back
@@ -387,14 +391,14 @@ def s5(t, dur):
         if sx > -300 and a > 0:
             card(None, sx, y + jy, KIND_SEQ[i % len(KIND_SEQ)], rot=rot - q * 20, dim=dimv, alpha=a, img=img)
     ruler(img, 1.0 - q)
-    p = land(t, 3.4, 0.7)
+    p = land(t, CUE["s5_brief"], 0.7)
     if p is not None:
         dy, sc, a = landing_offset(p)
         cx = (DESK[0] + 70 + DESK[2]) / 2
         cy = (DESK[1] + DESK[3]) / 2
-        card(None, cx, cy + dy, "you", scale=1.6 * sc, alpha=a, lines=["the brief:", "budget app, Postgres,", "billing is next"], img=img)
+        card(None, cx, cy + dy, "you", scale=1.9 * sc, alpha=a, lines=["budget app", "uses SQLite", "billing is next"], img=img)
         ruler(img, 0.06 * p)
-    for lab, at, off in (("a fresh chat is a clean desk", 1.3, 3.4), ("sharp. and blank.", 5.1, 99)):
+    for lab, (at, off) in zip(("a fresh chat is a clean desk", "sharp. and blank."), CUE["s5_labels"]):
         a = ease_out((t - at) / 0.4) * (1 - ease_out((t - at - off) / 0.3))
         if a > 0:
             label(img, lab, alpha=a)
@@ -417,7 +421,7 @@ def s6(t, dur):
         card(None, x, y + dy + slide * slide * 700, KIND_SEQ[i], scale=sc, alpha=a * (1 - clamp((slide - 0.5) / 0.5)), rot=-slide * 25, img=img)
     ruler(img, 0.3 + 0.1 * math.sin(t))
     # the notebook opens: it grows out from beside the desk into an open spread over the desk's right half
-    q = spring(clamp((t - 0.6) / 0.9))
+    q = spring(clamp((t - CUE["s6_open"]) / 0.9))
     bx0, by0, bx1, by1 = BOOK
     ox0, oy0, ox1, oy1 = (DESK[2] - 440, DESK[1] + 180, DESK[2] + 120, DESK[1] + 560)
     x0, y0, x1, y1 = lerp(bx0, ox0, q), lerp(by0, oy0, q), lerp(bx1, ox1, q), lerp(by1, oy1, q)
@@ -430,8 +434,8 @@ def s6(t, dur):
         mid = (inner[0] + inner[2]) / 2
         d.line((mid, inner[1], mid, inner[3]), fill=(190, 184, 176), width=3)
         f = font("Inter-Medium.otf", 22)
-        write = clamp((t - 1.6) / 2.2)
-        lines = ["budget app", "Postgres (decided Tue)", "auth: done", "billing: next", "", "do not rebuild login"]
+        write = clamp((t - CUE["s6_write"][0]) / CUE["s6_write"][1])
+        lines = ["budget app", "SQLite (decided Tue)", "auth: done", "billing: next", "", "do not rebuild login"]
         n_show = int(write * len(lines) + 0.999)
         for i, ln in enumerate(lines[:n_show]):
             page = 0 if i < 4 else 1
@@ -442,7 +446,7 @@ def s6(t, dur):
             ly = inner[1] + 56 + i * 36
             d.line((inner[0] + 14, ly, mid - 14, ly), fill=(200, 196, 190, 160), width=1)
             d.line((mid + 14, ly, inner[2] - 14, ly), fill=(200, 196, 190, 160), width=1)
-    for lab, at, off in (("the desk is for working", 0.3, 2.6), ("keep the record off the desk", 3.1, 99)):
+    for lab, (at, off) in zip(("the desk is for working", "keep the record off the desk"), CUE["s6_labels"]):
         a = ease_out((t - at) / 0.4) * (1 - ease_out((t - at - off) / 0.3))
         if a > 0:
             label(img, lab, alpha=a)
@@ -509,9 +513,16 @@ def apply_timing():
     for i, (sid, dur, fn) in enumerate(SCENES):
         if sid in vo.get("durations", {}):
             SCENES[i] = (sid, float(vo["durations"][sid]), fn)
-    global CAPTIONS
+    global CAPTIONS, S2_T0, S2_GAP, PUSH_T0, PUSH_GAP, PUSH_TAGS
     if "lines" in vo:
-        CAPTIONS = [(s - 0.05, e + 0.35, tx) for s, e, tx in vo["lines"]]
+        ln = vo["lines"]
+        CAPTIONS = [(s - 0.05, min(e + 0.35, ln[i + 1][0] - 0.08) if i + 1 < len(ln) else e + 0.35, tx) for i, (s, e, tx) in enumerate(ln)]
+    c = dict(vo.get("cues", {}))
+    S2_T0, S2_GAP = c.pop("s2_t0", S2_T0), c.pop("s2_gap", S2_GAP)
+    PUSH_T0, PUSH_GAP = c.pop("push_t0", PUSH_T0), c.pop("push_gap", PUSH_GAP)
+    if "push_tags" in c:
+        PUSH_TAGS = dict(zip(c.pop("push_tags"), PUSH_TAGS.values()))
+    CUE.update(c)
     return vo
 
 
@@ -625,17 +636,19 @@ def build_bed(path, total, starts):
     R += np.roll(room, 3000)
     s2, s3, s4, s5, s6 = (starts[k] for k in ("s2", "s3", "s4", "s5", "s6"))
     for i in range(N_S2):
-        put(snd_tap(0.45), s2 + 0.6 + i * S2_GAP + 0.3, pan=-0.3 + 0.2 * (i % COLS))
+        put(snd_tap(0.45), s2 + S2_T0 + i * S2_GAP + 0.3, pan=-0.3 + 0.2 * (i % COLS))
     for c, r, kd, at in S3_FILL:
         put(snd_tap(0.45), s3 + at + 0.3, pan=-0.3 + 0.2 * c)
     for j in range(5):
+        if s3 + PUSH_T0 + j * PUSH_GAP > s4 - 0.9:
+            break
         put(snd_slide(0.3), s3 + PUSH_T0 + j * PUSH_GAP)
         put(snd_fall(0.35), s3 + PUSH_T0 + j * PUSH_GAP + 0.55)
-    put(snd_slide(0.25, 0.8), s4 + 3.0)
-    put(snd_tap(0.4), s4 + 6.4 + 0.35)
+    put(snd_slide(0.25, 0.8), s4 + CUE["s4_pull"])
+    put(snd_tap(0.4), s4 + CUE["s4_reply"] + 0.35)
     put(snd_sweep(0.45), s5 + 0.2)
-    put(snd_tap(0.5), s5 + 3.4 + 0.4)
-    put(snd_page(0.4), s6 + 0.7)
+    put(snd_tap(0.5), s5 + CUE["s5_brief"] + 0.4)
+    put(snd_page(0.4), s6 + CUE["s6_open"] + 0.1)
     for i in range(6):
         put(snd_tap(0.3), s6 + 0.3 + i * 0.5 + 0.3)
     put(snd_tone(0.22), starts["end"] + 0.5)
@@ -702,8 +715,9 @@ def render(preview=False, stills=False, final=False, audio_only=False):
     cmd = ["ffmpeg", "-y", "-loglevel", "error"] + vid_in + ["-i", wav]
     if vo and vo.get("file") and not preview:
         cmd += ["-i", os.path.join(ROOT, vo["file"])]
+        hp = "" if vo.get("mixed") else "highpass=f=70,"     # a mixed export already carries Charlie's music; leave its low end alone
         fc = (f"[2:a]atrim=start={vo.get('offset_s', 0)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,"
-              f"highpass=f=70,volume={vo.get('voice_db', 7.5)}dB,asplit=2[v][vk];[1:a]volume={vo.get('bed_db', 0)}dB[b];"
+              f"{hp}volume={vo.get('voice_db', 7.5)}dB,apad=whole_dur={total},asplit=2[v][vk];[1:a]volume={vo.get('bed_db', 0)}dB[b];"
               f"[b][vk]sidechaincompress=threshold=0.03:ratio=4:attack=20:release=350[bd];"
               f"[v][bd]amix=inputs=2:normalize=0:duration=longest,atrim=0:{total},afade=t=out:st={total - 1.2}:d=1.2,alimiter=limit=0.89:level=0[a]")
         cmd += ["-filter_complex", fc, "-map", "0:v", "-map", "[a]"]

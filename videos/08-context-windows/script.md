@@ -16,8 +16,8 @@ Type is clean and large, one short line at a time. Nothing hot or dramatic; this
 **Audience:** individual builders, many of them non-technical. One term is introduced (token) and defined in
 passing. No mechanism beyond what the desk shows.
 
-**Target length:** about 55 s (about 135 narrated words). Status: draft v1, Nov 8, for Charlie's review. No render
-until the words are approved.
+**Target length:** about 55 s (about 135 narrated words). Status: final, Nov 15. Charlie recorded variant A as written (40.6 s read, with his
+music); the finished video runs 45.2 s.
 
 | # | Sec | Visual | On-screen text | Narration (plain, calm, a little dry) |
 | --- | --- | --- | --- | --- |
@@ -86,3 +86,12 @@ Keep the record somewhere that doesn't slide off.
 - Beat labels sit in the top safe area at 44 px. Captions placeholder-timed from the beat table; real timings come from `voiceover/desk.json` once narration is recorded.
 - Sound bed only: card taps, slides, the fall off the edge, a sweep, a page turn, end tone. No narration (Charlie records).
 - Copy QA passes (max 12 words per caption after splitting the tokens line).
+
+### Final (Nov 15)
+- Narration: `voiceover/charlie-with-music.wav` (Charlie's Descript export, voice plus his music, variant A). Word times from
+  forced alignment; scene lengths, captions and every on-screen cue now come from `voiceover/desk.json` ("durations", "lines", "cues").
+- Scenes after timing: s1 3.45, s2 9.6, s3 8.85, s4 7.6, s5 6.85, s6 4.65, end card 4.2. Total 45.2 s.
+- The two tags on the falling cards are off in the narrated cut (the captions say the same words right under them).
+- The brief card now reads "budget app / uses SQLite / billing is next" (the old text was clipped and named Postgres after the
+  switch to SQLite); the notebook says SQLite too.
+- The export ends on the last word, so the end card holds over the sound bed's end tone.

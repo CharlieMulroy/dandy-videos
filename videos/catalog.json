@@ -140,15 +140,15 @@
       "look": "Desk",
       "script_path": "videos/08-context-windows/script.md",
       "renderer_path": "videos/08-context-windows/desk/render_desk.py",
-      "duration_s": 54.5,
-      "script_status": "draft",
-      "narration_status": "pending",
-      "render_status": "preview",
+      "duration_s": 45.2,
+      "script_status": "final",
+      "narration_status": "recorded",
+      "render_status": "final",
       "posted": {
         "platforms": [],
         "links": {}
       },
-      "notes": "Variant A (no Dandy in the narration). Waiting on narration."
+      "notes": "Final Nov 15: Charlie's read with his music (variant A, no Dandy line), synced by forced alignment. Awaiting his sign-off and posting."
     },
     {
       "number": "09",

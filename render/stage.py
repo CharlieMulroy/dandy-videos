@@ -381,6 +381,67 @@ def cable(img, box_a, box_b, p, spark=0.0, alpha=1.0):
         put_sprite(img, HALO, mid, y, scale=0.9 * spark + 0.3, alpha=spark)
 
 
+def chat_bubble(img, box, text=None, alpha=1.0, slide=0.0, mine=True):
+    """A chat message: grey bars for words, optionally one real line of text. mine=True tints it as the user's."""
+    if alpha <= 0:
+        return
+    x0, y0, x1, y1 = box
+    y0, y1 = y0 + slide, y1 + slide
+    d = ImageDraw.Draw(img, "RGBA")
+    fill = mix(CARD, PURPLE, 0.35) if mine else CARD
+    d.rounded_rectangle((x0 + 4, y0 + 10, x1 + 4, y1 + 12), radius=24, fill=(0, 0, 0, int(90 * alpha)))
+    d.rounded_rectangle((x0, y0, x1, y1), radius=24, fill=fill + (int(245 * alpha),), outline=SOFT + (int(140 * alpha),), width=2)
+    y = y0 + 22
+    if text:
+        fnt = font("Inter-Bold.otf", 40)
+        d.text((x0 + 26, y - 4), text, font=fnt, fill=TEXT + (int(255 * alpha),))
+        y += 58
+    rnd = random.Random(int(x0 * 7 + y0))
+    while y < y1 - 26:
+        w = (x1 - x0 - 52) * rnd.uniform(0.55, 1.0)
+        d.rounded_rectangle((x0 + 26, y, x0 + 26 + w, y + 12), radius=6, fill=SOFT + (int(110 * alpha),))
+        y += 28
+
+
+MINI = [(0.2, 0.2), (0.62, 0.2), (0.62, 0.55), (0.2, 0.55), (0.62, 0.9)]
+MINI_EDGES = [(0, 1), (1, 2), (2, 3), (2, 4)]
+
+
+def project_card(img, box, title, states, progress, alpha=1.0, slide=0.0, pulse=0.0):
+    """One project at a glance: its name, a small map whose dots show where each piece stands, and a progress bar.
+    states is a list of five of "done" / "building" / "next"; progress is 0..1 (1 draws a check)."""
+    if alpha <= 0:
+        return
+    x0, y0, x1, y1 = box
+    y0, y1 = y0 + slide, y1 + slide
+    cx = (x0 + x1) / 2
+    if pulse > 0:
+        put_sprite(img, GLOW_P, cx, (y0 + y1) / 2, scale=1.2, alpha=0.7 * pulse * alpha)
+    d = ImageDraw.Draw(img, "RGBA")
+    a255 = int(255 * alpha)
+    d.rounded_rectangle((x0 + 5, y0 + 12, x1 + 5, y1 + 14), radius=26, fill=(0, 0, 0, int(100 * alpha)))
+    d.rounded_rectangle((x0, y0, x1, y1), radius=26, fill=mix(CARD, PURPLE, 0.2 * pulse) + (int(250 * alpha),),
+                        outline=mix(SOFT, PURPLE_HI, max(pulse, 1.0 if progress >= 1 else 0)) + (a255,), width=3)
+    ft = font("Inter-Bold.otf", 36)
+    d.text((cx - ft.getlength(title) / 2, y0 + 26), title, font=ft, fill=TEXT + (a255,))
+    mx0, my0, mw, mh = x0 + 30, y0 + 100, x1 - x0 - 60, y1 - y0 - 200
+    pts = [(mx0 + u * mw, my0 + v * mh) for u, v in MINI]
+    for i, j in MINI_EDGES:
+        d.line((*pts[i], *pts[j]), fill=SOFT + (int(170 * alpha),), width=4)
+    for (px, py), st in zip(pts, states):
+        col = STATE_COL[st]
+        if st == "next":
+            d.ellipse((px - 17, py - 17, px + 17, py + 17), fill=CARD + (a255,), outline=col + (a255,), width=4)
+        else:
+            d.ellipse((px - 17, py - 17, px + 17, py + 17), fill=col + (a255,))
+            if st == "done":
+                d.line((px - 8, py, px - 2, py + 6, px + 8, py - 7), fill=(255, 255, 255, a255), width=4)
+    bx0, bx1, by = x0 + 30, x1 - 30, y1 - 52
+    d.rounded_rectangle((bx0, by, bx1, by + 18), radius=9, fill=(60, 44, 96, a255))
+    if progress > 0.02:
+        d.rounded_rectangle((bx0, by, bx0 + (bx1 - bx0) * clamp(progress), by + 18), radius=9, fill=PURPLE_HI + (a255,))
+
+
 def phrase_lines(text):
     return wrap(text, font("Inter-Bold.otf", PHRASE_SIZE), PHRASE_W - 34)
 

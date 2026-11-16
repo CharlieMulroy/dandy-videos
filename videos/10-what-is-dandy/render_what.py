@@ -40,6 +40,22 @@ B3_READ = [("Sign up", 0.7), ("Calendar", 1.1), ("Bookings", 1.5), ("Payments", 
 B3_WORK, B3_DONE, B3_NEW, B3_NEW_EDGE = 2.9, 3.8, 4.4, 4.7
 B4_SLIDE, B4_CHIPS, B4_ORB, B4_TIP = 0.8, (0.9, 1.2, 1.5), 2.0, 3.0
 
+# The values above are the placeholder timing. Once Charlie has recorded, voiceover/stage.json "cues" replaces them
+# (same names, scene-relative seconds) so every visual lands on his words.
+_vo = os.path.join(HERE, "voiceover", "stage.json")
+if os.path.exists(_vo):
+    import json as _json
+    with open(_vo) as _f:
+        _c = _json.load(_f).get("cues", {})
+    CARDS = [(box, text, at) for (box, text, _), at in zip(CARDS, _c.get("cards", [c[2] for c in CARDS]))]
+    PHRASES = {k: (PHRASES[k][0], _c.get("phrases", {}).get(k, PHRASES[k][1])) for k in PHRASES}
+    B2_NODES = [(n, at) for (n, _), at in zip(B2_NODES, _c.get("b2_nodes", [x[1] for x in B2_NODES]))]
+    B2_EDGES = _c.get("b2_edges", B2_EDGES)
+    B3_READ = [(n, at) for (n, _), at in zip(B3_READ, _c.get("b3_read", [x[1] for x in B3_READ]))]
+    B3_WORK, B3_DONE, B3_NEW, B3_NEW_EDGE = _c.get("b3", (B3_WORK, B3_DONE, B3_NEW, B3_NEW_EDGE))
+    B4_SLIDE, B4_ORB, B4_TIP = _c.get("b4", (B4_SLIDE, B4_ORB, B4_TIP))
+    B4_CHIPS = tuple(_c.get("b4_chips", B4_CHIPS))
+
 
 def center(name, table=P):
     x, y = table[name]
@@ -80,8 +96,9 @@ def s_b1(t, dur, tg):
     for box, text, at in CARDS:
         a = ease_out((t - at) / 0.3)
         S.card(img, box, text, alpha=a * fo, slide=(1 - a) * 16)
-    ox, oy = path(t, [(0.0, 540, 200), (0.6, *ORB_HOME), (2.6, *ORB_HOME), (3.2, 300, 470), (3.9, 780, 470), (4.7, 540, 676), (5.6, *ORB_HOME)])
-    lost = smooth((t - 2.6) / 0.6)
+    c0, c1, c2 = (c[2] for c in CARDS)       # the light goes looking as each question lands
+    ox, oy = path(t, [(0.0, 540, 200), (0.6, *ORB_HOME), (c0, *ORB_HOME), (c0 + 0.6, 300, 470), (c1 + 0.5, 780, 470), (c2 + 0.5, 540, 676), (c2 + 1.4, *ORB_HOME)])
+    lost = smooth((t - c0) / 0.6)
     S.orb(img, ox + 8 * math.sin(t * 2.3) * lost, oy + 6 * math.cos(t * 1.9), t, alpha=ease_out(t / 0.4) * fo, dim=0.5 * lost)
     S.phrase(img, PHRASES["b1"][0], t, at=PHRASES["b1"][1], until=dur)
     S.draw_dm(img, bob(tg), "pointing")

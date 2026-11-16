@@ -66,3 +66,7 @@ That's Dandy.
 2. The example app (a booking app: Sign up, Calendar, Bookings, Payments, Reminders). Fine, or a different example?
 3. Length: about 30 s. The first cut if you want it shorter is "what's built, what's decided, or what's next"
    down to "where anything stands".
+
+## Final (Nov 15)
+
+Charlie recorded the narration as written (22 s read plus a short music tail; `voiceover/charlie-with-music.wav`). Scene lengths, captions and cues come from `voiceover/stage.json`: title 1.9, b1 7.1, b2 5.2, b3 3.8, b4 4.2, end card 3.2. Total 25.4 s. "That's Dandy." lands on the hat tip.

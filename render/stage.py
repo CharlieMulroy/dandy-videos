@@ -708,7 +708,8 @@ def render_video(spec, preview=False, stills=False, final=False):
             vo = json.load(f)
         scenes = [(sid, float(vo.get("durations", {}).get(sid, dur)), fn) for sid, dur, fn in scenes]
         if "lines" in vo:
-            captions = [(s - 0.05, e + 0.3, tx) for s, e, tx in vo["lines"]]
+            ln = vo["lines"]     # a caption never runs into the next one
+            captions = [(s - 0.05, min(e + 0.3, ln[i + 1][0] - 0.08) if i + 1 < len(ln) else e + 0.3, tx) for i, (s, e, tx) in enumerate(ln)]
     out = os.path.join(spec["video_dir"], "out")
     os.makedirs(out, exist_ok=True)
     starts, acc = {}, 0.0
@@ -764,8 +765,9 @@ def render_video(spec, preview=False, stills=False, final=False):
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(FPS // step), "-i", os.path.join(tmp, "f%06d.png"), "-i", wav]
     if vo and vo.get("file") and not preview:
         hp = "" if vo.get("mixed") else "highpass=f=70,"
+        fo = "afade=t=out:st={}:d={},".format(*vo["fade_out"]) if vo.get("fade_out") else ""   # an export whose music stops mid-note
         fc = (f"[2:a]atrim=start={vo.get('offset_s', 0)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,"
-              f"{hp}volume={vo.get('voice_db', 3)}dB,apad=whole_dur={total},asplit=2[v][vk];[1:a]volume={vo.get('bed_db', -6)}dB[b];"
+              f"{hp}{fo}volume={vo.get('voice_db', 3)}dB,apad=whole_dur={total},asplit=2[v][vk];[1:a]volume={vo.get('bed_db', -6)}dB[b];"
               f"[b][vk]sidechaincompress=threshold=0.03:ratio=4:attack=20:release=350[bd];"
               f"[v][bd]amix=inputs=2:normalize=0:duration=longest,atrim=0:{total},afade=t=out:st={total - 1.0}:d=1.0,alimiter=limit=0.89:level=0[a]")
         cmd += ["-i", os.path.join(ROOT, vo["file"]), "-filter_complex", fc, "-map", "0:v", "-map", "[a]"]

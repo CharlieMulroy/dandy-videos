@@ -1,0 +1,136 @@
+{
+ "file": "videos/10-what-is-dandy/voiceover/charlie-with-music.wav",
+ "mixed": true,
+ "offset_s": 0.0,
+ "voice_db": -3.5,
+ "bed_db": -9,
+ "fade_out": [
+  23.3,
+  1.2
+ ],
+ "note": "Charlie's Descript export 'What_is_dandy.wav' (Nov 15): voice with his music, mono, 24.5 s, read as scripted; last word ends at 22.0 with 2.5 s of music after. Word times from pocketsphinx forced alignment.",
+ "durations": {
+  "title": 1.9,
+  "b1": 7.1,
+  "b2": 5.2,
+  "b3": 3.8,
+  "b4": 4.2,
+  "end": 3.2
+ },
+ "cues": {
+  "cards": [
+   4.0,
+   4.85,
+   5.9
+  ],
+  "phrases": {
+   "b1": 1.3,
+   "b2": 2.0,
+   "b3": 0.5,
+   "b4": 0.9
+  },
+  "b2_nodes": [
+   0.3,
+   0.9,
+   1.5,
+   2.1,
+   2.7
+  ],
+  "b2_edges": [
+   3.5,
+   3.75,
+   4.0,
+   4.25
+  ],
+  "b3_read": [
+   0.25,
+   0.5,
+   0.75,
+   1.0,
+   1.25
+  ],
+  "b3": [
+   1.5,
+   2.3,
+   2.75,
+   2.95
+  ],
+  "b4": [
+   0.6,
+   1.5,
+   3.3
+  ],
+  "b4_chips": [
+   0.7,
+   0.9,
+   1.1
+  ]
+ },
+ "lines": [
+  [
+   1.98,
+   3.02,
+   "When you build with AI,"
+  ],
+  [
+   3.16,
+   4.7,
+   "every new session starts from zero."
+  ],
+  [
+   5.08,
+   5.91,
+   "Your agent doesn't know"
+  ],
+  [
+   5.92,
+   7.72,
+   "what's built, what's decided,"
+  ],
+  [
+   7.73,
+   8.52,
+   "or what's next."
+  ],
+  [
+   9.22,
+   10.72,
+   "Dandy is where your project lives."
+  ],
+  [
+   10.97,
+   12.49,
+   "A live map of every piece,"
+  ],
+  [
+   12.5,
+   13.5,
+   "and how they connect."
+  ],
+  [
+   14.34,
+   16.0,
+   "Your agent reads it before it starts,"
+  ],
+  [
+   16.01,
+   17.32,
+   "and updates it when it's done."
+  ],
+  [
+   18.06,
+   19.26,
+   "So every session picks up"
+  ],
+  [
+   19.27,
+   20.71,
+   "right where the last one left off."
+  ],
+  [
+   21.34,
+   22.02,
+   "That's Dandy."
+  ]
+ ]
+}

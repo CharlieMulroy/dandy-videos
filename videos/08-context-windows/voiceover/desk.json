@@ -1,10 +1,10 @@
 {
- "file": "videos/08-context-windows/voiceover/charlie-with-music.wav",
+ "file": "videos/08-context-windows/voiceover/charlie-music-lifted.wav",
  "mixed": true,
  "offset_s": 0.0,
  "voice_db": 7.5,
  "bed_db": -9,
- "note": "Charlie's Descript export 'Context_Desk.wav' (Nov 15): voice with his music bed, mono, 40.6 s, variant A (no Dandy line), read as scripted. Word times from pocketsphinx forced alignment. The last word ends at the end of the file, so the end card holds over the end tone. The two tags on the falling cards are off in this cut because the captions say the same words directly under them.",
+ "note": "Charlie's Descript export 'Context_Desk_Fixed.wav' (Nov 15, kept as charlie-with-music.wav): same read as the first export (kept as charlie-voice-only.wav), now with his music, but the music sits about 29 dB under the voice, far quieter than on videos 04 and 09. charlie-music-lifted.wav is the same voice with that music raised 13 dB to match video 04's bed and faded over the last 1.2 s. Word times from pocketsphinx forced alignment; timing is unchanged. Top labels and the falling-card tags are off because captions carry the words.",
  "durations": {
   "s1": 3.45,
   "s2": 9.6,

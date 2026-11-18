@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-14",
+  "updated": "2026-11-17",
   "videos": [
     {
       "number": "01",
@@ -73,10 +73,15 @@
       "narration_status": "recorded",
       "render_status": "final",
       "posted": {
-        "platforms": [],
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "linkedin",
+          "youtube_shorts"
+        ],
         "links": {}
       },
-      "notes": "Final rendered Nov 13 with Charlie's narration and music master (recorded Nov 12, read as scripted). Scenes and captions cut to his read; the beacon in the last beat is Dandy purple. End card holds 1.3 s past the last word over a soft ring-out. Awaiting his sign-off and posting. Not in Drive (over the upload size limit)."
+      "notes": "Final rendered Nov 13 with Charlie's narration and music master (recorded Nov 12, read as scripted). Scenes and captions cut to his read; the beacon in the last beat is Dandy purple. End card holds 1.3 s past the last word over a soft ring-out. Posted on all platforms (Charlie confirmed Nov 17); links to confirm. Not in Drive (over the upload size limit)."
     },
     {
       "number": "05",
@@ -145,10 +150,10 @@
       "narration_status": "recorded",
       "render_status": "final",
       "posted": {
-        "platforms": [],
+        "platforms": null,
         "links": {}
       },
-      "notes": "Final Nov 15: Charlie's read with his music (variant A, no Dandy line), synced by forced alignment. Awaiting his sign-off and posting."
+      "notes": "Final Nov 15: Charlie's read with his music (variant A, no Dandy line), synced by forced alignment. Posted (Charlie confirmed Nov 17); platforms and links to confirm."
     },
     {
       "number": "09",
@@ -163,10 +168,15 @@
       "narration_status": "recorded",
       "render_status": "final",
       "posted": {
-        "platforms": [],
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "linkedin",
+          "youtube_shorts"
+        ],
         "links": {}
       },
-      "notes": "Final rendered Nov 12 with Charlie's narration and music master: cursor hops land on the music's kicks and the end card cuts in on the beat drop at 21.47 s. Awaiting Charlie's sign-off and posting. Drive link is the earlier silent preview; the final is over the connector's upload size limit.",
+      "notes": "Final rendered Nov 12 with Charlie's narration and music master: cursor hops land on the music's kicks and the end card cuts in on the beat drop at 21.47 s. Posted on all platforms (Charlie confirmed Nov 17); links to confirm. Drive link is the earlier silent preview; the final is over the connector's upload size limit.",
       "drive_link": "https://drive.google.com/file/d/1VajpQlIR17SsB8P7F1PVIZBo1yMk6IsQ/view"
     },
     {
@@ -179,12 +189,12 @@
       "narration_status": "recorded",
       "render_status": "final",
       "series": "pinned",
-      "notes": "Final Nov 15: Charlie's read with his music, synced by forced alignment (cues in voiceover/stage.json). Thumbnail at out/10-thumbnail.png. Awaiting his sign-off and pinning.",
+      "notes": "Final Nov 15: Charlie's read with his music, synced by forced alignment (cues in voiceover/stage.json). Thumbnail at out/10-thumbnail.png. Posted (Charlie confirmed Nov 17); platforms, links and pinning to confirm.",
       "kind": "informational",
       "look": "Void Stage",
       "renderer_path": "render/stage.py",
       "posted": {
-        "platforms": [],
+        "platforms": null,
         "links": {}
       }
     },
@@ -198,7 +208,7 @@
       "narration_status": "pending",
       "render_status": "preview",
       "series": "pinned",
-      "notes": "Pinned series 2 of 3. Preview v1 rendered Nov 14 from the outline while Charlie was away; he had thoughts on this video that were not in his message, so words and visuals are expected to change. Thumbnail at out/11-thumbnail.png. Scenes in videos/11-how-dandy-works/render_how.py. Mechanics worth a read by Nick before recording. Charlie said on Nov 14 he really liked this preview and plans to record its narration on Nov 15.",
+      "notes": "Pinned series 2 of 3. Preview v1 rendered Nov 14 from the outline while Charlie was away; he had thoughts on this video that were not in his message, so words and visuals are expected to change. Thumbnail at out/11-thumbnail.png. Scenes in videos/11-how-dandy-works/render_how.py. Mechanics worth a read by Nick before recording. Charlie said on Nov 14 he really liked this preview and plans to record its narration on Nov 15. Nov 17: Charlie could not recall those thoughts; full frame rate draft re-rendered from script v1 (34.0 s, QA clean) and a read-through script sent for him to record.",
       "kind": "informational",
       "look": "Void Stage",
       "renderer_path": "render/stage.py",

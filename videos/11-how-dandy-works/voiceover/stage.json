@@ -1,0 +1,148 @@
+{
+ "file": "videos/11-how-dandy-works/voiceover/charlie-with-music.wav",
+ "mixed": true,
+ "offset_s": 0.0,
+ "voice_db": 2,
+ "bed_db": -9,
+ "note": "Charlie's export 'How_Dandy_Works.wav' (Nov 18): voice with his music, mono, 30.6 s, read as scripted; last word ends at 22.41 and the music runs on to 30.6 (he said to cut it where it feels natural). Beat is about 0.46 s; the end card comes in on the beat at 23.0 and the cut fades over the last second to 26.3, seven beats later. Export is about 5.6 LU quieter than video 10's, so voice_db is +2 against 10's -3.5. Word times from pocketsphinx forced alignment, checked against the level dips.",
+ "durations": {
+  "title": 1.65,
+  "b1": 2.8,
+  "b2": 5.1,
+  "b3": 6.3,
+  "b4": 3.5,
+  "b5": 3.65,
+  "end": 3.3
+ },
+ "cues": {
+  "title_out": 1.0,
+  "phrases": {
+   "b1": 0.5,
+   "b2": 2.0,
+   "b3": 1.0,
+   "b4": 1.1,
+   "b5": 1.0
+  },
+  "b1": [
+   [
+    0.0,
+    0.15
+   ],
+   0.45,
+   2.02
+  ],
+  "b2": [
+   1.8,
+   4.4
+  ],
+  "b2_nodes": [
+   2.0,
+   2.3,
+   2.6,
+   2.9,
+   3.2
+  ],
+  "b2_edges": [
+   3.9,
+   4.0,
+   4.1,
+   4.2
+  ],
+  "b3_read": [
+   0.9,
+   1.15,
+   1.4,
+   1.65,
+   1.9
+  ],
+  "b3": [
+   2.5,
+   3.9,
+   5.7,
+   5.85
+  ],
+  "b4": [
+   1.05,
+   1.65,
+   2.05
+  ],
+  "b5_chips": [
+   0.35,
+   0.55,
+   0.75
+  ],
+  "b5_tip": 2.55
+ },
+ "lines": [
+  [
+   1.72,
+   2.66,
+   "You connect it to your"
+  ],
+  [
+   2.67,
+   4.2,
+   "AI coding tool, once."
+  ],
+  [
+   4.62,
+   6.18,
+   "Tell your agent what you're building,"
+  ],
+  [
+   6.19,
+   7.45,
+   "and it lays it out as a map:"
+  ],
+  [
+   7.73,
+   9.26,
+   "every piece, and how they connect."
+  ],
+  [
+   9.7,
+   10.58,
+   "Before it builds,"
+  ],
+  [
+   10.59,
+   11.7,
+   "your agent reads the map."
+  ],
+  [
+   12.0,
+   13.14,
+   "When a piece is finished,"
+  ],
+  [
+   13.15,
+   14.42,
+   "a second check confirms it"
+  ],
+  [
+   14.43,
+   15.51,
+   "before it counts as done."
+  ],
+  [
+   15.95,
+   17.5,
+   "And when one piece changes,"
+  ],
+  [
+   17.51,
+   19.23,
+   "Dandy flags everything it touches."
+  ],
+  [
+   19.5,
+   20.87,
+   "So the map stays current,"
+  ],
+  [
+   20.88,
+   22.41,
+   "and you never update it by hand."
+  ]
+ ]
+}

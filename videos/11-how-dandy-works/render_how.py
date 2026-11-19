@@ -43,6 +43,25 @@ B4_CHANGE, B4_RIPPLE, B4_FLAG = 0.8, 1.5, 2.1
 # b5: the map, current
 B5_CHIPS = {"Sign up": 0.5, "Calendar": 0.7, "Bookings": 0.9}
 B5_TIP = 2.6
+TITLE_OUT = 1.3   # when the title card starts to leave
+
+# The values above are the placeholder timing. Once Charlie has recorded, voiceover/stage.json "cues" replaces them
+# (same names, scene-relative seconds) so every visual lands on his words.
+_vo = os.path.join(HERE, "voiceover", "stage.json")
+if os.path.exists(_vo):
+    import json as _json
+    with open(_vo) as _f:
+        _c = _json.load(_f).get("cues", {})
+    TITLE_OUT = _c.get("title_out", TITLE_OUT)
+    PHRASES = {k: (PHRASES[k][0], _c.get("phrases", {}).get(k, PHRASES[k][1])) for k in PHRASES}
+    (B1_CARDS, B1_CABLE, B1_JOIN) = _c.get("b1", (B1_CARDS, B1_CABLE, B1_JOIN))
+    B2_IDEA_OUT, B2_FLOW = _c.get("b2", (B2_IDEA_OUT, B2_FLOW))
+    B2_NODES, B2_EDGES = _c.get("b2_nodes", B2_NODES), _c.get("b2_edges", B2_EDGES)
+    B3_READ = _c.get("b3_read", B3_READ)
+    B3_BUILD, B3_CHECK, B3_DONE, B3_LEAVE = _c.get("b3", (B3_BUILD, B3_CHECK, B3_DONE, B3_LEAVE))
+    B4_CHANGE, B4_RIPPLE, B4_FLAG = _c.get("b4", (B4_CHANGE, B4_RIPPLE, B4_FLAG))
+    B5_CHIPS = dict(zip(B5_CHIPS, _c.get("b5_chips", list(B5_CHIPS.values()))))
+    B5_TIP = _c.get("b5_tip", B5_TIP)
 
 
 def center(name):
@@ -95,8 +114,8 @@ def draw_map(img, t, node_at=None, edge_at=None, states=None, pulses=None, flags
 
 def s_title(t, dur, tg):
     img = S.void(bob(tg))
-    S.title_card(img, TITLE, tg, out=(t - 1.3) / 0.6)
-    S.draw_dm(img, bob(tg), "idle", **S.dm_place((t - 1.35) / 0.65))
+    S.title_card(img, TITLE, tg, out=(t - TITLE_OUT) / 0.6)
+    S.draw_dm(img, bob(tg), "idle", **S.dm_place((t - TITLE_OUT - 0.05) / 0.65))
     return img
 
 
@@ -237,8 +256,8 @@ def qa_scenes(starts, durs, captions):
         return dict(name=f"chip {n}", type="text", role="body", text=word, lines=[word], gold=gold, **kw)
 
     out = [dict(id="title", type="title", duration=durs["title"], laid_out=[
-        S.text_el("title", " ".join(TITLE), (min(b[0] for b in tb), tb[0][1], max(b[2] for b in tb), tb[-1][3]), role="headline", lines=TITLE, exit_at=1.3),
-        dict(name="dandy_man", type="sprite", exit_at=1.35,
+        S.text_el("title", " ".join(TITLE), (min(b[0] for b in tb), tb[0][1], max(b[2] for b in tb), tb[-1][3]), role="headline", lines=TITLE, exit_at=TITLE_OUT),
+        dict(name="dandy_man", type="sprite", exit_at=TITLE_OUT + 0.05,
              bbox=(S.TITLE_DM_X0 + tspr.width * 0.2, S.TITLE_DM_Y0, S.TITLE_DM_X0 + tspr.width * 0.8, S.TITLE_DM_Y0 + S.TITLE_DM_H))])]
     out.append(dict(id="b1", type="stage", duration=durs["b1"], laid_out=[
         S.text_el("tool card", "Your AI coding tool", TOOL_A, lines=["Your AI", "coding tool"]), S.text_el("dandy card", "Dandy", TOOL_B), ph("b1"), dm] + caps("b1")))
@@ -255,7 +274,7 @@ def qa_scenes(starts, durs, captions):
 
 def events(starts, durs):
     b1, b2, b3, b4, b5 = (starts[k] for k in ("b1", "b2", "b3", "b4", "b5"))
-    ev = [(STILL, "whoosh", dict(gain=0.2), 0.0), (starts["title"] + 1.3, "whoosh", dict(gain=0.3), 0.3),
+    ev = [(STILL, "whoosh", dict(gain=0.2), 0.0), (starts["title"] + TITLE_OUT, "whoosh", dict(gain=0.3), 0.3),
           (b1 + B1_CARDS[0], "pop", dict(gain=0.3, f=440), -0.5), (b1 + B1_CARDS[1], "pop", dict(gain=0.3, f=554), 0.5),
           (b1 + B1_CABLE, "zip", dict(gain=0.16), 0.0), (b1 + B1_JOIN, "chime", dict(gain=0.32, f0=988), 0.0), (b1 + B1_JOIN, "tick", dict(gain=0.35), 0.0),
           (b2 - 0.2, "whoosh", dict(gain=0.3), 0.0), (b2 + 0.3, "pop", dict(gain=0.25, f=520), 0.0)]

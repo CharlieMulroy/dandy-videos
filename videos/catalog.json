@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-17",
+  "updated": "2026-11-18",
   "videos": [
     {
       "number": "01",
@@ -203,12 +203,12 @@
       "slug": "11-how-dandy-works",
       "title": "How does Dandy work?",
       "script_path": "videos/11-how-dandy-works/script.md",
-      "duration_s": 34.0,
-      "script_status": "approved",
-      "narration_status": "pending",
-      "render_status": "preview",
+      "duration_s": 26.3,
+      "script_status": "final",
+      "narration_status": "recorded",
+      "render_status": "final",
       "series": "pinned",
-      "notes": "Pinned series 2 of 3. Preview v1 rendered Nov 14 from the outline while Charlie was away; he had thoughts on this video that were not in his message, so words and visuals are expected to change. Thumbnail at out/11-thumbnail.png. Scenes in videos/11-how-dandy-works/render_how.py. Mechanics worth a read by Nick before recording. Charlie said on Nov 14 he really liked this preview and plans to record its narration on Nov 15. Nov 17: Charlie could not recall those thoughts; full frame rate draft re-rendered from script v1 (34.0 s, QA clean) and a read-through script sent for him to record.",
+      "notes": "Pinned series 2 of 3. Final Nov 18: Charlie's read with his music (script v1, read as written), synced by forced alignment (cues in voiceover/stage.json). His music ran 8 s past his last word; cut at 26.3 s, end card in on the beat at 23.0, fading over the last second. Thumbnail at out/11-thumbnail.png. Mechanics still unread by Nick. Awaiting Charlie's sign-off and posting.",
       "kind": "informational",
       "look": "Void Stage",
       "renderer_path": "render/stage.py",

@@ -11,7 +11,7 @@ each one stands alone.
 **First frame (thumbnail):** a still title card, "How does Dandy work?", with Dandy Man beneath it. Holds half a
 second; also exported as out/11-thumbnail.png.
 
-**Target length:** about 34 s (74 narrated words). Status: draft v1, Nov 14, for Charlie's review. First render made
+**Length:** 26.3 s with Charlie's narration (Nov 18, read as written; final render done). Draft history: v1, Nov 14, targeted about 34 s (74 narrated words). First render made
 alongside it because Charlie was away. He said he had thoughts on this video but they were not in his message, so
 this is built from the Nov 12 outline and is expected to change.
 

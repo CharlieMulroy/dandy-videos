@@ -11,8 +11,8 @@ each one stands alone.
 **First frame (thumbnail):** a still title card, "Why use Dandy?", with Dandy Man beneath it. Holds half a second;
 also exported as out/12-thumbnail.png.
 
-**Target length:** about 31.5 s (64 narrated words). Status: draft v1, Nov 14, for Charlie's review. First preview
-rendered at his request the same day, after he said he really liked 10 and 11.
+**Length:** 29.0 s (64 narrated words). Status: final, Nov 19. Charlie read draft v1 as written and recorded it with his
+music; scene timings below are the placeholder plan, the real ones are in voiceover/stage.json.
 
 | # | Sec | Visual | Key phrase | Narration |
 | --- | --- | --- | --- | --- |
@@ -52,7 +52,7 @@ Dandy keeps your projects moving, so you finish what you start.
 - Does not call Dandy a project management tool, a harness or a framework; no "state layer"; no long dashes.
 - Dandy Man appears because this is an informational video about Dandy; end card with him.
 
-## Open questions for Charlie
+## Decisions
 
-1. "Pick it up in a minute" or the softer "pick it right back up"?
-2. The three example projects in beat 4 (Booking app, Portfolio, Budget tool): fine, or different ones?
+1. "Pick it up in a minute" stays (Charlie read it that way, Nov 19).
+2. The three example projects stay as Booking app, Portfolio, Budget tool.

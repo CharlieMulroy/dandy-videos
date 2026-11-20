@@ -1,0 +1,36 @@
+{
+ "file": "videos/12-why-dandy/voiceover/charlie-with-music.wav",
+ "mixed": true,
+ "offset_s": 0.0,
+ "voice_db": 0,
+ "bed_db": -9,
+ "note": "Charlie's Descript export 'wHY dANDY' (Nov 19): voice with his music, mono, 29.04 s, read as scripted (kept 'pick it up in a minute'). Last word ends at 24.6; the music drops at 25.19 and runs to the end of the file, so the end card cuts in on the drop and holds to 29.0, fading over the last second. His speech sits at -24 LUFS, about 6 LU under video 11's and 8 LU under his own drop, so charlie-with-music.wav is a leveled copy (+8 dB through the read, easing to +1.5 dB at the drop, limited); the untouched export is charlie-with-music-original.wav. Beat after the drop is about 0.6 s. Word times from pocketsphinx forced alignment, checked against the level dips.",
+ "durations": {"title": 1.7, "b1": 4.8, "b2": 4.7, "b3": 5.45, "b4": 3.75, "b5": 4.79, "end": 3.81},
+ "cues": {
+  "title_out": 1.05,
+  "phrases": {"b1": 1.4, "b2": 1.1, "b3": 2.3, "b4": 1.2, "b5": 2.9},
+  "b1_bubbles": [0.15, 0.55, 0.95],
+  "b1": [2.3, 2.7],
+  "b2": [1.1, [1.4, 2.4], 2.4, 2.7, 3.5],
+  "b3": [1.5, 2.6, 3.2],
+  "b4_cards": [0.3, 0.6, 0.9],
+  "b4_orb": [1.2, 1.7, 0.65],
+  "b5_finish": [0.9, 1.3, 1.7],
+  "b5_tip": 3.9
+ },
+ "lines": [
+  [2.16, 3.62, "Because you stop re-explaining"],
+  [3.63, 4.97, "your project every time"],
+  [4.98, 6.15, "you open a new chat."],
+  [6.96, 8.32, "Because you can leave a project"],
+  [8.33, 8.98, "for weeks,"],
+  [9.18, 10.55, "and pick it up in a minute."],
+  [11.7, 13.32, "Because when one piece changes,"],
+  [13.47, 14.63, "you see what it touches"],
+  [14.64, 15.75, "before it breaks."],
+  [17.15, 18.59, "And because you can finally see"],
+  [18.6, 20.15, "where every project stands."],
+  [20.9, 22.57, "Dandy keeps your projects moving,"],
+  [22.94, 24.6, "so you finish what you start."]
+ ]
+}

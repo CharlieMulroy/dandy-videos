@@ -44,6 +44,26 @@ CARDS = [((86, 300, 356, 760), "Booking app", ["done", "done", "building", "next
          ((405, 300, 675, 760), "Portfolio", ["done", "done", "done", "done", "next"], 0.8, 0.8),
          ((724, 300, 994, 760), "Budget tool", ["done", "next", "next", "next", "next"], 0.2, 1.2)]
 B5_FINISH, B5_TIP = (0.5, 0.9, 1.3), 2.4
+B4_ORB = (1.6, 2.2, 0.9)     # the light enters, reaches the first card, then moves on every N seconds
+TITLE_OUT = 1.3              # when the title card starts to leave
+
+# The values above are the placeholder timing. Once Charlie has recorded, voiceover/stage.json "cues" replaces them
+# (same names, scene-relative seconds) so every visual lands on his words.
+_vo = os.path.join(HERE, "voiceover", "stage.json")
+if os.path.exists(_vo):
+    import json as _json
+    with open(_vo) as _f:
+        _c = _json.load(_f).get("cues", {})
+    TITLE_OUT = _c.get("title_out", TITLE_OUT)
+    PHRASES = {k: (PHRASES[k][0], _c.get("phrases", {}).get(k, PHRASES[k][1])) for k in PHRASES}
+    BUBBLES = [(bx, tx, at) for (bx, tx, _), at in zip(BUBBLES, _c.get("b1_bubbles", [b[2] for b in BUBBLES]))]
+    B1_CLEAR, B1_MAP = _c.get("b1", (B1_CLEAR, B1_MAP))
+    B2_SLEEP, B2_DAYS, B2_WEEKS, B2_WAKE, B2_BACK = _c.get("b2", (B2_SLEEP, B2_DAYS, B2_WEEKS, B2_WAKE, B2_BACK))
+    B3_CHANGE, B3_RIPPLE, B3_FLAG = _c.get("b3", (B3_CHANGE, B3_RIPPLE, B3_FLAG))
+    CARDS = [c[:4] + (at,) for c, at in zip(CARDS, _c.get("b4_cards", [c[4] for c in CARDS]))]
+    B4_ORB = tuple(_c.get("b4_orb", B4_ORB))
+    B5_FINISH = tuple(_c.get("b5_finish", B5_FINISH))
+    B5_TIP = _c.get("b5_tip", B5_TIP)
 
 
 def center(name):
@@ -90,8 +110,8 @@ def draw_map(img, t, node_at=None, alpha=1.0, states=None, pulses=None, flags=No
 
 def s_title(t, dur, tg):
     img = S.void(bob(tg))
-    S.title_card(img, TITLE, tg, out=(t - 1.3) / 0.6)
-    S.draw_dm(img, bob(tg), "idle", **S.dm_place((t - 1.35) / 0.65))
+    S.title_card(img, TITLE, tg, out=(t - TITLE_OUT) / 0.6)
+    S.draw_dm(img, bob(tg), "idle", **S.dm_place((t - TITLE_OUT - 0.05) / 0.65))
     return img
 
 
@@ -171,9 +191,13 @@ def s_b4(t, dur, tg):
     for bx, title, states, prog, at in CARDS:
         a = ease_out((t - at) / 0.35)
         S.project_card(img, bx, title, states, prog * ease_out((t - at - 0.2) / 0.8), alpha=a, slide=(1 - a) * 20, pulse=1 - clamp((t - at) / 0.6) if t >= at else 0)
-    k = int(max(0, t - 2.2) / 0.9) % 3
-    ox, oy = path(t, [(1.6, -40, 240), (2.2, CARDS[0][0][0] + 30, 300)]) if t < 2.2 else (CARDS[k][0][0] + 30, 300)
-    if t >= 1.6:
+    o_in, o_at, o_step = B4_ORB
+    k = min(2, int(max(0, t - o_at) / o_step))
+    tk = o_at + k * o_step
+    keys = [(o_in, -40, 240), (o_at, CARDS[0][0][0] + 30, 300)] if k == 0 else \
+        [(tk - 0.25, CARDS[k - 1][0][0] + 30, 300), (tk, CARDS[k][0][0] + 30, 300)]
+    ox, oy = path(t, keys)
+    if t >= o_in:
         S.orb(img, ox, oy, t)
     S.phrase(img, PHRASES["b4"][0], t, at=PHRASES["b4"][1], until=dur)
     S.draw_dm(img, bob(tg), "pointing")
@@ -221,8 +245,8 @@ def qa_scenes(starts, durs, captions):
         return [S.text_el(f"node {n}", n, box(n), **({"enter_at": at} if at else {})) for n in ORDER]
 
     out = [dict(id="title", type="title", duration=durs["title"], laid_out=[
-        S.text_el("title", " ".join(TITLE), (min(b[0] for b in tb), tb[0][1], max(b[2] for b in tb), tb[-1][3]), role="headline", lines=TITLE, exit_at=1.3),
-        dict(name="dandy_man", type="sprite", exit_at=1.35,
+        S.text_el("title", " ".join(TITLE), (min(b[0] for b in tb), tb[0][1], max(b[2] for b in tb), tb[-1][3]), role="headline", lines=TITLE, exit_at=TITLE_OUT),
+        dict(name="dandy_man", type="sprite", exit_at=TITLE_OUT + 0.05,
              bbox=(S.TITLE_DM_X0 + tspr.width * 0.2, S.TITLE_DM_Y0, S.TITLE_DM_X0 + tspr.width * 0.8, S.TITLE_DM_Y0 + S.TITLE_DM_H))])]
     # the bubbles overlap each other on purpose (a pile), so only the one with words is declared
     out.append(dict(id="b1", type="stage", duration=durs["b1"], laid_out=[S.text_el("bubble", BUBBLES[0][1], BUBBLES[0][0], exit_at=B1_CLEAR + 0.35)]
@@ -243,7 +267,7 @@ def qa_scenes(starts, durs, captions):
 
 def events(starts, durs):
     b1, b2, b3, b4, b5 = (starts[k] for k in ("b1", "b2", "b3", "b4", "b5"))
-    ev = [(STILL, "whoosh", dict(gain=0.2), 0.0), (starts["title"] + 1.3, "whoosh", dict(gain=0.3), 0.3)]
+    ev = [(STILL, "whoosh", dict(gain=0.2), 0.0), (starts["title"] + TITLE_OUT, "whoosh", dict(gain=0.3), 0.3)]
     for i, (_, _, at) in enumerate(BUBBLES):
         ev.append((b1 + at, "pop", dict(gain=0.3, f=330 - 30 * i), -0.4 + 0.4 * i))
     ev += [(b1 + B1_CLEAR, "whoosh", dict(gain=0.35), 0.0), (b1 + B1_MAP + 0.1, "chime", dict(gain=0.25, f0=988), 0.0),

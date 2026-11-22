@@ -14,7 +14,7 @@ seconds; everything slows down the moment Dandy Man speaks.
 
 **Audience:** anyone who has built with an AI coding tool and been through this exact moment.
 
-**Target length:** about 24 s in the first render (38 narrated words, all Dandy Man). Status: draft v1, Nov 14;
+**Target length:** 25.0 s, fitted to Charlie's Nov 21 read (all Dandy Man, timing in `voiceover/stage.json`). Status: draft v1, Nov 14;
 first render built Nov 14 with placeholder timing (`room/render_crash.py`). Timing follows Charlie's read once recorded.
 
 | # | Sec | Visual | On-screen text | Narration (Dandy Man, in Charlie's voice) |

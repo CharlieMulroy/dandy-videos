@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-19",
+  "updated": "2026-11-21",
   "videos": [
     {
       "number": "01",
@@ -244,16 +244,16 @@
       "look": "night room with Dandy Man",
       "script_path": "videos/13-crash-out-login/script.md",
       "renderer_path": "videos/13-crash-out-login/room/render_crash.py",
-      "duration_s": 24.4,
+      "duration_s": 25.0,
       "script_status": "draft",
-      "narration_status": "pending",
-      "render_status": "preview",
+      "narration_status": "recorded",
+      "render_status": "final",
       "posted": {
         "platforms": [],
         "links": {}
       },
       "series": "crash-out",
-      "notes": "Crash-out test. First render Nov 14 with placeholder timing and no narration; awaiting Charlie's review of words and look. Narration is Dandy Man only (38 words)."
+      "notes": "Crash-out test. Charlie recorded Dandy Man's lines with his music bed on Nov 21 (voiceover/stage.json); scenes retimed to the read and final rendered Nov 21 (25.0 s, checks pass). Not in Drive yet: the final is too large for the Drive connector, Charlie has it from chat. Script still marked draft; the meltdown is on-screen text only (not voiced). Not posted."
     }
   ]
 }

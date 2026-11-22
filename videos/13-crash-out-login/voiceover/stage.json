@@ -1,0 +1,70 @@
+{
+ "file": "videos/13-crash-out-login/voiceover/charlie-with-music.wav",
+ "offset_s": 0.0,
+ "note": "Charlie's Descript export 'Crash out' (Nov 21): Dandy Man's lines with his music bed, mono, 25.02 s. Music alone until the first line at 5.83 s, so the meltdown (text and sound effects) plays over the intro. The music lifts at about 21.25 s; the end card cuts in there and holds to the end of the file. The builder's lines stay on-screen text (not voiced).",
+ "mixed": true,
+ "voice_db": 0.0,
+ "bed_db": -8.0,
+ "durations": {
+  "open": 1.3,
+  "smash": 1.9,
+  "thud": 1.5,
+  "enter": 2.6,
+  "why": 4.7,
+  "map": 6.4,
+  "better": 2.85,
+  "end": 3.75
+ },
+ "lines": [
+  [
+   5.83,
+   6.4,
+   "Rough night?"
+  ],
+  [
+   7.6,
+   9.23,
+   "Your agent isn't careless."
+  ],
+  [
+   9.45,
+   10.53,
+   "It just can't see"
+  ],
+  [
+   10.64,
+   11.45,
+   "what's already built."
+  ],
+  [
+   12.35,
+   13.2,
+   "Dandy shows it:"
+  ],
+  [
+   13.51,
+   14.95,
+   "every piece of your project,"
+  ],
+  [
+   15.14,
+   16.13,
+   "and where it stands,"
+  ],
+  [
+   16.43,
+   17.75,
+   "before it writes a line."
+  ],
+  [
+   18.77,
+   19.25,
+   "There."
+  ],
+  [
+   20.11,
+   20.78,
+   "Much better."
+  ]
+ ]
+}

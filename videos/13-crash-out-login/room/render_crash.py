@@ -12,7 +12,8 @@ and the monitor are drawn here, with the desk kept left of centre so Dandy Man h
 the map, the agent's light, captions, the end card, the sound bed and the render loop come from render/stage.py, so
 all four shared checks run before a frame is drawn.
 
-Timings are placeholders until Charlie records; they move to voiceover/stage.json ("durations", "file", "lines").
+Timings follow Charlie's Nov 21 read in voiceover/stage.json ("durations", "file", "lines"); the durations in SCENES are
+the old placeholders and only apply if that file is missing.
 """
 import argparse
 import io
@@ -373,9 +374,9 @@ def dandy(img, tg, pose, x=DM_X0, dip=0.0, alpha=1.0):
 P = {"Login": (86, 290), "Calendar": (405, 290), "Bookings": (724, 290), "Payments": (724, 478)}
 EDGES = [("Login", "Calendar"), ("Calendar", "Bookings"), ("Bookings", "Payments")]
 STATES = {"Login": "done", "Calendar": "done", "Bookings": "done", "Payments": "next"}
-BLOOM = [("Login", 0.35), ("Calendar", 0.65), ("Bookings", 0.95), ("Payments", 1.25)]
-READ = [("Login", 1.9), ("Calendar", 2.3), ("Bookings", 2.7), ("Payments", 3.2)]
-BUILD_AT, SAY_AT = 3.6, 3.9
+BLOOM = [("Login", 0.4), ("Calendar", 1.55), ("Bookings", 1.9), ("Payments", 2.25)]     # Login on "Dandy shows it", the rest on "every piece"
+READ = [("Login", 3.15), ("Calendar", 3.45), ("Bookings", 3.75), ("Payments", 4.15)]      # on "and where it stands"
+BUILD_AT, SAY_AT = 5.3, 5.55      # as "before it writes a line" ends
 SAY = ["Login's done.", "Building payments."]
 SAY_BOX = (268, 656, 762, 800)
 MON_TIP = (633, 846)
@@ -466,8 +467,8 @@ def s_thud(t, dur, tg):
     return img
 
 
-WALK = (0.35, 1.25)
-TIP_AT, PEEK_AT = 1.35, 1.0
+WALK = (0.2, 0.95)
+TIP_AT, PEEK_AT = 1.1, 0.8      # "Rough night?" lands on the hat tip (1.13 s in, Nov 21 read)
 
 
 def s_enter(t, dur, tg):
@@ -522,7 +523,7 @@ def s_map(t, dur, tg):
     return map_frame(t, tg, "watch" if t >= WATCH_AT else "peek", "pointing" if t > 0.3 else "idle", dip=tap)
 
 
-BETTER_TIP = 0.55
+BETTER_TIP = 1.65      # the hat tip lands on "Much better."
 
 
 def s_better(t, dur, tg):

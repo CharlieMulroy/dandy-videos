@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-21",
+  "updated": "2026-11-22",
   "videos": [
     {
       "number": "01",
@@ -254,6 +254,24 @@
       },
       "series": "crash-out",
       "notes": "Crash-out test. Charlie recorded Dandy Man's lines with his music bed on Nov 21 (voiceover/stage.json); scenes retimed to the read and final rendered Nov 21 (25.0 s, checks pass). Not in Drive yet: the final is too large for the Drive connector, Charlie has it from chat. Script still marked draft; the meltdown is on-screen text only (not voiced). Not posted."
+    },
+    {
+      "number": "14",
+      "slug": "14-mcp",
+      "title": "MCP: The Universal Plug",
+      "kind": "general_concept",
+      "look": "Blueprint (proposed, no Look node yet)",
+      "script_path": "videos/14-mcp/script.md",
+      "renderer_path": null,
+      "duration_s": null,
+      "script_status": "draft",
+      "narration_status": "pending",
+      "render_status": "none",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      },
+      "notes": "Draft v1 Nov 22: what MCP is, how it works (menu, ask, answer), five example tools, Dandy only in the last spoken line. Target about 75 s, with a 55 s cut noted. Awaiting Charlie's review of the script and the blueprint look before a first render."
     }
   ]
 }

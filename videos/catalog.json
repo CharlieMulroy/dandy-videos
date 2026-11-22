@@ -260,7 +260,7 @@
       "slug": "14-mcp",
       "title": "MCP: The Universal Plug",
       "kind": "general_concept",
-      "look": "Blueprint (proposed, no Look node yet)",
+      "look": "Blueprint, dark opening (proposed, no Look node yet)",
       "script_path": "videos/14-mcp/script.md",
       "renderer_path": null,
       "duration_s": null,
@@ -271,7 +271,7 @@
         "platforms": [],
         "links": {}
       },
-      "notes": "Draft v1 Nov 22: what MCP is, how it works (menu, ask, answer), five example tools, Dandy only in the last spoken line. Target about 94 s, with a 60 s cut noted. Awaiting Charlie's review of the script and the blueprint look before a first render."
+      "notes": "Draft v2 Nov 22: what MCP is, how it works (menu, ask, answer), five example tools, Dandy only in the last spoken line. 180 words, about 70 to 75 s at a faster read. Opening (locked room, reach, tangle) is dark and played as horror; lights come up when MCP arrives. Awaiting Charlie's go-ahead for a first render."
     }
   ]
 }

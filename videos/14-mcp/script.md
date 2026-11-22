@@ -8,43 +8,55 @@ your code, your docs and your chats.
 appears only in the final spoken line ("our tool, Dandy"), as one more plug on the wall. No Dandy Man. Soft end card
 without him.
 
-**Look (new, proposed): the inventor's blueprint.** The whole film is one patent drawing being inked in front of
-you. Deep blueprint-blue paper with a faint grid, chalk-white line art that draws itself stroke by stroke, small
-figure labels in the corners (FIG. 1, FIG. 2), and one warm amber accent for anything that is "live": the mind,
-the current running down a cable, the menu item being picked. The camera never cuts; it slides across the sheet
-from one figure to the next, so the film reads as one long drawing. No purple anywhere until the last plug, which
-is the only purple on the sheet. Tools are named in plain lettering on their plugs, never as logos.
-Why this look: it is unlike every video so far, it suits a topic that is literally about a plug standard, and the
-old-patent feel sits naturally next to the top hat without using the mascot.
+**Look (new, proposed): the inventor's blueprint, opening in the dark.** The whole film is one patent drawing
+being inked in front of you, and it has two halves.
+*The dark half (scenes 1 to 3), played as horror.* The sheet is almost black. The only light is the mind itself, a
+dim amber glow that flickers like a failing bulb, inside a cell drawn in thin grey chalk. Heavy vignette, drifting
+dust, a slow push in. The walls draw themselves shut. When the mind reaches for your files its lines hit the wall
+and spread like hands on glass, then go out. The cables in scene 3 creep in like vines and tighten around the cell.
+Moody and tense, never gory: the fear is being shut in, not anything jumping out.
+*The turn (scene 4).* On "Then came MCP" a single socket is cut into the wall and light pours through it. The
+black washes out to blueprint blue, the grid appears, the chalk turns clean white and the flicker steadies. From
+here on it is bright, calm and clear: figure labels in the corners (FIG. 2, FIG. 3), amber for anything live (the
+current in a cable, the menu item being picked), and a camera that slides across the sheet without cutting.
+No purple anywhere until the last plug, which is the only purple on the sheet. Tools are named in plain lettering
+on their plugs, never as logos.
+*Sound.* Dark half: a low drone, a slow heartbeat thump, a faint electrical buzz with the flicker, a dull knock
+when the reach hits the wall. The turn: one clean switch click, then the drone lifts into something open. If
+Charlie mixes his own music, a track that starts dark and opens up at about 17 s fits; otherwise the render's own
+sound carries the change.
 
 **Audience:** anyone using AI tools who has seen "MCP" and never had it explained. One term is introduced (MCP
 server) and defined by the menu picture. No code, no jargon beyond that.
 
-**Target length:** about 94 s (189 narrated words at Charlie's pace, plus pauses); the scene times in the table are a rough plan and follow his read, the longest so far, on purpose. Status: draft
-v1, Nov 22. No render yet. A 60 s cut is marked below if it feels long.
+**Target length:** about 70 to 75 s (180 narrated words, read a little faster than usual, as Charlie suggested on
+Nov 22). Status: draft v2, Nov 22 (v1 was 189 words with a plain blueprint opening). No render yet. Scene times
+below are a plan and follow his read.
 
 | # | Sec | Visual | On-screen text | Narration (Charlie) |
 | --- | --- | --- | --- | --- |
-| 1 | 0-4 | Blueprint sheet, already half drawn. A sealed room in white line art with a glowing amber mind inside. No door. The last wall inks itself shut as the line is spoken. | FIG. 1 | The smartest AI you've ever used is locked in a room. |
-| 2 | 4-11 | Outside the room three objects draw in: a folder, a calendar, a code window. Thin amber lines reach out from the mind toward each and stop dead at the wall. | (captions only) | It can think. It can write. But on its own, it can't touch your files, your calendar, or your code. |
-| 3 | 11-19 | Slide right to FIG. 2. Three rooms on the left, five tools on the right. Hand-built cables draw between them one by one, every plug a different odd shape, until fifteen cables make a knot. A small counter ticks up. | 15 custom cables | Every connection used to be built by hand. One custom cable for every tool, for every AI. |
-| 4 | 19-27 | The knot is erased in one sweep of a chalk eraser. A single clean socket is drawn into the wall of the room, with a patent title block lettering itself beneath it. | MCP: Model Context Protocol | Then came MCP, the Model Context Protocol. One standard plug that any AI and any tool can share. |
-| 5 | 27-29 | Slide down to FIG. 3, three numbered panels waiting empty. | How it works | Here's how it works. |
-| 6 | 29-36 | Panel 1. A tool (the folder) plugs into the socket and hangs a menu card on the wall: three short lines. | 1. The menu | A tool sets up what's called an MCP server. Think of it as a menu: here's what I can do. |
-| 7 | 36-42 | Panel 2. The mind's amber light runs down the menu, one line lights up, and a pulse travels down the cable to the tool. | 2. The ask | Your AI reads the menu, picks what it needs, and asks. |
-| 8 | 42-47 | Panel 3. The tool's gears turn once and a small page travels back up the cable into the room. | 3. The answer | The tool does the work and hands back the result. |
-| 9 | 47-49 | Slide right to FIG. 4: a long wall of empty sockets. | (captions only) | So what can you plug in? |
-| 10 | 49-64 | Plugs click into the wall one at a time, each with a name and a few words under it, on the beat of the read. | GitHub / Notion / Slack / Figma / A browser (one at a time, with its few words) | GitHub, to read your code and open pull requests. Notion, to find and update your docs. Slack, to catch you up on the thread you missed. Figma, to build from your designs. Even a browser, to click through your site and test it. |
-| 11 | 64-68 | Pull back. The wall of sockets runs off the sheet in both directions, plugs filling in faster than you can read them. | (captions only) | There are thousands more, and anyone can build one. |
-| 12 | 68-74 | One last plug clicks into the nearest socket. It is purple, the only purple on the sheet, and a small map unfolds from it into the room. | Dandy | Including us. Our tool, Dandy, plugs in the same way, and gives your AI a live map of your project. |
-| 13 | 74-77 | The sheet dims and the soft end card comes up (no Dandy Man). | dandylabs.dev, 14-day free trial | (nothing) |
+| 1 | 0-5 | Black. A dim amber light flickers on: the mind, alone in a cell of thin grey chalk lines. Slow push in. The last wall draws itself shut; where a door and a window should be, chalk outlines appear and are crossed out. | (captions only) | The smartest AI you've ever used is locked in a room. No doors. No windows. |
+| 2 | 5-11 | Out in the dark, three shapes are barely lit: a folder, a calendar, a code window. Amber lines stretch from the mind toward each, hit the wall with a dull knock, spread like hands on glass and go out. The light dims a little each time. | (captions only) | It can think. It can write. But it can't touch your files, your calendar, or your code. |
+| 3 | 11-17 | Pull back, still dark. More cells, more tools. Hand-built cables creep between them like vines, every plug a different crooked shape, until fifteen of them knot around the cell. A small counter ticks up. | 15 custom cables | Every connection used to be built by hand. One custom cable for every tool, for every AI. |
+| 4 | 17-24 | The turn. A clean socket is cut into the cell wall and light pours through. The black washes to blueprint blue, the tangle burns away to nothing, the flicker steadies, and a patent title block letters itself under the socket. | MCP: Model Context Protocol | Then came MCP, the Model Context Protocol. One standard plug that any AI and any tool can share. |
+| 5 | 24-26 | Bright from here. Slide down to FIG. 2, three numbered panels waiting empty. | How it works | Here's how it works. |
+| 6 | 26-32 | Panel 1. A tool (the folder) plugs into the socket and hangs a menu card on the wall: three short lines. | 1. The menu | A tool sets up an MCP server. Think of it as a menu: here's what I can do. |
+| 7 | 32-37 | Panel 2. The mind's amber light runs down the menu, one line lights up, and a pulse travels down the cable to the tool. | 2. The ask | Your AI reads the menu, picks what it needs, and asks. |
+| 8 | 37-41 | Panel 3. The tool's gears turn once and a small page travels back up the cable into the room. | 3. The answer | The tool does the work and hands back the result. |
+| 9 | 41-43 | Slide right to FIG. 3: a long wall of empty sockets. | (captions only) | So what can you plug in? |
+| 10 | 43-56 | Plugs click into the wall one at a time, each with a name and a few words under it, on the beat of the read. | GitHub / Notion / Slack / Figma / A browser (one at a time, with its few words) | GitHub, to read your code and open pull requests. Notion, to find and update your docs. Slack, to catch you up on a thread. Figma, to build from your designs. Even a browser, to test your site. |
+| 11 | 56-59 | Pull back. The wall of sockets runs off the sheet in both directions, plugs filling in faster than you can read them. | (captions only) | Thousands more, and anyone can build one. |
+| 12 | 59-66 | One last plug clicks into the nearest socket. It is purple, the only purple on the sheet, and a small map unfolds from it into the room, which now has light in every corner. | Dandy | Including us. Our tool, Dandy, plugs in the same way and gives your AI a live map of your project. |
+| 13 | 66-70 | The sheet dims and the soft end card comes up (no Dandy Man). | dandylabs.dev, 14-day free trial | (nothing) |
 
 ## Narration, read straight through
 
 The smartest AI you've ever used is locked in a room.
 
+No doors. No windows.
+
 It can think. It can write.
-But on its own, it can't touch your files, your calendar, or your code.
+But it can't touch your files, your calendar, or your code.
 
 Every connection used to be built by hand.
 One custom cable for every tool, for every AI.
@@ -54,7 +66,7 @@ One standard plug that any AI and any tool can share.
 
 Here's how it works.
 
-A tool sets up what's called an MCP server.
+A tool sets up an MCP server.
 Think of it as a menu: here's what I can do.
 
 Your AI reads the menu, picks what it needs, and asks.
@@ -65,18 +77,13 @@ So what can you plug in?
 
 GitHub, to read your code and open pull requests.
 Notion, to find and update your docs.
-Slack, to catch you up on the thread you missed.
+Slack, to catch you up on a thread.
 Figma, to build from your designs.
-Even a browser, to click through your site and test it.
+Even a browser, to test your site.
 
-There are thousands more, and anyone can build one.
+Thousands more, and anyone can build one.
 
-Including us. Our tool, Dandy, plugs in the same way, and gives your AI a live map of your project.
-
-## Shorter cut (about 60 s)
-
-Drop scene 2's first two sentences ("It can think. It can write."), merge scenes 7 and 8 into one line ("Your AI picks from the
-menu, asks, and gets the result back."), and keep three examples (GitHub, Slack, a browser).
+Including us. Our tool, Dandy, plugs in the same way and gives your AI a live map of your project.
 
 ## Accuracy notes (checked Nov 22, 2026)
 
@@ -105,8 +112,8 @@ menu, asks, and gets the result back."), and keep three examples (GitHub, Slack,
 
 ## Open questions for Charlie
 
-1. The blueprint look: go with it, or would you rather see one other direction first?
-2. The full length, or the 60 s cut?
+1. The horror opening: is moody and tense the right level, or do you want it darker?
+2. Music: will you mix a dark-to-bright track yourself, or should the render's own sound carry the turn?
 3. The five examples: swap any for ones your audience uses more (Google Drive, Stripe, a database)?
 4. Title on the first frame for the thumbnail: "What is MCP?" over the sealed room, or no title and let the
    hook line carry it?

@@ -262,16 +262,16 @@
       "kind": "general_concept",
       "look": "Blueprint, dark opening (proposed, no Look node yet)",
       "script_path": "videos/14-mcp/script.md",
-      "renderer_path": null,
-      "duration_s": null,
+      "renderer_path": "videos/14-mcp/blueprint/render_mcp.py",
+      "duration_s": 72.5,
       "script_status": "draft",
       "narration_status": "pending",
-      "render_status": "none",
+      "render_status": "preview",
       "posted": {
         "platforms": [],
         "links": {}
       },
-      "notes": "Draft v3 Nov 22: what MCP is, how it works (menu, ask, answer), five example tools, Dandy only in the last spoken line. 180 words, about 70 to 75 s at a faster read. Opening (locked room, reach, tangle) is horror: near-black flicker, tally marks, living cables that tap on the wall, found-footage camera, whispered read; lights come up when MCP arrives. Charlie adds music. Awaiting Charlie's go-ahead for a first render."
+      "notes": "Script draft v3 (180 words). First render Nov 22: full 30 fps cut with placeholder timing, burned-in captions and a sound-effects bed only (no narration, no music); checks pass. Dark half: floor plan of a sealed cell lit only by a flickering bulb-filament mind, tally marks, the reach hitting the wall, 15 living cables and the tap, found-footage camera and dropouts. The turn: a socket cut in the wall washes the sheet to blueprint blue and burns the tangle. Bright half: title block, three panels (menu, ask, answer), wall of sockets with GitHub, Notion, Slack, Figma, a browser, then many more, and the purple Dandy plug that unfolds a map. Awaiting Charlie's review and narration (timing moves to voiceover/blueprint.json)."
     }
   ]
 }

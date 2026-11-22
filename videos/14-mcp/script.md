@@ -10,34 +10,40 @@ without him.
 
 **Look (new, proposed): the inventor's blueprint, opening in the dark.** The whole film is one patent drawing
 being inked in front of you, and it has two halves.
-*The dark half (scenes 1 to 3), played as horror.* The sheet is almost black. The only light is the mind itself, a
-dim amber glow that flickers like a failing bulb, inside a cell drawn in thin grey chalk. Heavy vignette, drifting
-dust, a slow push in. The walls draw themselves shut. When the mind reaches for your files its lines hit the wall
-and spread like hands on glass, then go out. The cables in scene 3 creep in like vines and tighten around the cell.
-Moody and tense, never gory: the fear is being shut in, not anything jumping out.
+*The dark half (scenes 1 to 3), played as horror (Charlie's picks, Nov 22).* Shot like found footage: a slightly
+shaky handheld camera, heavy grain, and a picture that cuts out for a few frames mid-line. The sheet is black. The
+only light is the mind itself, a dim amber glow inside a cell of thin grey chalk, and it nearly dies between
+flickers, so the screen goes fully black for a beat (never longer, or it reads as a video that failed to load).
+When the light catches the inside wall you can see tally marks scratched into it, rows of them, as if it has been
+counting sessions. When the mind reaches for your files its lines hit the wall and spread like hands on glass, then
+go out. The cables in scene 3 are alive: they slither in out of the dark, coil around the cell, and one taps on
+the wall from outside. Tense and unsettling, never gory. The walls do not close in and the captions stay clean.
 *The turn (scene 4).* On "Then came MCP" a single socket is cut into the wall and light pours through it. The
 black washes out to blueprint blue, the grid appears, the chalk turns clean white and the flicker steadies. From
 here on it is bright, calm and clear: figure labels in the corners (FIG. 2, FIG. 3), amber for anything live (the
 current in a cable, the menu item being picked), and a camera that slides across the sheet without cutting.
 No purple anywhere until the last plug, which is the only purple on the sheet. Tools are named in plain lettering
 on their plugs, never as logos.
-*Sound.* Dark half: a low drone, a slow heartbeat thump, a faint electrical buzz with the flicker, a dull knock
-when the reach hits the wall. The turn: one clean switch click, then the drone lifts into something open. If
-Charlie mixes his own music, a track that starts dark and opens up at about 17 s fits; otherwise the render's own
-sound carries the change.
+*Sound.* Charlie adds his own music. Suggested: a low drone or one sustained note under the dark half, no beat,
+then half a second of silence before the turn. The render keeps its own sound to the essentials so it does not
+fight his track: a faint electrical buzz with the flicker, the dull knock when the reach hits the wall, the three
+taps from the cable, and one clean switch click at the turn.
+*The read.* Slow and low for the first three lines, close to a whisper, with a real pause after "locked in a
+room." Switch to his normal, brighter voice on "Then came MCP." The contrast in the voice carries the turn as much
+as the picture does.
 
 **Audience:** anyone using AI tools who has seen "MCP" and never had it explained. One term is introduced (MCP
 server) and defined by the menu picture. No code, no jargon beyond that.
 
 **Target length:** about 70 to 75 s (180 narrated words, read a little faster than usual, as Charlie suggested on
-Nov 22). Status: draft v2, Nov 22 (v1 was 189 words with a plain blueprint opening). No render yet. Scene times
+Nov 22). Status: draft v3, Nov 22 (v1 was 189 words with a plain blueprint opening; v2 added the dark opening; v3 makes it darker). No render yet. Scene times
 below are a plan and follow his read.
 
 | # | Sec | Visual | On-screen text | Narration (Charlie) |
 | --- | --- | --- | --- | --- |
-| 1 | 0-5 | Black. A dim amber light flickers on: the mind, alone in a cell of thin grey chalk lines. Slow push in. The last wall draws itself shut; where a door and a window should be, chalk outlines appear and are crossed out. | (captions only) | The smartest AI you've ever used is locked in a room. No doors. No windows. |
-| 2 | 5-11 | Out in the dark, three shapes are barely lit: a folder, a calendar, a code window. Amber lines stretch from the mind toward each, hit the wall with a dull knock, spread like hands on glass and go out. The light dims a little each time. | (captions only) | It can think. It can write. But it can't touch your files, your calendar, or your code. |
-| 3 | 11-17 | Pull back, still dark. More cells, more tools. Hand-built cables creep between them like vines, every plug a different crooked shape, until fifteen of them knot around the cell. A small counter ticks up. | 15 custom cables | Every connection used to be built by hand. One custom cable for every tool, for every AI. |
+| 1 | 0-5 | Black. A dim amber light stutters on: the mind, alone in a cell of thin grey chalk lines. Shaky handheld push in, heavy grain. The light nearly dies and the screen goes black for a beat; when it comes back, tally marks are visible scratched into the inside wall. The picture cuts out for a few frames on "No windows." | (captions only) | The smartest AI you've ever used is locked in a room. No doors. No windows. |
+| 2 | 5-11 | Out in the dark, three shapes are barely lit: a folder, a calendar, a code window. Amber lines stretch from the mind toward each, hit the wall with a dull knock, spread like hands on glass and go out. The light dims a little each time, and more tally marks show with every flicker. | (captions only) | It can think. It can write. But it can't touch your files, your calendar, or your code. |
+| 3 | 11-17 | The camera jerks back, still dark. More cells, more tools. Cables slither in from the black like living things, every plug a different crooked shape, and coil around the cell until fifteen of them knot it shut. One lifts and taps on the wall from outside: three slow knocks. The mind's light shrinks away from it. A small counter ticks up. | 15 custom cables | Every connection used to be built by hand. One custom cable for every tool, for every AI. |
 | 4 | 17-24 | The turn. A clean socket is cut into the cell wall and light pours through. The black washes to blueprint blue, the tangle burns away to nothing, the flicker steadies, and a patent title block letters itself under the socket. | MCP: Model Context Protocol | Then came MCP, the Model Context Protocol. One standard plug that any AI and any tool can share. |
 | 5 | 24-26 | Bright from here. Slide down to FIG. 2, three numbered panels waiting empty. | How it works | Here's how it works. |
 | 6 | 26-32 | Panel 1. A tool (the folder) plugs into the socket and hangs a menu card on the wall: three short lines. | 1. The menu | A tool sets up an MCP server. Think of it as a menu: here's what I can do. |
@@ -112,8 +118,8 @@ Including us. Our tool, Dandy, plugs in the same way and gives your AI a live ma
 
 ## Open questions for Charlie
 
-1. The horror opening: is moody and tense the right level, or do you want it darker?
-2. Music: will you mix a dark-to-bright track yourself, or should the render's own sound carry the turn?
+1. Settled Nov 22: darker opening (near-black flicker, tally marks, living cables with the tap, found-footage
+   camera, whispered read) and Charlie adds the music.
 3. The five examples: swap any for ones your audience uses more (Google Drive, Stripe, a database)?
 4. Title on the first frame for the thumbnail: "What is MCP?" over the sealed room, or no title and let the
    hook line carry it?

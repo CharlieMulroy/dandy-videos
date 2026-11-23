@@ -1605,15 +1605,18 @@ def end_card(last, t):
 def caption_layout(text):
     fnt = font("Inter-Bold.otf", int(CONTRACT["type"]["vertical"]["body"] * 0.92))
     d = ImageDraw.Draw(Image.new("RGB", (4, 4)))
-    words, lines, cur = text.split(), [], ""
-    for w_ in words:
-        trial = (cur + " " + w_).strip()
-        if d.textlength(trial, font=fnt) <= SAFE[2] - SAFE[0] - 40 or not cur:
-            cur = trial
-        else:
-            lines.append(cur)
-            cur = w_
-    lines.append(cur)
+    words, maxw = text.split(), SAFE[2] - SAFE[0] - 40
+    if d.textlength(text, font=fnt) <= maxw:
+        lines = [text]
+    else:
+        # two balanced lines: the split that keeps the longer line shortest (no lone word on the second line)
+        best = None
+        for k in range(1, len(words)):
+            a, b = " ".join(words[:k]), " ".join(words[k:])
+            wa, wb = d.textlength(a, font=fnt), d.textlength(b, font=fnt)
+            if wa <= maxw and wb <= maxw and (best is None or max(wa, wb) < best[0]):
+                best = (max(wa, wb), [a, b])
+        lines = best[1]
     lh, pad = fnt.size * 1.18, 20
     y = SAFE[3] - len(lines) * (lh + pad * 0.6) - 10
     boxes = []
@@ -1986,7 +1989,7 @@ def render(preview=False, final=False, at=None, workers=2):
         fc = (f"[2:a]atrim=start={vo.get('offset_s', 0)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,"
               f"{hp}volume={vo.get('voice_db', 0)}dB,apad=whole_dur={TOTAL},asplit=2[v][vk];[1:a]volume={vo.get('bed_db', -4)}dB[b];"
               f"[b][vk]sidechaincompress=threshold=0.03:ratio=4:attack=20:release=350[bd];"
-              f"[v][bd]amix=inputs=2:normalize=0:duration=longest,atrim=0:{TOTAL},afade=t=out:st={TOTAL - 1.0}:d=1.0,alimiter=limit=0.89:level=0[a]")
+              f"[v][bd]amix=inputs=2:normalize=0:duration=longest,atrim=0:{TOTAL},afade=t=out:st={TOTAL - vo.get('fade_s', 1.0)}:d={vo.get('fade_s', 1.0)},alimiter=limit=0.89:level=0[a]")
         cmd += ["-i", os.path.join(ROOT, vo["file"]), "-filter_complex", fc, "-map", "0:v", "-map", "[a]"]
     else:
         cmd += ["-map", "0:v", "-map", "1:a"]
@@ -1994,6 +1997,17 @@ def render(preview=False, final=False, at=None, workers=2):
             "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", mp4]
     subprocess.run(cmd, check=True)
     shutil.rmtree(tmp)
+    if vo and vo.get("file") and not preview and vo.get("loudness_lufs"):
+        # bring the finished mix to a social-feed level (two-pass loudnorm, then a limiter); the video stream is copied
+        tgt = vo["loudness_lufs"]
+        meas = subprocess.run(["ffmpeg", "-hide_banner", "-i", mp4, "-af", f"loudnorm=I={tgt}:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+                              capture_output=True, text=True).stderr
+        j = json.loads(meas[meas.rindex("{"):meas.rindex("}") + 1])
+        af = (f"loudnorm=I={tgt}:TP=-1.5:LRA=11:measured_I={j['input_i']}:measured_TP={j['input_tp']}:measured_LRA={j['input_lra']}:"
+              f"measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true,alimiter=limit=0.84:level=0,aresample=48000")
+        tmp4 = mp4.replace(".mp4", ".loud.mp4")
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", mp4, "-c:v", "copy", "-af", af, "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", tmp4], check=True)
+        os.replace(tmp4, mp4)
     print(f"rendered {mp4} ({TOTAL:.1f} s)")
     return True
 

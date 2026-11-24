@@ -280,16 +280,16 @@
       "kind": "use_case",
       "look": "Apartment Cutaway (proposed, no Look node yet)",
       "script_path": "videos/15-roommates/script.md",
-      "renderer_path": null,
-      "duration_s": null,
+      "renderer_path": "videos/15-roommates/cutaway/render_cutaway.py",
+      "duration_s": 36.5,
       "script_status": "draft",
       "narration_status": "pending",
-      "render_status": "none",
+      "render_status": "preview",
       "posted": {
         "platforms": [],
         "links": {}
       },
-      "notes": "Draft v1 Nov 23: two roommates build a bill-splitting app at night, each with their own Claude Code; the agents keep redoing each other's work until both read the same live map in Dandy. About 35 s. Awaiting Charlie's review before a first render."
+      "notes": "Script draft v1 (82 words). First render Nov 23: full 30 fps cut with placeholder timing, burned-in captions and a sound-effects bed only. House cutaway: Sam upstairs (teal), Jo downstairs (coral), the app band between floors; morning text fight, rewind to night, agents overwriting each other with a redone counter, Sam types 'point it at Dandy', the band becomes a purple map, both build side by side, finished app in the morning. Hook text tightened to 'no?? you rebuilt my chores page' to keep the frame under the word limit. Checks pass. Awaiting Charlie's review and narration (timing moves to voiceover/cutaway.json)."
     }
   ]
 }

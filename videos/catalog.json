@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-22",
+  "updated": "2026-11-23",
   "videos": [
     {
       "number": "01",
@@ -272,6 +272,24 @@
         "links": {}
       },
       "notes": "Charlie approved the first render Nov 22 ('pretty perfect') and recorded the narration with his music the same night (voiceover/blueprint.json, word times from a forced alignment). Final render Nov 22: 69.5 s, scenes and cues retimed to the read, end card on the music lift at 66.47 s, audio brought to -16 LUFS, checks pass. Not in Drive (file too large for the connector); not posted. Look: blueprint with a dark found-footage opening, no Look node yet."
+    },
+    {
+      "number": "15",
+      "slug": "15-roommates",
+      "title": "Roommates: Two Builders, One App",
+      "kind": "use_case",
+      "look": "Apartment Cutaway (proposed, no Look node yet)",
+      "script_path": "videos/15-roommates/script.md",
+      "renderer_path": null,
+      "duration_s": null,
+      "script_status": "draft",
+      "narration_status": "pending",
+      "render_status": "none",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      },
+      "notes": "Draft v1 Nov 23: two roommates build a bill-splitting app at night, each with their own Claude Code; the agents keep redoing each other's work until both read the same live map in Dandy. About 32 s. Awaiting Charlie's review before a first render."
     }
   ]
 }

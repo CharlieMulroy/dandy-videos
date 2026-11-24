@@ -996,7 +996,7 @@ def compose(tg):
         a, d = CUE["type"]
         callout(img, "sam", "point it at Dandy", t, a, 99, "sam types", typed=True)
     elif sid == "fix":
-        callout(img, "sam", "Jo's agent is working on Chores. I'll take Groceries.", t, CUE["f_say"], CUE["f_say"] + 4.2, "sam agent 2")
+        callout(img, "sam", "Jo's agent is working on Chores. I'll take Groceries.", t, CUE["f_say"], CUE["f_say"] + 3.7, "sam agent 2")
         callout(img, "jo", "Groceries already has a writer. Picking another page.", t, CUE["catch_say"][0], CUE["catch_say"][1], "jo agent 2")
     elif sid == "payoff":
         text_bubble(img, "jo", "ok who built groceries, it's good", t, CUE["pay_jo"], 99, "jo text 2")
@@ -1341,6 +1341,7 @@ def render(preview=False, final=False, at=None, workers=2):
     if vo and vo.get("file") and not preview:
         fade = vo.get("fade_s", 1.0)
         fc = (f"[2:a]atrim=start={vo.get('offset_s', 0)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,"
+              f"adelay={int(vo.get('delay_s', 0) * 1000)}:all=1,"
               f"volume={vo.get('voice_db', 0)}dB,apad=whole_dur={TOTAL},asplit=2[v][vk];[1:a]volume={vo.get('bed_db', -4)}dB[b];"
               f"[b][vk]sidechaincompress=threshold=0.03:ratio=4:attack=20:release=350[bd];"
               f"[v][bd]amix=inputs=2:normalize=0:duration=longest,atrim=0:{TOTAL},afade=t=out:st={TOTAL - fade}:d={fade},alimiter=limit=0.89:level=0[a]")

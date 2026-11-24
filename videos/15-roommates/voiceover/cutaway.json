@@ -1,0 +1,122 @@
+{
+ "file": "videos/15-roommates/voiceover/charlie-with-music.wav",
+ "offset_s": 0.0,
+ "delay_s": 4.4,
+ "note": "Charlie's Descript export 'Duo' (Nov 23): narration with his music bed, mono 44.1 kHz, 39.42 s; voice and music start together at 0.2 s and the music fades out by 38.8 s. The track is delayed 4.4 s so the morning text-fight hook and the rewind play with only their chimes, then his voice and music come in at night. Word times from a forced alignment of the script. End card follows 'One map.' and holds through the fade.",
+ "mixed": true,
+ "voice_db": 0.0,
+ "bed_db": -7.0,
+ "fade_s": 0.4,
+ "loudness_lufs": -16,
+ "durations": {
+  "hook": 3.8,
+  "setup": 7.7,
+  "problem": 7.0,
+  "switch": 3.2,
+  "fix": 16.4,
+  "payoff": 2.9,
+  "end": 3.3
+ },
+ "cues": {
+  "p_sam_bills": 0.35,
+  "p_jo_bills": 2.65,
+  "p_jo_chores": 4.4,
+  "p_sam_chores": 5.15,
+  "p_sam_bills2": 5.9,
+  "morning1": [
+   4.0,
+   4.7
+  ],
+  "morning2": [
+   5.55,
+   6.15
+  ],
+  "type": [
+   1.0,
+   1.1
+  ],
+  "map": [
+   2.1,
+   1.0
+  ],
+  "f_jo": 0.35,
+  "f_say": 3.3,
+  "f_sam": 4.0,
+  "f_build": [
+   0.9,
+   7.4
+  ],
+  "g_end": 13.3,
+  "catch": [
+   9.6,
+   0.75
+  ],
+  "catch_say": [
+   10.25,
+   12.8
+  ],
+  "review": [
+   14.4,
+   1.4
+  ],
+  "pay_jo": 0.35,
+  "pay_sam": 1.35
+ },
+ "lines": [
+  [
+   4.63,
+   8.09,
+   "Sam and Jo are building an app to split bills for their apartment."
+  ],
+  [
+   8.77,
+   11.14,
+   "Each one works at night, with their own Claude Code."
+  ],
+  [
+   11.89,
+   14.45,
+   "The problem: neither agent knows what the other one did."
+  ],
+  [
+   14.99,
+   18.04,
+   "So every morning, something one of them built has been redone."
+  ],
+  [
+   18.89,
+   21.01,
+   "Then they pointed both agents at Dandy."
+  ],
+  [
+   21.55,
+   24.61,
+   "Now each agent checks the same live map before it starts."
+  ],
+  [
+   25.07,
+   28.49,
+   "It sees what's built, and what the other one is working on right now."
+  ],
+  [
+   29.45,
+   32.45,
+   "When Jo's agent reached for Groceries, Dandy stopped it."
+  ],
+  [
+   32.95,
+   34.38,
+   "Sam's agent already had it."
+  ],
+  [
+   35.02,
+   38.0,
+   "And nothing's marked done until a different agent reviews it."
+  ],
+  [
+   38.2,
+   40.75,
+   "Same app. Two builders. One map."
+  ]
+ ]
+}

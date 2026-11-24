@@ -281,15 +281,15 @@
       "look": "Apartment Cutaway (proposed, no Look node yet)",
       "script_path": "videos/15-roommates/script.md",
       "renderer_path": "videos/15-roommates/cutaway/render_cutaway.py",
-      "duration_s": 43.0,
-      "script_status": "draft",
-      "narration_status": "pending",
-      "render_status": "preview",
+      "duration_s": 44.3,
+      "script_status": "approved",
+      "narration_status": "recorded",
+      "render_status": "final",
       "posted": {
         "platforms": [],
         "links": {}
       },
-      "notes": "Script draft v2 Nov 23 (106 words): adds the overwrite catch (Jo's agent reaches for Groceries, Dandy turns it away because Sam's agent is its writer) and the review (Jo's agent reviews Sam's Groceries page before it gets its check mark); propagation left for a later video at Charlie's request. Second render Nov 23: 43 s, placeholder timing, captions and sound effects only, checks pass. Awaiting Charlie's review and narration (timing moves to voiceover/cutaway.json)."
+      "notes": "Charlie recorded the v2 narration with his music on Nov 23 (voiceover/cutaway.json, word times from a forced alignment). His track is delayed 4.4 s so the morning text-fight hook and the rewind play with only their chimes. Final render Nov 23: 44.3 s, beats retimed to the read (barrier on 'Dandy stopped it', magnifier on 'a different agent reviews it'), end card after 'One map.' through the music fade, audio at -16 LUFS, checks pass. Not in Drive (too large for the connector); not posted."
     }
   ]
 }

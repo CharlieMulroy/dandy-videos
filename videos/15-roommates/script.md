@@ -20,7 +20,7 @@ wall band becomes the map.
 **Cast:** Sam and Jo, two new figures in the Maya style (cartoonish, a bit realistic). Seen from the side at
 their desks; no dialogue, only texts.
 
-**Target length:** about 35 s (82 narrated words). Status: draft v1, Nov 23. No render yet.
+**Target length:** about 43 s (106 narrated words). Status: draft v2, Nov 23 (v1 had no overwrite catch or review; Charlie asked for both, and left propagation for a later video). First render made.
 
 | # | Sec | Visual | On-screen text | Narration (Charlie) |
 | --- | --- | --- | --- | --- |
@@ -29,7 +29,9 @@ their desks; no dialogue, only texts.
 | 3 | 10-17 | Sam's agent sends a teal Bills page down the wire into the phone. Then Jo's agent, not seeing it, sends a coral version over the top of it; the teal page crumples. Moon, sun, moon: it happens again the other way with Chores. A small "redone" counter ticks 1, 2, 3. | Sam's agent: "Bills page done." Jo's agent: "No bills page found. Building one." | The problem: neither agent knows what the other one did. So every morning, something one of them built has been redone. |
 | 4 | 17-20 | Both slump at their desks. Sam types one line. The wall band between the rooms lights up purple and the phone unfolds into a small map: one card per page, each tagged with who built it. | Sam: "point it at Dandy" | Then they pointed both agents at Dandy. |
 | 5 | 20-28 | Night again. Sam's chat reads the map first. On the map, the Chores card shows a coral dot: Jo's agent is in it right now. Sam's agent goes to Groceries instead. Both wires feed the phone at once and nothing collides; cards fill in teal and coral side by side. | Sam's agent: "Jo's agent is working on Chores. I'll take Groceries." | Now each agent checks the same live map before it starts. It sees what's built, and what the other one is working on right now. |
-| 6 | 28-32 | Morning. The finished app on the phone, all three pages. One last text exchange. They both lean back. Soft end card rises out of the wall band. | Jo: "ok who built groceries, it's good" Sam: "we did" | Same app. Two builders. One map. |
+| 5b | 28-31.5 | Jo's agent, done with Chores, reaches for Groceries: a coral pulse runs up the wire and stops at a purple bar across the Groceries card, which shows a lock; the pulse falls back. | Jo's agent: "Groceries already has a writer. Picking another page." | When Jo's agent reached for Groceries, Dandy stopped it. Sam's agent already had it. |
+| 5c | 31.5-35 | Sam's agent finishes Groceries, but the card gets no check mark yet. A coral magnifier sweeps across it (Jo's agent reviewing), then the check lands. | (captions only) | And nothing's marked done until a different agent reviews it. |
+| 6 | 35-39.5 | Morning. The finished app on the phone, all three pages. One last text exchange. They both lean back. Soft end card rises out of the wall band. | Jo: "ok who built groceries, it's good" Sam: "we did" | Same app. Two builders. One map. |
 
 ## Narration, read straight through
 
@@ -44,6 +46,11 @@ Then they pointed both agents at Dandy.
 Now each agent checks the same live map before it starts.
 It sees what's built, and what the other one is working on right now.
 
+When Jo's agent reached for Groceries, Dandy stopped it.
+Sam's agent already had it.
+
+And nothing's marked done until a different agent reviews it.
+
 Same app. Two builders. One map.
 
 ## Accuracy notes
@@ -53,6 +60,11 @@ Same app. Two builders. One map.
 - "Checks the same live map before it starts": agents connected to Dandy read the product's pieces and their
   status first. "What the other one is working on right now": Dandy shows which agents are active on which piece
   and a piece being worked on has one writer at a time.
+- "Dandy stopped it. Sam's agent already had it.": a piece being worked on has one writer at a time; another
+  agent trying to take it is turned away rather than allowed to overwrite.
+- "Nothing's marked done until a different agent reviews it": a piece completes through its review, and the
+  reviewing session is never the one that wrote it. In the story Jo's agent does the review.
+- Hook text shortened to "no?? you rebuilt my chores page" to keep that frame within the on-screen word limit.
 - The closing line says "one map", not "nothing ever breaks". No claim about speed, tokens or cost.
 - Sam and Jo are invented; no customer is named or implied.
 

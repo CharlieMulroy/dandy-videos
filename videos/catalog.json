@@ -281,7 +281,7 @@
       "look": "Apartment Cutaway (proposed, no Look node yet)",
       "script_path": "videos/15-roommates/script.md",
       "renderer_path": "videos/15-roommates/cutaway/render_cutaway.py",
-      "duration_s": 36.5,
+      "duration_s": 43.0,
       "script_status": "draft",
       "narration_status": "pending",
       "render_status": "preview",
@@ -289,7 +289,7 @@
         "platforms": [],
         "links": {}
       },
-      "notes": "Script draft v1 (82 words). First render Nov 23: full 30 fps cut with placeholder timing, burned-in captions and a sound-effects bed only. House cutaway: Sam upstairs (teal), Jo downstairs (coral), the app band between floors; morning text fight, rewind to night, agents overwriting each other with a redone counter, Sam types 'point it at Dandy', the band becomes a purple map, both build side by side, finished app in the morning. Hook text tightened to 'no?? you rebuilt my chores page' to keep the frame under the word limit. Checks pass. Awaiting Charlie's review and narration (timing moves to voiceover/cutaway.json)."
+      "notes": "Script draft v2 Nov 23 (106 words): adds the overwrite catch (Jo's agent reaches for Groceries, Dandy turns it away because Sam's agent is its writer) and the review (Jo's agent reviews Sam's Groceries page before it gets its check mark); propagation left for a later video at Charlie's request. Second render Nov 23: 43 s, placeholder timing, captions and sound effects only, checks pass. Awaiting Charlie's review and narration (timing moves to voiceover/cutaway.json)."
     }
   ]
 }

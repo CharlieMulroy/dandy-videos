@@ -116,7 +116,7 @@ def win(t, a, b, fi=0.25, fo=0.25):
 
 
 # ---------------------------------------------------------------- timing (placeholder until Charlie records)
-SCENES = [("hook", 4.0), ("setup", 6.0), ("problem", 7.0), ("switch", 3.5), ("fix", 8.0), ("payoff", 4.5), ("end", 3.5)]
+SCENES = [("hook", 4.0), ("setup", 6.0), ("problem", 7.0), ("switch", 3.5), ("fix", 14.5), ("payoff", 4.5), ("end", 3.5)]
 CAPTIONS = [
     (4.4, 7.4, "Sam and Jo are building an app to split bills for their apartment."),
     (7.6, 9.9, "Each one works at night, with their own Claude Code."),
@@ -125,7 +125,10 @@ CAPTIONS = [
     (17.5, 19.8, "Then they pointed both agents at Dandy."),
     (20.8, 23.7, "Now each agent checks the same live map before it starts."),
     (24.0, 27.9, "It sees what's built, and what the other one is working on right now."),
-    (30.0, 32.7, "Same app. Two builders. One map."),
+    (28.3, 30.5, "When Jo's agent reached for Groceries, Dandy stopped it."),
+    (30.6, 31.8, "Sam's agent already had it."),
+    (32.1, 34.7, "And nothing's marked done until a different agent reviews it."),
+    (36.5, 39.2, "Same app. Two builders. One map."),
 ]
 CUE = dict(
     hook_sam=0.3, hook_jo=1.55,
@@ -133,7 +136,8 @@ CUE = dict(
     p_sam_bills=0.35, p_jo_bills=2.75, p_jo_chores=4.55, p_sam_chores=5.45, p_sam_bills2=6.25,
     morning1=(4.1, 4.75), morning2=(5.95, 6.5),
     slump=0.0, type=(1.0, 1.1), map=(2.35, 1.0),
-    f_jo=0.35, f_say=1.3, f_sam=2.5, f_build=(0.9, 4.6),
+    f_jo=0.35, f_say=1.3, f_sam=2.5, f_build=(0.9, 4.6), g_end=11.4,
+    catch=(7.7, 0.75), catch_say=(8.15, 10.8), review=(11.75, 1.4),
     pay_jo=0.45, pay_sam=1.7,
 )
 START = {}
@@ -394,6 +398,12 @@ def wrap(text, fnt, maxw):
     if d.textlength(text, font=fnt) <= maxw:
         return [text]
     words = text.split()
+    for k in range(1, len(words)):
+        # two sentences that each fit: break between them
+        if words[k - 1].endswith((".", "?", "!")):
+            a, b = " ".join(words[:k]), " ".join(words[k:])
+            if d.textlength(a, font=fnt) <= maxw and d.textlength(b, font=fnt) <= maxw:
+                return [a, b]
     best = None
     for k in range(1, len(words)):
         a, b = " ".join(words[:k]), " ".join(words[k:])
@@ -548,13 +558,16 @@ def tile_states(tg):
         return st
     if sid == "switch":
         st[0] = [("sam", 1.0, 0.0)]
-        st[1] = [("sam", 1.0, 0.0)]
+        a, d = CUE["map"]
+        # as the map unfolds, Chores is handed back to Jo, whose agent picks it up again
+        q = smooth((t - a - d * 0.4) / (d * 0.5))
+        st[1] = [("sam", 1.0, q)] + ([("jo", 0.25 * q, 0.0)] if q > 0 else [])
         return st
     if sid == "fix":
         a, d = CUE["f_build"]
         st[0] = [("sam", 1.0, 0.0)]
         st[1] = [("jo", lerp(0.25, 1.0, smooth((t - a) / d)), 0.0)]
-        st[2] = [("sam", smooth((t - CUE["f_sam"] - 0.6) / (d - 1.2)), 0.0)] if t > CUE["f_sam"] + 0.6 else []
+        st[2] = [("sam", smooth((t - CUE["f_sam"] - 0.6) / (CUE["g_end"] - CUE["f_sam"] - 0.6)), 0.0)] if t > CUE["f_sam"] + 0.6 else []
         return st
     st[0] = [("sam", 1.0, 0.0)]
     st[1] = [("jo", 1.0, 0.0)]
@@ -596,7 +609,7 @@ def pulses(tg):
         for owner, tile, t0 in (("jo", 1, CUE["f_jo"]), ("sam", 2, CUE["f_sam"])):
             if t >= t0:
                 # a steady stream of small pulses while each agent builds its own page
-                end = a + d if owner == "jo" else a + d
+                end = a + d if owner == "jo" else CUE["g_end"] - 0.6
                 k = 0
                 while True:
                     s0 = t0 + k * 0.55
@@ -719,13 +732,39 @@ def draw_tile(img, i, layers, m, tg, dim):
     if m > 0.3 and built_owner:
         col = OWNER[built_owner][0]
         sid, t = scene_at(tg)
-        live = sid == "fix" and ((i == 1 and t < CUE["f_build"][0] + CUE["f_build"][1]) or (i == 2 and CUE["f_sam"] < t < CUE["f_build"][0] + CUE["f_build"][1]))
+        live = sid == "fix" and ((i == 1 and t < CUE["f_build"][0] + CUE["f_build"][1]) or (i == 2 and CUE["f_sam"] < t < CUE["g_end"]))
         r = 11 * (1 + (0.3 * math.sin(tg * 7) if live else 0))
         cx, cy = x1 - 28, y0 + 30
         d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=col + (int(255 * m),))
         if live:
             put_glow(img, cx, cy, 46, col, 0.7)
     sid, t = scene_at(tg)
+    if sid == "fix" and i == 2:
+        c0, cd = CUE["catch"]
+        la = win(t, c0 + cd * 0.8, CUE["catch_say"][1], 0.15, 0.4)
+        if la > 0:
+            # Dandy turns Jo's agent away: a purple bar across the card's lower edge and a lock on the card
+            flash = 1 + 0.6 * math.exp(-max(0, t - c0 - cd * 0.8) * 5)
+            d.rounded_rectangle((x0 + 8, y1 - 8, x1 - 8, y1 + 8), radius=8, fill=PURPLE_LIGHT + (int(230 * la),))
+            put_glow(img, (x0 + x1) / 2, y1, 170 * flash, PURPLE, 0.6 * la)
+            lx, ly = (x0 + x1) / 2, (y0 + y1) / 2 + 14
+            d.rounded_rectangle((lx - 22, ly - 4, lx + 22, ly + 30), radius=6, fill=PURPLE + (int(255 * la),))
+            d.arc((lx - 15, ly - 28, lx + 15, ly + 4), 180, 360, fill=PURPLE_LIGHT + (int(255 * la),), width=6)
+            d.ellipse((lx - 5, ly + 6, lx + 5, ly + 16), fill=INK + (int(255 * la),))
+        r0, rd = CUE["review"]
+        if r0 <= t <= r0 + rd + 0.2:
+            # Jo's agent reviews Sam's page: a coral magnifier sweeps across it
+            u = ease_io((t - r0) / rd)
+            a_ = win(t, r0, r0 + rd, 0.15, 0.2)
+            mx_, my_ = lerp(x0 + 50, x1 - 70, u), (y0 + y1) / 2 + 18 + 12 * math.sin(u * math.pi * 2)
+            put_glow(img, mx_, my_, 70, CORAL, 0.5 * a_)
+            d.ellipse((mx_ - 26, my_ - 26, mx_ + 26, my_ + 26), outline=CORAL + (int(255 * a_),), width=6)
+            d.line(((mx_ + 18, my_ + 18), (mx_ + 40, my_ + 40)), fill=CORAL + (int(255 * a_),), width=8)
+        q = ease_out((t - r0 - rd - 0.05) / 0.35)
+        if q > 0:
+            cx, cy = x1 - 30, y1 - 30
+            put_glow(img, cx, cy, 60, TEXT, 0.4 * q * math.exp(-max(0, t - r0 - rd) * 2))
+            d.line(((cx - 12, cy), (cx - 3, cy + 9), (cx + 14, cy - 10)), fill=TEXT + (int(255 * q),), width=5, joint="curve")
     if sid in ("payoff", "end") and layers:
         cx, cy = x1 - 30, y1 - 30
         q = ease_out((t - 0.2 - 0.15 * i) / 0.4) if sid == "payoff" else 1
@@ -753,6 +792,17 @@ def draw_wires(img, tg):
         for k in range(3):
             tx = (TILES[k][0] + TILES[k][2]) / 2
             d.line(((tx, y), (tx, TILES[k][1] if owner == "sam" else TILES[k][3])), fill=col + (255,), width=6)
+    sid, t = scene_at(tg)
+    if sid == "fix":
+        c0, cd = CUE["catch"]
+        q = (t - c0) / cd
+        if 0 <= q <= 1.7:
+            pts = wire_path("jo", 2)
+            p = 0.92 * ease_out(q / 0.8) if q < 0.8 else 0.92 - 0.25 * ease_out((q - 0.8) / 0.9)
+            a_ = 1 - smooth((q - 1.1) / 0.6)
+            x, y = along(pts, p)
+            put_glow(img, x, y, 44, CORAL, 0.9 * a_)
+            d.rounded_rectangle((x - 13, y - 16, x + 13, y + 16), radius=4, fill=CORAL_SOFT + (int(255 * a_),), outline=CORAL + (int(255 * a_),), width=2)
     for owner, tile, p in pulses(tg):
         pts = wire_path(owner, tile)
         x, y = along(pts, ease_io(p))
@@ -947,6 +997,7 @@ def compose(tg):
         callout(img, "sam", "point it at Dandy", t, a, 99, "sam types", typed=True)
     elif sid == "fix":
         callout(img, "sam", "Jo's agent is working on Chores. I'll take Groceries.", t, CUE["f_say"], CUE["f_say"] + 4.2, "sam agent 2")
+        callout(img, "jo", "Groceries already has a writer. Picking another page.", t, CUE["catch_say"][0], CUE["catch_say"][1], "jo agent 2")
     elif sid == "payoff":
         text_bubble(img, "jo", "ok who built groceries, it's good", t, CUE["pay_jo"], 99, "jo text 2")
         text_bubble(img, "sam", "we did", t, CUE["pay_sam"], 99, "sam text 2")
@@ -1061,7 +1112,7 @@ def frame(tg):
 
 
 # ---------------------------------------------------------------- QA
-QA_TIMES = {"hook": [3.6], "setup": [3.0, 5.5], "problem": [2.0, 3.4, 4.6, 6.8], "switch": [2.0, 3.4], "fix": [2.5, 4.8, 7.6], "payoff": [2.6, 4.3]}
+QA_TIMES = {"hook": [3.6], "setup": [3.0, 5.5], "problem": [2.0, 3.4, 4.6, 6.8], "switch": [2.0, 3.4], "fix": [2.5, 4.8, 7.6, 9.5, 12.4, 14.2], "payoff": [2.6, 4.3]}
 
 
 def qa():
@@ -1155,6 +1206,14 @@ def snd_thud(g=0.25):
     return _n(np.sin(2 * np.pi * (90 + 40 * np.exp(-t * 30)) * t) * np.exp(-t * 14), g)
 
 
+def snd_denied(g=0.26):
+    n = int(SR * 0.42)
+    t = np.arange(n) / SR
+    x = np.sign(np.sin(2 * np.pi * 220 * t)) * (t < 0.18) + np.sign(np.sin(2 * np.pi * 175 * t)) * (t >= 0.2)
+    x = sosfilt(butter(2, 1400, btype="low", fs=SR, output="sos"), x).astype(np.float32)
+    return _n(x * np.exp(-((t % 0.2) * 6)), g)
+
+
 def snd_chord(g=0.22, root=261.6, dur=2.2):
     n = int(SR * dur)
     t = np.arange(n) / SR
@@ -1205,6 +1264,10 @@ def build_bed(path):
         while t0 + k * 0.55 < CUE["f_build"][0] + CUE["f_build"][1]:
             put(snd_blip(0.06, 520 if owner == "jo" else 660), S["fix"] + t0 + k * 0.55 + 0.65, 0.3 if owner == "jo" else -0.3)
             k += 1
+    put(snd_whoosh(0.14, 0.6, 400, 3000), S["fix"] + CUE["catch"][0], 0.3)
+    put(snd_denied(0.26), S["fix"] + CUE["catch"][0] + CUE["catch"][1] * 0.8, 0.0)
+    put(snd_whoosh(0.1, CUE["review"][1], 900, 5000), S["fix"] + CUE["review"][0], 0.0)
+    put(snd_chime(0.26, 1568), S["fix"] + CUE["review"][0] + CUE["review"][1] + 0.05, 0.0)
     put(snd_chime(0.3, 1175), S["payoff"] + CUE["pay_jo"], 0.2)
     put(snd_chime(0.3, 1320), S["payoff"] + CUE["pay_sam"], -0.2)
     put(snd_chord(0.18, 329.6, 2.6), S["end"] + 0.4, 0.0)

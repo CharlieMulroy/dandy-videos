@@ -20,7 +20,7 @@ wall band becomes the map.
 **Cast:** Sam and Jo, two new figures in the Maya style (cartoonish, a bit realistic). Seen from the side at
 their desks; no dialogue, only texts.
 
-**Target length:** about 32 s (72 narrated words). Status: draft v1, Nov 23. No render yet.
+**Target length:** about 35 s (82 narrated words). Status: draft v1, Nov 23. No render yet.
 
 | # | Sec | Visual | On-screen text | Narration (Charlie) |
 | --- | --- | --- | --- | --- |

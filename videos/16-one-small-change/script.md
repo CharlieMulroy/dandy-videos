@@ -18,8 +18,9 @@ The earlier Void Stage draft (render_change.py) is kept for reference.
 **First frame (thumbnail):** the flat project map with "One small change" in large type, held still for half a
 second; also exported as out/16-thumbnail.png.
 
-**Length:** about 50 s at placeholder timing (113 narrated words; Charlie's read usually comes in shorter).
-Status: draft v2 script (adds Charlie's pick, "Think of your project as a city."), city look v2 rendered Nov 24.
+**Length:** 43.8 s with Charlie's narration (recorded Nov 24, read as written, with his music; voiceover/city.json).
+Status: final. Script v2 (adds Charlie's pick, "Think of your project as a city."); city look v3; final render Nov 24.
+The Sec column below is the placeholder plan; the real scene lengths and cues are in voiceover/city.json.
 
 | # | Sec | Visual | Narration |
 | --- | --- | --- | --- |

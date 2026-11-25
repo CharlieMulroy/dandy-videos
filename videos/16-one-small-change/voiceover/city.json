@@ -1,0 +1,795 @@
+{
+ "file": "videos/16-one-small-change/voiceover/charlie-with-music.wav",
+ "mixed": true,
+ "offset_s": 0.0,
+ "voice_db": 4.0,
+ "bed_db": -10,
+ "fade_out": [
+  42.3,
+  1.5
+ ],
+ "note": "Charlie's export 'City.wav' (Nov 24): narration with his music, mono 44.1 kHz, 43.81 s, read as scripted (v2). Speech 1.04 to 38.90 s; the music runs on at a steady level to 43.81 s with no fade, so it is faded over the last 1.5 s. Export measures -20.5 LUFS, so voice_db +4 brings it to about -16.5. Word times from voiceover/force_align.py (pocketsphinx forced alignment of the script), checked against the silence gaps. End card comes in after 'Nothing caught off guard.' and holds through the music.",
+ "durations": {
+  "title": 2.0,
+  "city": 4.45,
+  "b1": 5.05,
+  "b2": 8.45,
+  "b3": 2.05,
+  "b4": 8.4,
+  "b5": 5.95,
+  "b6": 3.85,
+  "end": 3.61
+ },
+ "cues": {
+  "title_out": 1.3,
+  "city_rise": [
+   0.25,
+   2.3
+  ],
+  "b1": [
+   1.6,
+   2.35,
+   3.3,
+   3.9
+  ],
+  "b2_wires": 1.15,
+  "b2_in": [
+   2.5,
+   2.8,
+   3.1
+  ],
+  "b2_off": [
+   5.6,
+   6.0,
+   6.4
+  ],
+  "b2_red": 7.5,
+  "b4_dandy": 0.3,
+  "b4": [
+   2.6,
+   3.7,
+   4.7,
+   5.5,
+   6.3,
+   7.2
+  ],
+  "b5_flag": [
+   2.55,
+   2.75,
+   2.95
+  ],
+  "b5": [
+   3.9,
+   4.8
+  ],
+  "b6_clear": [
+   0.2,
+   0.4,
+   0.6
+  ],
+  "b6_net": 0.8,
+  "b6_flat": [
+   1.4,
+   1.6
+  ]
+ },
+ "lines": [
+  [
+   1.04,
+   2.54,
+   "Think of your project as a city."
+  ],
+  [
+   3.09,
+   4.25,
+   "Every part is a building,"
+  ],
+  [
+   4.49,
+   6.05,
+   "wired to the parts it depends on."
+  ],
+  [
+   6.69,
+   7.48,
+   "You ask your agent"
+  ],
+  [
+   7.48,
+   8.64,
+   "for one small change."
+  ],
+  [
+   8.84,
+   9.87,
+   "Rename a column."
+  ],
+  [
+   9.97,
+   11.11,
+   "Done in ten seconds."
+  ],
+  [
+   11.77,
+   12.59,
+   "What it didn't know:"
+  ],
+  [
+   12.63,
+   13.93,
+   "three other parts of your project"
+  ],
+  [
+   13.93,
+   14.98,
+   "were reading that column."
+  ],
+  [
+   15.81,
+   16.73,
+   "Nothing errors."
+  ],
+  [
+   16.97,
+   18.34,
+   "They just quietly go wrong,"
+  ],
+  [
+   18.34,
+   19.57,
+   "and you find out next week."
+  ],
+  [
+   20.19,
+   21.75,
+   "That's what propagation fixes."
+  ],
+  [
+   22.2,
+   23.96,
+   "In Dandy, every piece of your project"
+  ],
+  [
+   23.96,
+   25.09,
+   "says what it takes in"
+  ],
+  [
+   25.09,
+   26.19,
+   "and what it puts out."
+  ],
+  [
+   26.69,
+   28.02,
+   "So when one piece changes,"
+  ],
+  [
+   28.27,
+   29.77,
+   "the change travels down the map."
+  ],
+  [
+   30.76,
+   32.04,
+   "Everything that depends on it"
+  ],
+  [
+   32.04,
+   33.88,
+   "gets updated or flagged,"
+  ],
+  [
+   33.88,
+   34.74,
+   "and your agent is told"
+  ],
+  [
+   34.74,
+   36.2,
+   "exactly what it just touched."
+  ],
+  [
+   36.48,
+   37.28,
+   "One change."
+  ],
+  [
+   37.64,
+   38.9,
+   "Nothing caught off guard."
+  ]
+ ],
+ "words": [
+  {
+   "word": "think",
+   "start": 1.04,
+   "end": 1.27
+  },
+  {
+   "word": "of",
+   "start": 1.27,
+   "end": 1.33
+  },
+  {
+   "word": "your",
+   "start": 1.33,
+   "end": 1.42
+  },
+  {
+   "word": "project",
+   "start": 1.42,
+   "end": 1.93
+  },
+  {
+   "word": "as",
+   "start": 1.93,
+   "end": 2.14
+  },
+  {
+   "word": "a",
+   "start": 2.14,
+   "end": 2.18
+  },
+  {
+   "word": "city",
+   "start": 2.18,
+   "end": 2.54
+  },
+  {
+   "word": "every",
+   "start": 3.09,
+   "end": 3.34
+  },
+  {
+   "word": "part",
+   "start": 3.34,
+   "end": 3.69
+  },
+  {
+   "word": "is",
+   "start": 3.69,
+   "end": 3.81
+  },
+  {
+   "word": "a",
+   "start": 3.81,
+   "end": 3.84
+  },
+  {
+   "word": "building",
+   "start": 3.84,
+   "end": 4.25
+  },
+  {
+   "word": "wired",
+   "start": 4.49,
+   "end": 4.81
+  },
+  {
+   "word": "to",
+   "start": 4.81,
+   "end": 4.94
+  },
+  {
+   "word": "the",
+   "start": 4.94,
+   "end": 5.02
+  },
+  {
+   "word": "parts",
+   "start": 5.02,
+   "end": 5.38
+  },
+  {
+   "word": "it",
+   "start": 5.38,
+   "end": 5.48
+  },
+  {
+   "word": "depends",
+   "start": 5.48,
+   "end": 5.9
+  },
+  {
+   "word": "on",
+   "start": 5.9,
+   "end": 6.05
+  },
+  {
+   "word": "you",
+   "start": 6.69,
+   "end": 6.79
+  },
+  {
+   "word": "ask",
+   "start": 6.79,
+   "end": 7.02
+  },
+  {
+   "word": "your",
+   "start": 7.02,
+   "end": 7.14
+  },
+  {
+   "word": "agent",
+   "start": 7.14,
+   "end": 7.48
+  },
+  {
+   "word": "for",
+   "start": 7.48,
+   "end": 7.62
+  },
+  {
+   "word": "one",
+   "start": 7.62,
+   "end": 7.79
+  },
+  {
+   "word": "small",
+   "start": 7.79,
+   "end": 8.07
+  },
+  {
+   "word": "change",
+   "start": 8.07,
+   "end": 8.64
+  },
+  {
+   "word": "rename",
+   "start": 8.84,
+   "end": 9.26
+  },
+  {
+   "word": "a",
+   "start": 9.26,
+   "end": 9.3
+  },
+  {
+   "word": "column",
+   "start": 9.3,
+   "end": 9.87
+  },
+  {
+   "word": "done",
+   "start": 9.97,
+   "end": 10.19
+  },
+  {
+   "word": "in",
+   "start": 10.19,
+   "end": 10.28
+  },
+  {
+   "word": "ten",
+   "start": 10.28,
+   "end": 10.48
+  },
+  {
+   "word": "seconds",
+   "start": 10.48,
+   "end": 11.11
+  },
+  {
+   "word": "what",
+   "start": 11.77,
+   "end": 11.94
+  },
+  {
+   "word": "it",
+   "start": 11.94,
+   "end": 12.06
+  },
+  {
+   "word": "didn't",
+   "start": 12.06,
+   "end": 12.3
+  },
+  {
+   "word": "know",
+   "start": 12.3,
+   "end": 12.59
+  },
+  {
+   "word": "three",
+   "start": 12.63,
+   "end": 12.88
+  },
+  {
+   "word": "other",
+   "start": 12.88,
+   "end": 13.01
+  },
+  {
+   "word": "parts",
+   "start": 13.01,
+   "end": 13.32
+  },
+  {
+   "word": "of",
+   "start": 13.32,
+   "end": 13.38
+  },
+  {
+   "word": "your",
+   "start": 13.38,
+   "end": 13.47
+  },
+  {
+   "word": "project",
+   "start": 13.47,
+   "end": 13.93
+  },
+  {
+   "word": "were",
+   "start": 13.93,
+   "end": 14.08
+  },
+  {
+   "word": "reading",
+   "start": 14.08,
+   "end": 14.41
+  },
+  {
+   "word": "that",
+   "start": 14.41,
+   "end": 14.55
+  },
+  {
+   "word": "column",
+   "start": 14.55,
+   "end": 14.98
+  },
+  {
+   "word": "nothing",
+   "start": 15.81,
+   "end": 16.2
+  },
+  {
+   "word": "errors",
+   "start": 16.2,
+   "end": 16.73
+  },
+  {
+   "word": "they",
+   "start": 16.97,
+   "end": 17.09
+  },
+  {
+   "word": "just",
+   "start": 17.09,
+   "end": 17.31
+  },
+  {
+   "word": "quietly",
+   "start": 17.31,
+   "end": 17.72
+  },
+  {
+   "word": "go",
+   "start": 17.72,
+   "end": 17.89
+  },
+  {
+   "word": "wrong",
+   "start": 17.89,
+   "end": 18.34
+  },
+  {
+   "word": "and",
+   "start": 18.34,
+   "end": 18.48
+  },
+  {
+   "word": "you",
+   "start": 18.48,
+   "end": 18.54
+  },
+  {
+   "word": "find",
+   "start": 18.54,
+   "end": 18.82
+  },
+  {
+   "word": "out",
+   "start": 18.82,
+   "end": 18.99
+  },
+  {
+   "word": "next",
+   "start": 18.99,
+   "end": 19.26
+  },
+  {
+   "word": "week",
+   "start": 19.26,
+   "end": 19.57
+  },
+  {
+   "word": "that's",
+   "start": 20.19,
+   "end": 20.36
+  },
+  {
+   "word": "what",
+   "start": 20.36,
+   "end": 20.53
+  },
+  {
+   "word": "propagation",
+   "start": 20.53,
+   "end": 21.19
+  },
+  {
+   "word": "fixes",
+   "start": 21.19,
+   "end": 21.75
+  },
+  {
+   "word": "in",
+   "start": 22.2,
+   "end": 22.38
+  },
+  {
+   "word": "dandy",
+   "start": 22.38,
+   "end": 22.86
+  },
+  {
+   "word": "every",
+   "start": 22.86,
+   "end": 23.14
+  },
+  {
+   "word": "piece",
+   "start": 23.14,
+   "end": 23.39
+  },
+  {
+   "word": "of",
+   "start": 23.39,
+   "end": 23.45
+  },
+  {
+   "word": "your",
+   "start": 23.45,
+   "end": 23.54
+  },
+  {
+   "word": "project",
+   "start": 23.54,
+   "end": 23.96
+  },
+  {
+   "word": "says",
+   "start": 23.96,
+   "end": 24.25
+  },
+  {
+   "word": "what",
+   "start": 24.25,
+   "end": 24.48
+  },
+  {
+   "word": "it",
+   "start": 24.48,
+   "end": 24.61
+  },
+  {
+   "word": "takes",
+   "start": 24.61,
+   "end": 24.91
+  },
+  {
+   "word": "in",
+   "start": 24.91,
+   "end": 25.09
+  },
+  {
+   "word": "and",
+   "start": 25.09,
+   "end": 25.34
+  },
+  {
+   "word": "what",
+   "start": 25.34,
+   "end": 25.63
+  },
+  {
+   "word": "it",
+   "start": 25.63,
+   "end": 25.7
+  },
+  {
+   "word": "puts",
+   "start": 25.7,
+   "end": 25.99
+  },
+  {
+   "word": "out",
+   "start": 25.99,
+   "end": 26.19
+  },
+  {
+   "word": "so",
+   "start": 26.69,
+   "end": 26.86
+  },
+  {
+   "word": "when",
+   "start": 26.86,
+   "end": 27.01
+  },
+  {
+   "word": "one",
+   "start": 27.01,
+   "end": 27.22
+  },
+  {
+   "word": "piece",
+   "start": 27.22,
+   "end": 27.5
+  },
+  {
+   "word": "changes",
+   "start": 27.5,
+   "end": 28.02
+  },
+  {
+   "word": "the",
+   "start": 28.27,
+   "end": 28.37
+  },
+  {
+   "word": "change",
+   "start": 28.37,
+   "end": 28.68
+  },
+  {
+   "word": "travels",
+   "start": 28.68,
+   "end": 29.15
+  },
+  {
+   "word": "down",
+   "start": 29.15,
+   "end": 29.41
+  },
+  {
+   "word": "the",
+   "start": 29.41,
+   "end": 29.48
+  },
+  {
+   "word": "map",
+   "start": 29.48,
+   "end": 29.77
+  },
+  {
+   "word": "everything",
+   "start": 30.76,
+   "end": 31.19
+  },
+  {
+   "word": "that",
+   "start": 31.19,
+   "end": 31.35
+  },
+  {
+   "word": "depends",
+   "start": 31.35,
+   "end": 31.73
+  },
+  {
+   "word": "on",
+   "start": 31.73,
+   "end": 31.9
+  },
+  {
+   "word": "it",
+   "start": 31.9,
+   "end": 32.04
+  },
+  {
+   "word": "gets",
+   "start": 32.04,
+   "end": 32.35
+  },
+  {
+   "word": "updated",
+   "start": 32.35,
+   "end": 32.82
+  },
+  {
+   "word": "or",
+   "start": 32.82,
+   "end": 32.99
+  },
+  {
+   "word": "flagged",
+   "start": 32.99,
+   "end": 33.88
+  },
+  {
+   "word": "and",
+   "start": 33.88,
+   "end": 34.0
+  },
+  {
+   "word": "your",
+   "start": 34.0,
+   "end": 34.13
+  },
+  {
+   "word": "agent",
+   "start": 34.13,
+   "end": 34.42
+  },
+  {
+   "word": "is",
+   "start": 34.42,
+   "end": 34.51
+  },
+  {
+   "word": "told",
+   "start": 34.51,
+   "end": 34.74
+  },
+  {
+   "word": "exactly",
+   "start": 34.74,
+   "end": 35.16
+  },
+  {
+   "word": "what",
+   "start": 35.16,
+   "end": 35.37
+  },
+  {
+   "word": "it",
+   "start": 35.37,
+   "end": 35.44
+  },
+  {
+   "word": "just",
+   "start": 35.44,
+   "end": 35.73
+  },
+  {
+   "word": "touched",
+   "start": 35.73,
+   "end": 36.2
+  },
+  {
+   "word": "one",
+   "start": 36.48,
+   "end": 36.74
+  },
+  {
+   "word": "change",
+   "start": 36.74,
+   "end": 37.28
+  },
+  {
+   "word": "nothing",
+   "start": 37.64,
+   "end": 38.09
+  },
+  {
+   "word": "caught",
+   "start": 38.09,
+   "end": 38.36
+  },
+  {
+   "word": "off",
+   "start": 38.36,
+   "end": 38.55
+  },
+  {
+   "word": "guard",
+   "start": 38.55,
+   "end": 38.9
+  }
+ ]
+}

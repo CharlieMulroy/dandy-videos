@@ -268,6 +268,7 @@ B2_OFF = [6.3, 6.7, 7.1]
 B2_RED = 8.4
 B3_BACK = 0.3
 B4_IN, B4_OUT, B4_ARRIVE, B4_CH, B4_RIP, B4_LAND = 2.4, 3.9, 5.4, 6.1, 7.2, 8.4
+B4_DANDY = 0.4                     # "In Dandy": the lines turn purple
 B5_FLAG = [1.9, 2.2, 2.5]
 B5_BACK, B5_TOLD = 3.7, 4.6
 B6_CLEAR = [0.4, 0.7, 1.0]
@@ -284,6 +285,8 @@ if os.path.exists(VO):
     B1_TAG, B1_ARRIVE, B1_CH, B1_LEAVE = _c.get("b1", (B1_TAG, B1_ARRIVE, B1_CH, B1_LEAVE))
     B2_IN, B2_OFF, B2_RED = _c.get("b2_in", B2_IN), _c.get("b2_off", B2_OFF), _c.get("b2_red", B2_RED)
     B4_IN, B4_OUT, B4_ARRIVE, B4_CH, B4_RIP, B4_LAND = _c.get("b4", (B4_IN, B4_OUT, B4_ARRIVE, B4_CH, B4_RIP, B4_LAND))
+    B4_DANDY = _c.get("b4_dandy", B4_DANDY)
+    B2_WIRES = _c.get("b2_wires", B2_WIRES)
     B5_FLAG = _c.get("b5_flag", B5_FLAG)
     B5_BACK, B5_TOLD = _c.get("b5", (B5_BACK, B5_TOLD))
     B6_CLEAR = _c.get("b6_clear", B6_CLEAR)
@@ -800,9 +803,9 @@ def s_b1(t, dur, tg):
     if t >= B1_CH:
         st["swaps"] = {TOP: (OLD, NEW, B1_CH, t)}
     px, py = perch()
-    X, Y = agent_path(t, [(1.6, 700, 300), (B1_ARRIVE, px, py), (B1_LEAVE, px, py), (B1_LEAVE + 0.8, 1900, 300)])
+    X, Y = agent_path(t, [(B1_ARRIVE - 0.8, 700, 300), (B1_ARRIVE, px, py), (B1_LEAVE, px, py), (B1_LEAVE + 0.8, 1900, 300)])
     wig = 6 * math.sin(t * 26) if B1_ARRIVE + 0.1 < t < B1_CH else 0
-    st["agent"] = (X + wig, Y, clamp((t - 1.6) / 0.3) * (1 - clamp((t - B1_LEAVE - 0.5) / 0.3)))
+    st["agent"] = (X + wig, Y, clamp((t - B1_ARRIVE + 0.8) / 0.3) * (1 - clamp((t - B1_LEAVE - 0.5) / 0.3)))
     return frame(tg, st)
 
 
@@ -844,7 +847,7 @@ def s_b3(t, dur, tg):
 
 
 def s_b4(t, dur, tg):
-    pin = ease_out((t - B4_IN) / 0.6)
+    pin = ease_out((t - B4_DANDY) / 0.8)
     st = dict(labels=1.0, plate_purple=pin, tag_purple=pin)
     st["wire"] = {k: 1.0 for k in KIDS}
     st["purple"] = {k: pin for k in KIDS}
@@ -982,7 +985,7 @@ def events(starts, durs):
     for k in range(10):
         ev.append((b3 + B3_BACK + 0.14 * k, "tick", dict(gain=0.18 + 0.01 * k), 0.0))
     ev += [(b3 + B3_BACK, "whoosh", dict(gain=0.3, dur=1.5), 0.0),
-           (b4 + B4_IN, "chime", dict(gain=0.24, f0=659), 0.0), (b4 + B4_OUT, "pop", dict(gain=0.22, f=784), 0.0),
+           (b4 + B4_DANDY, "chime", dict(gain=0.26, f0=659), 0.0), (b4 + B4_IN, "pop", dict(gain=0.2, f=587), 0.0), (b4 + B4_OUT, "pop", dict(gain=0.22, f=784), 0.0),
            (b4 + B4_ARRIVE - 0.5, "whoosh", dict(gain=0.16, dur=0.45), 0.5), (b4 + B4_CH, "chime", dict(gain=0.3, f0=1047), 0.0),
            (b4 + B4_RIP, "zip", dict(gain=0.22), 0.0)]
     for i, k in enumerate(KIDS):

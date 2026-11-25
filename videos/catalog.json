@@ -299,7 +299,7 @@
       "look": "City at Night (proposed, no Look node yet)",
       "script_path": "videos/16-one-small-change/script.md",
       "renderer_path": "videos/16-one-small-change/city/render_city.py",
-      "duration_s": 44.0,
+      "duration_s": 50.4,
       "script_status": "draft",
       "narration_status": "pending",
       "render_status": "preview",
@@ -307,7 +307,7 @@
         "platforms": [],
         "links": {}
       },
-      "notes": "Propagation, the Dandy-specific version (Charlie's pick Nov 24). First draft was in the Void Stage; Charlie found it too close to the older videos and wanted it unique like 14, so the second draft (Nov 24) is a new look: a city at night, one continuous camera, buildings as pieces and power lines as connections, purple only once Dandy appears, no Dandy Man in the scenes (end card with him). Same script. Placeholder timing and scratch sound bed; checks pass. Waiting on Charlie's notes, a read from Nick on the mechanics, then narration (voiceover/city.json). Not in Drive."
+      "notes": "Propagation, the Dandy-specific version (Charlie's pick Nov 24). Void Stage first draft felt too close to the older videos, so it moved to a new look like 14: City at Night, one continuous camera, purple only once Dandy appears, no Dandy Man in the scenes (end card with him). v2 (Nov 24, after Charlie said the city felt disconnected from Dandy): adds his line 'Think of your project as a city.', opens on the project map rising into the city and ends with the city flattening into Dandy's purple map, card-style name signs, column signs hung on the power lines. Placeholder timing, scratch sound bed; checks pass. Waiting on Charlie's notes, a read from Nick on the mechanics, then narration (voiceover/city.json). Not in Drive."
     }
   ]
 }

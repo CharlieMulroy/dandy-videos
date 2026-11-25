@@ -1,5 +1,7 @@
 """Video 16, One Small Change: what propagation is, in the Void Stage look (render/stage.py).
 
+First draft, kept for reference; the current look is city/render_city.py.
+
 Usage:  python3 videos/16-one-small-change/render_change.py [--preview] [--stills] [--final]
 
 Frame one is the thumbnail: a still title card (also saved as out/16-thumbnail.png). Then: the agent renames a

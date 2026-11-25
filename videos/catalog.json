@@ -296,9 +296,9 @@
       "slug": "16-one-small-change",
       "title": "One Small Change",
       "kind": "informational",
-      "look": "Void Stage",
+      "look": "City at Night (proposed, no Look node yet)",
       "script_path": "videos/16-one-small-change/script.md",
-      "renderer_path": "videos/16-one-small-change/render_change.py",
+      "renderer_path": "videos/16-one-small-change/city/render_city.py",
       "duration_s": 44.0,
       "script_status": "draft",
       "narration_status": "pending",
@@ -307,7 +307,7 @@
         "platforms": [],
         "links": {}
       },
-      "notes": "Propagation, the Dandy-specific version (Charlie's pick Nov 24 over a general-concept one). Draft v1 script and first 30 fps render made Nov 24 at placeholder timing with the scratch sound bed; checks pass. Waiting on Charlie's notes, a read from Nick on the mechanics, then narration. Not in Drive."
+      "notes": "Propagation, the Dandy-specific version (Charlie's pick Nov 24). First draft was in the Void Stage; Charlie found it too close to the older videos and wanted it unique like 14, so the second draft (Nov 24) is a new look: a city at night, one continuous camera, buildings as pieces and power lines as connections, purple only once Dandy appears, no Dandy Man in the scenes (end card with him). Same script. Placeholder timing and scratch sound bed; checks pass. Waiting on Charlie's notes, a read from Nick on the mechanics, then narration (voiceover/city.json). Not in Drive."
     }
   ]
 }

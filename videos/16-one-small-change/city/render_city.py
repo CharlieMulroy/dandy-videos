@@ -26,6 +26,8 @@ import os
 import random
 import sys
 
+import numpy as np
+
 from PIL import Image, ImageDraw, ImageFilter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -70,8 +72,19 @@ KEY = {   # footprint x, y, width, depth, height (world px); a building's face h
 }
 TOP, KIDS = "Bookings", ["Reminders", "Payments", "Reports"]
 OLD, NEW = "date", "start_time"
-BLOCK, ST = 340, 46
+BLOCK, ST = 340, 54
 CITY_X0, CITY_Y0, CITY_W, CITY_H = -1360, -1360, 3740, 4080
+# The part of the city any camera in the film can see; it is baked once into a still layer (see bake()).
+BX0, BY0, BX1, BY1 = -160, -1320, 2640, 3640
+DOWNTOWN = (1230, 900)
+
+STYLES = {   # face colour, roof colour, window size and gaps (world px), window colours, how lit
+    "glass": dict(face=(18, 28, 46), roof=(26, 34, 52), win=(10, 13, 6, 7), cols=[(150, 190, 240), (190, 215, 250), (120, 160, 220)], lit=0.55, floors=0.0),
+    "office": dict(face=(30, 32, 44), roof=(32, 35, 48), win=(14, 15, 8, 11), cols=[(250, 240, 220), (226, 232, 250)], lit=0.0, floors=0.38),
+    "apartment": dict(face=(40, 31, 35), roof=(36, 31, 38), win=(12, 15, 13, 13), cols=[(255, 196, 112), (255, 214, 150), (255, 176, 96)], lit=0.5, floors=0.0),
+    "lowrise": dict(face=(46, 34, 30), roof=(40, 33, 32), win=(12, 14, 15, 14), cols=[(255, 190, 110), (255, 205, 140)], lit=0.38, floors=0.0),
+}
+TV = (150, 180, 255)
 
 
 def _overlaps(a, b, pad=0):
@@ -82,57 +95,123 @@ def _span(x, y, w, d, h):
     return (x, y, x + w, y + d + h)
 
 
-def _windows(rnd, x, y, w, d, h, dark_share):
-    out = []
-    ww, wh, gx, gy = 16, 20, 12, 16
-    cols = max(1, int((w - 24 + gx) // (ww + gx)))
-    rows = max(1, int((h - 30 + gy) // (wh + gy)))
+def _windows(rnd, x, y, w, d, h, style, key=False):
+    """Windows on the face. Offices light whole floors; homes light windows one by one, with the odd blue TV."""
+    stl = STYLES[style]
+    ww, wh, gx, gy = stl["win"]
+    cols = max(1, int((w - 20 + gx) // (ww + gx)))
+    rows = max(1, int((h - 22 + gy) // (wh + gy)))
     ox = x + (w - (cols * ww + (cols - 1) * gx)) / 2
-    oy = y + d + 18
+    oy = y + d + 12
+    out = []
     for r in range(rows):
+        floor_on = rnd.random() < stl["floors"] if stl["floors"] else None
         for c in range(cols):
-            on = rnd.random() > dark_share
-            out.append((ox + c * (ww + gx), oy + r * (wh + gy), ww, wh, on, rnd.random(), rnd.random()))
+            if key:
+                on = rnd.random() > 0.06
+                col = rnd.choice(((255, 200, 120), (255, 214, 150), (255, 186, 104)))
+            else:
+                on = floor_on if floor_on is not None else rnd.random() < stl["lit"]
+                if floor_on is not None and rnd.random() < 0.08:
+                    on = not on
+                col = TV if (style in ("apartment", "lowrise") and rnd.random() < 0.05) else rnd.choice(stl["cols"])
+            out.append((ox + c * (ww + gx), oy + r * (wh + gy), ww, wh, on, rnd.random(), rnd.random(), col))
     return out
 
 
+def _props(rnd, w, d, style, h):
+    """Rooftop clutter: vents and AC boxes, a water tank on older buildings, an antenna on the tallest."""
+    out = []
+    for _ in range(rnd.randint(0, 3)):
+        pw, pd = rnd.uniform(10, 26), rnd.uniform(8, 18)
+        out.append(("box", rnd.uniform(6, max(7, w - pw - 6)), rnd.uniform(4, max(5, d - pd - 4)), pw, pd))
+    if style in ("apartment", "lowrise") and rnd.random() < 0.35 and w > 70:
+        r = rnd.uniform(9, 14)
+        out.append(("tank", rnd.uniform(r + 4, w - r - 4), d / 2, r, r))
+    return out
+
+
+def _bldg(rnd, name, x, y, w, d, h, style, key=False):
+    stl = STYLES[style]
+    j = rnd.uniform(-4, 4)
+    return dict(name=name, x=x, y=y, w=w, d=d, h=h, style=style,
+                face=tuple(int(max(0, v + j)) for v in stl["face"]), roof=tuple(int(max(0, v + j)) for v in stl["roof"]),
+                win=_windows(rnd, x, y, w, d, h, style, key), props=_props(rnd, w, d, style, h),
+                antenna=(h > 340 and not key), ph=rnd.random() * 6.28)
+
+
 def build_city():
+    """Every block is filled. A block is split into lots; each lot holds one building that rises from it (its roof
+    drawn up-screen of the lot by its height), so nearer buildings overlap farther ones as in a real aerial view.
+    Some blocks are parks or car parks. Heights grow toward downtown, around Bookings."""
     rnd = random.Random(16)
-    bl = []
+    bl, parks, lots_park = [], [], []
     keys = {n: _span(*v) for n, v in KEY.items()}
     for n, (x, y, w, d, h) in KEY.items():
-        bl.append(dict(name=n, x=x, y=y, w=w, d=d, h=h, win=_windows(rnd, x, y, w, d, h, 0.06)))
+        bl.append(_bldg(rnd, n, x, y, w, d, h, "apartment", key=True))
     for by in range(CITY_Y0, CITY_H, BLOCK):
         for bx in range(CITY_X0, CITY_W, BLOCK):
-            x0, y0 = bx + ST / 2 + 10, by + ST / 2 + 10
-            inner = BLOCK - ST - 20
-            for _ in range(rnd.choice((1, 2, 2, 3))):
-                w = rnd.uniform(80, 170)
-                d = rnd.uniform(50, 95)
-                h = rnd.uniform(70, 300)
-                if w > inner or d + h > inner + 120:
-                    h = max(60, inner + 100 - d)
-                x = x0 + rnd.uniform(0, max(1, inner - w))
-                y = y0 + rnd.uniform(-60, max(1, inner - d - h + 60))
-                sp = _span(x, y, w, d, h)
-                if any(_overlaps(sp, k, 40) for k in keys.values()):
-                    continue
-                if any(_overlaps(sp, _span(b["x"], b["y"], b["w"], b["d"], b["h"]), 14) for b in bl):
-                    continue
-                bl.append(dict(name=None, x=x, y=y, w=w, d=d, h=h, win=_windows(rnd, x, y, w, d, h, 0.42)))
-    bl.sort(key=lambda b: b["y"])
+            x0, y0 = bx + ST / 2 + 8, by + ST / 2 + 8
+            inner = BLOCK - ST - 16
+            if not (BX0 - 400 < x0 < BX1 + 100 and BY0 - 200 < y0 < BY1 + 300):
+                continue
+            blk = (x0, y0, x0 + inner, y0 + inner)
+            roll = rnd.random()
+            if roll < 0.07 and not any(_overlaps(blk, k, 20) for k in keys.values()):
+                parks.append(("park", blk, rnd.random()))
+                continue
+            if roll < 0.11 and not any(_overlaps(blk, k, 20) for k in keys.values()):
+                parks.append(("lot", blk, rnd.random()))
+                continue
+            dist = math.hypot(x0 + inner / 2 - DOWNTOWN[0], y0 + inner / 2 - DOWNTOWN[1])
+            core = clamp(1 - dist / 2300)
+            nx, ny = rnd.choice(((2, 2), (2, 3), (3, 2), (3, 3), (2, 2)))
+            lw, ld = inner / nx, inner / ny
+            for iy in range(ny):
+                for ix in range(nx):
+                    if rnd.random() < 0.1:
+                        continue
+                    gx = x0 + ix * lw + rnd.uniform(3, 8)
+                    gy = y0 + iy * ld + rnd.uniform(3, 8)
+                    w = lw - rnd.uniform(8, 18)
+                    d = max(26, ld * rnd.uniform(0.45, 0.7))
+                    h = rnd.uniform(60, 150) + core ** 1.6 * rnd.uniform(60, 330)
+                    if rnd.random() < 0.05 * core:
+                        h += rnd.uniform(80, 160)
+                    x, y = gx, gy + (ld - 10 - d) - h      # the lot is where it stands; the roof sits up-screen by its height
+                    sp = _span(x, y, w, d, h)
+                    if any(_overlaps(sp, k, 14) for k in keys.values()):
+                        continue
+                    style = ("glass" if h > 260 and rnd.random() < 0.6 else "office" if h > 180 and rnd.random() < 0.6
+                             else "apartment" if h > 110 else "lowrise")
+                    bl.append(_bldg(rnd, None, x, y, w, d, h, style))
+    bl.sort(key=lambda b: b["y"] + b["d"] + b["h"])
     lamps = []
     for k in range(CITY_X0, CITY_W + 1, BLOCK):
-        for v in range(CITY_Y0 + 40, CITY_H, 90):
-            lamps.append((k + 4, v))
+        for v in range(CITY_Y0 + 40, CITY_H, 85):
+            lamps.append((k - ST / 2 + 4, v))
     for k in range(CITY_Y0, CITY_H + 1, BLOCK):
-        for u in range(CITY_X0 + 40, CITY_W, 90):
-            lamps.append((u, k + 4))
-    return bl, lamps
+        for u in range(CITY_X0 + 40, CITY_W, 85):
+            lamps.append((u, k - ST / 2 + 4))
+    lamps = [p for p in lamps if BX0 - 200 < p[0] < BX1 + 200 and BY0 - 200 < p[1] < BY1 + 200]
+    return bl, lamps, parks
 
 
-BUILDINGS, LAMPS = build_city()
+BUILDINGS, LAMPS, PARKS = build_city()
 BY_NAME = {b["name"]: b for b in BUILDINGS if b["name"]}
+FILLERS = [b for b in BUILDINGS if not b["name"]]
+_r = random.Random(5)
+TWINKLE = []   # a few windows that switch on and off while you watch
+for b in _r.sample(FILLERS, min(140, len(FILLERS))):
+    wn = _r.choice(b["win"])
+    TWINKLE.append((wn, _r.uniform(2.0, 9.0), _r.uniform(0, 10), b["style"]))
+BEACONS = [b for b in FILLERS if b["antenna"]]
+CARS = []      # headlights moving along the streets
+for i in range(110):
+    vertical = _r.random() < 0.5
+    line = _r.choice(range(CITY_X0 if vertical else CITY_Y0, (CITY_W if vertical else CITY_H) + 1, BLOCK))
+    d_ = _r.choice((-1, 1))
+    CARS.append((vertical, line - ST / 2 + (ST / 2 + d_ * 11), d_, _r.uniform(0, 5000), _r.uniform(70, 150)))
 
 
 def roof_c(n):
@@ -160,7 +239,7 @@ def wire_pts(k, m=1.0):
 WIRE_U = {"Reminders": 0.5, "Payments": 0.78, "Reports": 0.5}   # where each column sign hangs on its line
 
 # The rest of the city's connections: grey links on the opening map, purple when the city flattens back at the end.
-_big = [b for b in BUILDINGS if b["name"] is None and b["h"] > 150]
+_big = [b for b in FILLERS if b["h"] > 170]
 
 
 def _rc(b):
@@ -248,72 +327,221 @@ def to_s(c, X, Y):
 
 
 # ---------------------------------------------------------------- drawing
-def draw_ground(d, c, tg, m):
-    s = c[2]
-    col = mix(GROUND, STREET, m)
-    for k in range(CITY_X0, CITY_W + 1, BLOCK):
-        x0, _ = to_s(c, k - ST / 2, 0)
-        x1, _ = to_s(c, k + ST / 2, 0)
-        _, y0 = to_s(c, 0, CITY_Y0 - 400)
-        _, y1 = to_s(c, 0, CITY_H + 400)
-        d.rectangle((x0, y0, x1, y1), fill=col)
-    for k in range(CITY_Y0, CITY_H + 1, BLOCK):
-        _, y0 = to_s(c, 0, k - ST / 2)
-        _, y1 = to_s(c, 0, k + ST / 2)
-        x0, _ = to_s(c, CITY_X0 - 400, 0)
-        x1, _ = to_s(c, CITY_W + 400, 0)
-        d.rectangle((x0, y0, x1, y1), fill=col)
-    if m < 0.05:
-        return
-    r = max(1.2, 3.2 * s)
-    lc = mix(GROUND, LAMP, m)
-    for (X, Y) in LAMPS:
-        x, y = to_s(c, X, Y)
-        if -10 < x < W + 10 and -10 < y < H + 10:
-            d.ellipse((x - r, y - r, x + r, y + r), fill=lc)
-
-
 MAP_EDGE = (110, 122, 168)
+ASPHALT = (9, 11, 20)
+SIDEWALK = (21, 23, 34)
+LOT_IN = (13, 15, 25)
 
 
-def draw_building(img, d, b, c, tg, m=1.0, lit=1.0, glow=None, beacon=0.0, purple=0.0):
-    """m=0 draws the building flat, as a card on the project map; m=1 stands it up as a building with its windows."""
-    s = c[2]
+def draw_bldg(img, d, b, T, k, tg, m=1.0, lit=1.0, glow=None, beacon=0.0, purple=0.0, live=True):
+    """One building. T maps world to pixels and k is pixels per world unit, so the same drawing serves the live
+    camera and the baked layer. m=0 draws it flat as a card on the project map; m=1 stands it up."""
     hh = b["h"] * m
-    x0, y0 = to_s(c, b["x"], b["y"])
-    x1, y1 = to_s(c, b["x"] + b["w"], b["y"] + b["d"])
-    _, y2 = to_s(c, 0, b["y"] + b["d"] + hh)
-    if x1 < -40 or x0 > W + 40 or y2 < -40 or y0 > H + 40:
+    x0, y0 = T(b["x"], b["y"] + b["h"] * (1 - m))
+    x1, y1 = T(b["x"] + b["w"], b["y"] + b["h"] * (1 - m) + b["d"])
+    _, y2 = T(0, b["y"] + b["d"] + b["h"])
+    if x1 < -60 or x0 > img.width + 60 or y2 < -60 or y0 > img.height + 60:
         return
     if glow:
         col, a = glow
         if a > 0.01:
             S.put_sprite(img, S.GLOW_P if col == "purple" else S.GLOW_W, (x0 + x1) / 2, (y0 + y2) / 2, scale=max(0.4, (x1 - x0) / 210), alpha=a)
     if b["name"] and lit > 0.02 and m > 0.05:
-        S.put_sprite(img, GLOW_WARM, (x0 + x1) / 2, (y1 + y2) / 2, scale=max(0.5, (x1 - x0) / 170), alpha=0.85 * lit * m)
-    dim = 1.0 if b["name"] else FILLER_DIM
-    if m > 0.01:
-        d.rectangle((x0, y1, x1, y2), fill=mix(FACE_DARK, FACE, 0.4 + 0.6 * lit))
-    edge = mix(mix(MAP_EDGE, ROOF_EDGE, m), DANDY_HI, purple * (1 - m))
-    d.rounded_rectangle((x0, y0, x1, y1), radius=max(1, 10 * s * (1 - m)), fill=mix((30, 37, 64), ROOF, m), outline=edge, width=max(1, int(2 * s + 1 - m)))
+        S.put_sprite(img, GLOW_WARM, (x0 + x1) / 2, (y1 + y2) / 2, scale=max(0.6, (x1 - x0) / 130), alpha=1.0 * lit * m)
+    face = b["face"] if not b["name"] else mix(FACE_DARK, FACE, 0.4 + 0.6 * lit)
+    if m > 0.01 and y2 > y1:
+        d.rectangle((x0, y1, x1, y2), fill=face)
+        cw = (x1 - x0) * 0.17   # the corner: the right of the face falls into shadow
+        d.rectangle((x1 - cw, y1, x1, y2), fill=mix(face, (4, 5, 10), 0.45))
+        if (y2 - y1) > 6:
+            d.rectangle((x0, y2 - (y2 - y1) * 0.12, x1, y2), fill=mix(face, (4, 5, 10), 0.3))
+    map_edge, map_fill = (MAP_EDGE, (30, 37, 64)) if b["name"] else ((58, 66, 98), (20, 24, 42))
+    edge = mix(mix(map_edge, mix(b["roof"], (110, 118, 150), 0.35), m), DANDY_HI, purple * (1 - m) * (1.0 if b["name"] else 0.55))
+    d.rounded_rectangle((x0, y0, x1, y1), radius=max(1, 10 * k * (1 - m)), fill=mix(map_fill, b["roof"], m), outline=edge, width=max(1, int(1.6 * k + 1 - m)))
     if m < 0.04:
         return
+    if m > 0.6 and k * b["w"] > 30:
+        for kind, px, py, pw, pd in b["props"]:
+            ax, ay = T(b["x"] + px, b["y"] + b["h"] * (1 - m) + py)
+            if kind == "box":
+                d.rectangle((ax, ay, ax + pw * k, ay + pd * k), fill=mix(b["roof"], (6, 7, 12), 0.5), outline=mix(b["roof"], (120, 126, 150), 0.3))
+            else:
+                d.ellipse((ax - pw * k, ay - pw * k, ax + pw * k, ay + pw * k), fill=(34, 30, 30), outline=(70, 62, 58))
     top = b["y"] + b["d"]
-    for (wx, wy, ww, wh, on, thr, ph) in b["win"]:
-        sx0, sy0 = to_s(c, wx, top + (wy - top) * m)
-        sx1, sy1 = sx0 + ww * s, sy0 + wh * s * m
-        if not on or thr > lit:
-            col = WIN_OFF
+    yoff = b["h"] * (1 - m)
+    for (wx, wy, ww, wh, on, thr, ph, col) in b["win"]:
+        sx0, sy0 = T(wx, top + (wy - top) * m + yoff)
+        sx1, sy1 = sx0 + ww * k, sy0 + wh * k * m
+        if sx0 > x1 - (x1 - x0) * 0.17 and on:
+            col = mix(col, (0, 0, 0), 0.35)   # windows on the shadowed corner
+        if not on or (b["name"] and thr > lit):
+            c = mix(face, (8, 10, 18), 0.5)
         else:
-            tw = 0.85 + 0.15 * math.sin(max(0.0, tg - STILL) * (0.6 + ph) + ph * 9)
-            col = mix(WIN_OFF, mix(WIN_ON, WIN_COOL, ph), tw * dim)
-        d.rectangle((sx0, sy0, sx1, sy1), fill=mix(FACE, col, m))
+            tw = 0.88 + 0.12 * math.sin(max(0.0, tg - STILL) * (0.6 + ph) + ph * 9) if live else 1.0
+            c = mix(mix(face, (8, 10, 18), 0.5), col, tw * (1.0 if b["name"] else 0.64))
+        d.rectangle((sx0, sy0, sx1, sy1), fill=mix(face, c, m))
     if beacon > 0:   # a red light on the roof: something here is wrong, and you just found out
         bx, by = (x0 + x1) / 2, (y0 + y1) / 2
         blink = 0.55 + 0.45 * math.sin(tg * 9)
-        S.put_sprite(img, S.GLOW_W, bx, by, scale=0.7 * max(0.6, s * 1.6), alpha=beacon * blink)
-        r = 9 * max(0.8, s * 1.4)
+        S.put_sprite(img, S.GLOW_W, bx, by, scale=0.7 * max(0.6, k * 1.6), alpha=beacon * blink)
+        r = 9 * max(0.8, k * 1.4)
         d.ellipse((bx - r, by - r, bx + r, by + r), fill=WARN, outline=(255, 220, 220), width=2)
+
+
+def draw_ground_layer(img, T, k):
+    """Streets, sidewalks, lane lines, crosswalks, parks and car parks: everything under the buildings."""
+    d = ImageDraw.Draw(img, "RGBA")
+    for by in range(CITY_Y0, CITY_H, BLOCK):
+        for bx in range(CITY_X0, CITY_W, BLOCK):
+            a = T(bx + ST / 2, by + ST / 2)
+            b = T(bx + BLOCK - ST / 2, by + BLOCK - ST / 2)
+            d.rectangle((*a, *b), fill=SIDEWALK)
+            a2 = T(bx + ST / 2 + 8, by + ST / 2 + 8)
+            b2 = T(bx + BLOCK - ST / 2 - 8, by + BLOCK - ST / 2 - 8)
+            d.rectangle((*a2, *b2), fill=LOT_IN)
+    for kind, (x0, y0, x1, y1), seed in PARKS:
+        rnd = random.Random(int(seed * 1e6))
+        a, b = T(x0, y0), T(x1, y1)
+        if kind == "park":
+            d.rectangle((*a, *b), fill=(13, 27, 21))
+            pa, pb = T(x0, (y0 + y1) / 2), T(x1, (y0 + y1) / 2)
+            d.line((*pa, *pb), fill=(36, 38, 42), width=max(1, int(6 * k)))
+            pa, pb = T(x0, y0), T(x1, y1)
+            d.line((*pa, *pb), fill=(36, 38, 42), width=max(1, int(5 * k)))
+            for _ in range(46):
+                tx, ty, r = rnd.uniform(x0 + 10, x1 - 10), rnd.uniform(y0 + 10, y1 - 10), rnd.uniform(9, 20)
+                cx, cy = T(tx, ty)
+                d.ellipse((cx - r * k, cy - r * k, cx + r * k, cy + r * k), fill=(15, 36, 24))
+                d.ellipse((cx - r * k * 0.5, cy - r * k * 0.7, cx + r * k * 0.1, cy - r * k * 0.1), fill=(24, 50, 33))
+        else:
+            d.rectangle((*a, *b), fill=(20, 22, 30))
+            for row in range(3):
+                yy = y0 + 20 + row * (y1 - y0 - 40) / 2.6
+                for col in range(12):
+                    xx = x0 + 12 + col * (x1 - x0 - 24) / 12
+                    p, q = T(xx, yy), T(xx, yy + 36)
+                    d.line((*p, *q), fill=(52, 54, 64), width=max(1, int(1.5 * k)))
+                    if rnd.random() < 0.45:
+                        cx, cy = T(xx + 4, yy + 6)
+                        d.rectangle((cx, cy, cx + 12 * k, cy + 22 * k), fill=rnd.choice(((60, 62, 74), (44, 50, 70), (70, 52, 50), (80, 80, 88))))
+    for kx in range(CITY_X0, CITY_W + 1, BLOCK):    # lane dashes down the middle of each street
+        for v in range(CITY_Y0, CITY_H, 40):
+            p, q = T(kx - ST / 2 + ST / 2 - 1, v), T(kx + 1, v + 18)
+            p = T(kx - 1, v)
+            d.rectangle((p[0], p[1], p[0] + max(1, 2 * k), p[1] + 18 * k), fill=(64, 58, 40))
+    for ky in range(CITY_Y0, CITY_H + 1, BLOCK):
+        for u in range(CITY_X0, CITY_W, 40):
+            p = T(u, ky - 1)
+            d.rectangle((p[0], p[1], p[0] + 18 * k, p[1] + max(1, 2 * k)), fill=(64, 58, 40))
+    for kx in range(CITY_X0, CITY_W + 1, BLOCK):    # crosswalks at each corner
+        for ky in range(CITY_Y0, CITY_H + 1, BLOCK):
+            for i in range(5):
+                p = T(kx - ST / 2 + 8 + i * 9, ky + ST / 2 + 2)
+                d.rectangle((p[0], p[1], p[0] + 5 * k, p[1] + 10 * k), fill=(48, 50, 62))
+                p = T(kx + ST / 2 + 2, ky - ST / 2 + 8 + i * 9)
+                d.rectangle((p[0], p[1], p[0] + 10 * k, p[1] + 5 * k), fill=(48, 50, 62))
+
+
+def _light_layer(size, T, k, buildings):
+    """Additive night light: pools under the streetlights, spill from lit windows, and a warm haze over downtown."""
+    lw, lh = size[0] // 4, size[1] // 4
+    lay = Image.new("RGB", (lw, lh), (0, 0, 0))
+    d = ImageDraw.Draw(lay)
+    for X, Y in LAMPS:
+        x, y = T(X, Y)
+        r = 34 * k / 4
+        d.ellipse((x / 4 - r, y / 4 - r, x / 4 + r, y / 4 + r), fill=(78, 54, 26))
+    for b in buildings:
+        lit_share = sum(1 for wn in b["win"] if wn[4]) / max(1, len(b["win"]))
+        x0, _ = T(b["x"], 0)
+        x1, y2 = T(b["x"] + b["w"], b["y"] + b["d"] + b["h"])
+        a = int(46 * lit_share)
+        d.ellipse((x0 / 4 - 4, y2 / 4 - 3, x1 / 4 + 4, y2 / 4 + 10 * k), fill=(a, int(a * 0.7), int(a * 0.4)))
+    cx, cy = T(*DOWNTOWN)
+    d.ellipse((cx / 4 - 1100 * k / 4, cy / 4 - 1000 * k / 4, cx / 4 + 1100 * k / 4, cy / 4 + 1300 * k / 4), fill=(14, 11, 12))
+    lay = lay.filter(ImageFilter.GaussianBlur(int(max(2, 10 * k))))
+    return lay.resize(size, Image.BILINEAR)
+
+
+BAKE_K = 1.1
+_bake = {}
+
+
+def bake():
+    """The still city: ground, light and every building but the four that act. Drawn once, then filmed by the camera."""
+    if "city" in _bake:
+        return _bake
+    size = (int((BX1 - BX0) * BAKE_K), int((BY1 - BY0) * BAKE_K))
+
+    def T(X, Y):
+        return (X - BX0) * BAKE_K, (Y - BY0) * BAKE_K
+
+    g = Image.new("RGB", size, ASPHALT)
+    draw_ground_layer(g, T, BAKE_K)
+    light = _light_layer(size, T, BAKE_K, FILLERS)
+    ga = np.asarray(g).astype(np.int16)
+    lit_ground = Image.fromarray(np.clip(ga + np.asarray(light).astype(np.int16), 0, 255).astype(np.uint8))
+    d = ImageDraw.Draw(lit_ground, "RGBA")
+    r = max(1.5, 3.0 * BAKE_K)
+    for X, Y in LAMPS:
+        x, y = T(X, Y)
+        d.ellipse((x - r, y - r, x + r, y + r), fill=LAMP)
+    city = lit_ground.copy()
+    d = ImageDraw.Draw(city, "RGBA")
+    for b in FILLERS:
+        draw_bldg(city, d, b, T, BAKE_K, 0.0, live=False)
+    haze = Image.new("RGB", size, (30, 34, 58))   # distance: the far (upper) city sinks into haze
+    mask = np.zeros((size[1], size[0]), np.uint8)
+    yy = np.linspace(0, 1, size[1])
+    mask[:] = (np.clip(1 - (yy - 0.0) / 0.35, 0, 1) * 70).astype(np.uint8)[:, None]
+    city = Image.composite(haze, city, Image.fromarray(mask))
+    _bake.update(city=city, ground=lit_ground, size=size)
+    return _bake
+
+
+def film(layer, c):
+    """What the camera sees of a baked layer."""
+    cx, cy, s = c
+    X0, Y0 = cx - W / 2 / s, cy - H / 2 / s
+    X1, Y1 = cx + W / 2 / s, cy + H / 2 / s
+    box = ((X0 - BX0) * BAKE_K, (Y0 - BY0) * BAKE_K, (X1 - BX0) * BAKE_K, (Y1 - BY0) * BAKE_K)
+    k = s / BAKE_K
+    return layer.resize((W, H), Image.BOX if k < 1 else Image.BILINEAR, box=box, reducing_gap=None)
+
+
+def draw_life(img, c, tg):
+    """What moves on top of the still city: headlights, windows switching on and off, tower beacons."""
+    d = ImageDraw.Draw(img, "RGBA")
+    s = c[2]
+    live = max(0.0, tg - STILL)
+    for vertical, line, dirn, start, speed in CARS:
+        span = (CITY_H - CITY_Y0) if vertical else (CITY_W - CITY_X0)
+        pos = ((start + dirn * speed * live) % span) + (CITY_Y0 if vertical else CITY_X0)
+        X, Y = (line, pos) if vertical else (pos, line)
+        x, y = to_s(c, X, Y)
+        if not (-20 < x < W + 20 and -20 < y < H + 20):
+            continue
+        r = max(1.3, 2.6 * s)
+        S.put_sprite(img, S.HALO, x, y, scale=0.11 * max(0.6, s * 1.5), alpha=0.55)
+        if vertical:
+            fy = y + dirn * 6 * s
+            d.ellipse((x - r * 2.2, fy - r, x - r * 0.2, fy + r), fill=(255, 244, 220, 255))
+            d.ellipse((x + r * 0.2, fy - r, x + r * 2.2, fy + r), fill=(255, 244, 220, 255))
+        else:
+            fx = x + dirn * 6 * s
+            d.ellipse((fx - r, y - r * 2.2, fx + r, y - r * 0.2), fill=(255, 244, 220, 255))
+            d.ellipse((fx - r, y + r * 0.2, fx + r, y + r * 2.2), fill=(255, 244, 220, 255))
+    for (wx, wy, ww, wh, on, thr, ph, col), period, off, style in TWINKLE:
+        state = int((live + off) / period) % 2 == 0
+        x0, y0 = to_s(c, wx, wy)
+        if -10 < x0 < W + 10 and -10 < y0 < H + 10:
+            d.rectangle((x0, y0, x0 + ww * s, y0 + wh * s), fill=(col if state else (14, 16, 26)) + (255,))
+    for b in BEACONS:
+        blink = 1 if (live * 0.7 + b["ph"]) % 1.6 < 0.25 else 0
+        if blink:
+            x, y = to_s(c, b["x"] + b["w"] / 2, b["y"] + b["d"] / 2)
+            S.put_sprite(img, S.HALO, x, y, scale=0.16, alpha=0.9)
+            d.ellipse((x - 3, y - 3, x + 3, y + 3), fill=(255, 250, 240, 255))
 
 
 def draw_wire(img, d, c, pts, col, width, alpha=1.0, p=1.0, glow=0.0):
@@ -416,22 +644,35 @@ def frame(tg, st):
     """st: the state of the story at this moment (see the scene functions)."""
     c = cam(tg)
     m = st.get("m", 1.0)
-    img = Image.new("RGB", (W, H), NIGHT)
-    d = ImageDraw.Draw(img, "RGBA")
-    gx0, gy0 = to_s(c, CITY_X0 - 400, CITY_Y0 - 400)
-    gx1, gy1 = to_s(c, CITY_W + 400, CITY_H + 400)
-    d.rectangle((gx0, gy0, gx1, gy1), fill=GROUND)
-    draw_ground(d, c, tg, m)
+    s = c[2]
+
+    def T(X, Y):
+        return to_s(c, X, Y)
+
+    B = bake()
     net_grey, net = st.get("net_grey", 0.0), st.get("network", 0.0)
-    if net_grey > 0.01:   # the opening map's links, under the cards
-        for p, q, _ in NETWORK:
-            a, b = to_s(c, *p), to_s(c, *q)
-            d.line((*a, *b), fill=MAP_EDGE + (int(150 * net_grey),), width=2)
     lit, glows, beacons = st.get("lit", {}), st.get("glow", {}), st.get("beacon", {})
     pp = st.get("card_purple", 0.0)
-    for b in BUILDINGS:
-        n = b["name"]
-        draw_building(img, d, b, c, tg, m=m, lit=lit.get(n, 1.0), glow=glows.get(n), beacon=beacons.get(n, 0.0), purple=pp)
+    if m >= 0.999:
+        img = film(B["city"], c)
+    else:   # the flat map, rising into the city (or flattening back into the map at the end)
+        img = Image.new("RGB", (W, H), NIGHT)
+        if m > 0.01:
+            img = Image.blend(img, film(B["ground"], c), clamp(m * 1.3))
+        d = ImageDraw.Draw(img, "RGBA")
+        if net_grey > 0.01:   # the opening map's links, under the cards
+            for p, q, _ in NETWORK:
+                d.line((*T(*p), *T(*q)), fill=MAP_EDGE + (int(150 * net_grey),), width=2)
+        for b in FILLERS:
+            draw_bldg(img, d, b, T, s, tg, m=m, purple=pp)
+        fade = smooth((m - 0.8) / 0.2)
+        if fade > 0:
+            img = Image.blend(img, film(B["city"], c), fade)
+    if m > 0.95:
+        draw_life(img, c, tg)
+    d = ImageDraw.Draw(img, "RGBA")
+    for n in [TOP] + KIDS:
+        draw_bldg(img, d, BY_NAME[n], T, s, tg, m=m, lit=lit.get(n, 1.0), glow=glows.get(n), beacon=beacons.get(n, 0.0), purple=pp)
     d = ImageDraw.Draw(img, "RGBA")
     if net > 0:
         for p, q, at in NETWORK:
@@ -447,8 +688,10 @@ def frame(tg, st):
         wa = st.get("wire", {}).get(k, 0.0)
         purple = st.get("purple", {}).get(k, 0.0)
         if wa > 0:
-            col = mix(mix(MAP_EDGE, WIRE, m), DANDY_HI, purple)
-            draw_wire(img, d, c, wire_pts(k, m), col, max(2, 4 * c[2] + 1.5 * purple), alpha=1.0, p=wa, glow=purple + st.get("hot", {}).get(k, 0))
+            col = mix(mix(MAP_EDGE, (150, 158, 186), m), DANDY_HI, purple)
+            if purple < 0.99:
+                draw_wire(img, d, c, wire_pts(k, m), (4, 5, 10), max(5, 9 * c[2]), alpha=0.8 * (1 - purple), p=wa)
+            draw_wire(img, d, c, wire_pts(k, m), col, max(3, 5 * c[2] + 1.5 * purple), alpha=1.0, p=wa, glow=purple + st.get("hot", {}).get(k, 0))
     for k, u in st.get("pulses", []):
         pulse(img, c, *along(wire_pts(k, m), u))
     for k in KIDS:

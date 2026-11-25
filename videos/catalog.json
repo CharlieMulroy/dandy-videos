@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-23",
+  "updated": "2026-11-24",
   "videos": [
     {
       "number": "01",
@@ -290,6 +290,24 @@
         "links": {}
       },
       "notes": "Charlie recorded the v2 narration with his music on Nov 23 (voiceover/cutaway.json, word times from a forced alignment). His track is delayed 4.4 s so the morning text-fight hook and the rewind play with only their chimes. Final render Nov 23: 44.3 s, beats retimed to the read (barrier on 'Dandy stopped it', magnifier on 'a different agent reviews it'), end card after 'One map.' through the music fade, audio at -16 LUFS, checks pass. Not in Drive (too large for the connector); not posted."
+    },
+    {
+      "number": "16",
+      "slug": "16-one-small-change",
+      "title": "One Small Change",
+      "kind": "informational",
+      "look": "Void Stage",
+      "script_path": "videos/16-one-small-change/script.md",
+      "renderer_path": "videos/16-one-small-change/render_change.py",
+      "duration_s": 44.0,
+      "script_status": "draft",
+      "narration_status": "pending",
+      "render_status": "preview",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      },
+      "notes": "Propagation, the Dandy-specific version (Charlie's pick Nov 24 over a general-concept one). Draft v1 script and first 30 fps render made Nov 24 at placeholder timing with the scratch sound bed; checks pass. Waiting on Charlie's notes, a read from Nick on the mechanics, then narration. Not in Drive."
     }
   ]
 }

@@ -1,0 +1,1221 @@
+{
+ "file": "videos/17-thanksgiving/voiceover/charlie-with-music.wav",
+ "mixed": true,
+ "offset_s": 0.0,
+ "voice_db": 6.0,
+ "bed_db": -13,
+ "fade_out": [
+  60.0,
+  1.5
+ ],
+ "note": "Charlie's export 'Thanksgiving.wav' (Nov 26): fast narration with his music, mono 44.1 kHz, 61.52 s. He recorded before any visuals existed and reworded the draft as he went, so the words were transcribed first (whisper small.en through sherpa-onnx, model from the sherpa-onnx GitHub releases) and then timed with pocketsphinx forced alignment in short stretches (voiceover/align_segments.py with segments.txt); one stretch (33.4 to 36.3 s) would not align and is timed by hand from its pauses. Speech 0.95 to 57.3 s; music runs on to the end with no fade, so it is faded over the last 1.5 s. Export measures -24 LUFS with peaks at 0 dB, so +6 dB into the limiter.",
+ "durations": {
+  "hook": 7.45,
+  "year": 1.67,
+  "dinner": 2.7,
+  "labels": 5.6,
+  "forget": 3.63,
+  "q_turkey": 1.15,
+  "q_corn": 0.66,
+  "q_pot": 1.59,
+  "pots": 2.0,
+  "platter": 0.95,
+  "moved": 1.85,
+  "pie": 2.15,
+  "scroll": 4.88,
+  "use": 7.02,
+  "change": 6.45,
+  "feast": 3.4,
+  "outro": 4.35,
+  "end": 4.02
+ },
+ "lines": [
+  [
+   0.95,
+   1.81,
+   "Okay, follow along"
+  ],
+  [
+   1.81,
+   2.89,
+   "while I explain our product"
+  ],
+  [
+   2.89,
+   4.25,
+   "using a Thanksgiving metaphor."
+  ],
+  [
+   4.44,
+   5.99,
+   "My cofounder did not approve this,"
+  ],
+  [
+   5.99,
+   7.32,
+   "but I'm gonna do it anyway."
+  ],
+  [
+   7.55,
+   8.9,
+   "So, the year 1621."
+  ],
+  [
+   9.21,
+   9.96,
+   "The pilgrims are making"
+  ],
+  [
+   9.96,
+   11.59,
+   "their first ever Thanksgiving dinner."
+  ],
+  [
+   11.9,
+   13.6,
+   "The feast represents your project."
+  ],
+  [
+   13.6,
+   15.3,
+   "The pilgrims are your AI agents."
+  ],
+  [
+   15.3,
+   16.48,
+   "They're hard workers."
+  ],
+  [
+   16.48,
+   17.34,
+   "Extremely fast."
+  ],
+  [
+   17.5,
+   18.41,
+   "However, one problem is that"
+  ],
+  [
+   18.41,
+   19.65,
+   "every morning they wake up"
+  ],
+  [
+   19.65,
+   20.69,
+   "and forget everything."
+  ],
+  [
+   21.14,
+   22.1,
+   "Who's catching the turkey?"
+  ],
+  [
+   22.28,
+   22.93,
+   "Who's on corn?"
+  ],
+  [
+   22.93,
+   24.06,
+   "What's already cooking?"
+  ],
+  [
+   24.55,
+   25.25,
+   "So you end up with"
+  ],
+  [
+   25.25,
+   26.24,
+   "three pots of corn,"
+  ],
+  [
+   26.53,
+   27.46,
+   "you have no turkey,"
+  ],
+  [
+   27.46,
+   28.11,
+   "and somebody moved"
+  ],
+  [
+   28.11,
+   29.03,
+   "the feast up a day,"
+  ],
+  [
+   29.32,
+   30.85,
+   "and nobody told the guy with the pie."
+  ],
+  [
+   31.52,
+   32.42,
+   "Dandy's the scroll"
+  ],
+  [
+   32.42,
+   33.34,
+   "that's nailed to the wall."
+  ],
+  [
+   33.43,
+   34.4,
+   "It holds every dish,"
+  ],
+  [
+   34.45,
+   35.43,
+   "who's on it, what it needs,"
+  ],
+  [
+   35.59,
+   36.26,
+   "what's already done."
+  ],
+  [
+   36.3,
+   39.12,
+   "Before they cook anything,"
+  ],
+  [
+   39.12,
+   40.3,
+   "every pilgrim checks it."
+  ],
+  [
+   40.3,
+   42.13,
+   "And after any task they finish,"
+  ],
+  [
+   42.25,
+   42.87,
+   "they update it."
+  ],
+  [
+   43.38,
+   44.62,
+   "So if the feast gets moved again,"
+  ],
+  [
+   44.62,
+   45.68,
+   "they are all aware."
+  ],
+  [
+   45.68,
+   47.73,
+   "And if you run out of any ingredient,"
+  ],
+  [
+   47.73,
+   49.05,
+   "every dish that depends on it"
+  ],
+  [
+   49.05,
+   49.65,
+   "gets flagged."
+  ],
+  [
+   50.05,
+   51.2,
+   "It's the same pilgrims,"
+  ],
+  [
+   51.29,
+   52.72,
+   "but the feast actually happens."
+  ],
+  [
+   53.26,
+   54.32,
+   "Is this metaphor perfect?"
+  ],
+  [
+   54.71,
+   55.03,
+   "No."
+  ],
+  [
+   55.03,
+   56.21,
+   "But Happy Thanksgiving."
+  ],
+  [
+   56.57,
+   57.27,
+   "Go try Dandy."
+  ]
+ ],
+ "words": [
+  {
+   "word": "okay",
+   "start": 0.95,
+   "end": 1.23
+  },
+  {
+   "word": "follow",
+   "start": 1.41,
+   "end": 1.57
+  },
+  {
+   "word": "along",
+   "start": 1.57,
+   "end": 1.81
+  },
+  {
+   "word": "while",
+   "start": 1.81,
+   "end": 1.93
+  },
+  {
+   "word": "i",
+   "start": 1.93,
+   "end": 2.01
+  },
+  {
+   "word": "explain",
+   "start": 2.01,
+   "end": 2.39
+  },
+  {
+   "word": "our",
+   "start": 2.39,
+   "end": 2.46
+  },
+  {
+   "word": "product",
+   "start": 2.46,
+   "end": 2.89
+  },
+  {
+   "word": "using",
+   "start": 2.89,
+   "end": 3.2
+  },
+  {
+   "word": "a",
+   "start": 3.2,
+   "end": 3.31
+  },
+  {
+   "word": "thanksgiving",
+   "start": 3.31,
+   "end": 3.74
+  },
+  {
+   "word": "metaphor",
+   "start": 3.74,
+   "end": 4.25
+  },
+  {
+   "word": "my",
+   "start": 4.44,
+   "end": 4.55
+  },
+  {
+   "word": "cofounder",
+   "start": 4.55,
+   "end": 5.01
+  },
+  {
+   "word": "did",
+   "start": 5.01,
+   "end": 5.26
+  },
+  {
+   "word": "not",
+   "start": 5.26,
+   "end": 5.52
+  },
+  {
+   "word": "approve",
+   "start": 5.52,
+   "end": 5.79
+  },
+  {
+   "word": "this",
+   "start": 5.79,
+   "end": 5.99
+  },
+  {
+   "word": "but",
+   "start": 5.99,
+   "end": 6.45
+  },
+  {
+   "word": "i'm",
+   "start": 6.45,
+   "end": 6.61
+  },
+  {
+   "word": "gonna",
+   "start": 6.61,
+   "end": 6.75
+  },
+  {
+   "word": "do",
+   "start": 6.75,
+   "end": 6.89
+  },
+  {
+   "word": "it",
+   "start": 6.89,
+   "end": 6.95
+  },
+  {
+   "word": "anyway",
+   "start": 6.95,
+   "end": 7.32
+  },
+  {
+   "word": "so",
+   "start": 7.55,
+   "end": 7.7
+  },
+  {
+   "word": "the",
+   "start": 7.7,
+   "end": 7.78
+  },
+  {
+   "word": "year",
+   "start": 7.78,
+   "end": 7.99
+  },
+  {
+   "word": "sixteen",
+   "start": 7.99,
+   "end": 8.47
+  },
+  {
+   "word": "twenty",
+   "start": 8.47,
+   "end": 8.7
+  },
+  {
+   "word": "one",
+   "start": 8.7,
+   "end": 8.9
+  },
+  {
+   "word": "the",
+   "start": 9.21,
+   "end": 9.29
+  },
+  {
+   "word": "pilgrims",
+   "start": 9.29,
+   "end": 9.72
+  },
+  {
+   "word": "are",
+   "start": 9.72,
+   "end": 9.75
+  },
+  {
+   "word": "making",
+   "start": 9.75,
+   "end": 9.96
+  },
+  {
+   "word": "their",
+   "start": 9.96,
+   "end": 10.07
+  },
+  {
+   "word": "first",
+   "start": 10.07,
+   "end": 10.44
+  },
+  {
+   "word": "ever",
+   "start": 10.44,
+   "end": 10.74
+  },
+  {
+   "word": "thanksgiving",
+   "start": 10.74,
+   "end": 11.26
+  },
+  {
+   "word": "dinner",
+   "start": 11.26,
+   "end": 11.59
+  },
+  {
+   "word": "the",
+   "start": 11.9,
+   "end": 11.97
+  },
+  {
+   "word": "feast",
+   "start": 11.97,
+   "end": 12.28
+  },
+  {
+   "word": "represents",
+   "start": 12.28,
+   "end": 12.67
+  },
+  {
+   "word": "your",
+   "start": 12.67,
+   "end": 12.81
+  },
+  {
+   "word": "project",
+   "start": 12.81,
+   "end": 13.6
+  },
+  {
+   "word": "the",
+   "start": 13.6,
+   "end": 13.66
+  },
+  {
+   "word": "pilgrims",
+   "start": 13.66,
+   "end": 14.17
+  },
+  {
+   "word": "are",
+   "start": 14.17,
+   "end": 14.24
+  },
+  {
+   "word": "your",
+   "start": 14.24,
+   "end": 14.39
+  },
+  {
+   "word": "a",
+   "start": 14.39,
+   "end": 14.58
+  },
+  {
+   "word": "i",
+   "start": 14.58,
+   "end": 14.76
+  },
+  {
+   "word": "agents",
+   "start": 14.76,
+   "end": 15.3
+  },
+  {
+   "word": "they're",
+   "start": 15.3,
+   "end": 15.74
+  },
+  {
+   "word": "hard",
+   "start": 15.74,
+   "end": 15.97
+  },
+  {
+   "word": "workers",
+   "start": 15.97,
+   "end": 16.48
+  },
+  {
+   "word": "extremely",
+   "start": 16.48,
+   "end": 16.9
+  },
+  {
+   "word": "fast",
+   "start": 16.9,
+   "end": 17.34
+  },
+  {
+   "word": "however",
+   "start": 17.5,
+   "end": 17.74
+  },
+  {
+   "word": "one",
+   "start": 17.74,
+   "end": 17.87
+  },
+  {
+   "word": "problem",
+   "start": 17.87,
+   "end": 18.16
+  },
+  {
+   "word": "is",
+   "start": 18.16,
+   "end": 18.25
+  },
+  {
+   "word": "that",
+   "start": 18.25,
+   "end": 18.41
+  },
+  {
+   "word": "every",
+   "start": 18.41,
+   "end": 18.71
+  },
+  {
+   "word": "morning",
+   "start": 18.71,
+   "end": 19.09
+  },
+  {
+   "word": "they",
+   "start": 19.09,
+   "end": 19.2
+  },
+  {
+   "word": "wake",
+   "start": 19.2,
+   "end": 19.46
+  },
+  {
+   "word": "up",
+   "start": 19.46,
+   "end": 19.65
+  },
+  {
+   "word": "and",
+   "start": 19.65,
+   "end": 19.88
+  },
+  {
+   "word": "forget",
+   "start": 19.88,
+   "end": 20.23
+  },
+  {
+   "word": "everything",
+   "start": 20.23,
+   "end": 20.69
+  },
+  {
+   "word": "who's",
+   "start": 21.14,
+   "end": 21.34
+  },
+  {
+   "word": "catching",
+   "start": 21.34,
+   "end": 21.63
+  },
+  {
+   "word": "the",
+   "start": 21.63,
+   "end": 21.71
+  },
+  {
+   "word": "turkey",
+   "start": 21.71,
+   "end": 22.1
+  },
+  {
+   "word": "who's",
+   "start": 22.28,
+   "end": 22.49
+  },
+  {
+   "word": "on",
+   "start": 22.49,
+   "end": 22.63
+  },
+  {
+   "word": "corn",
+   "start": 22.63,
+   "end": 22.93
+  },
+  {
+   "word": "what's",
+   "start": 22.93,
+   "end": 23.37
+  },
+  {
+   "word": "already",
+   "start": 23.37,
+   "end": 23.68
+  },
+  {
+   "word": "cooking",
+   "start": 23.68,
+   "end": 24.06
+  },
+  {
+   "word": "so",
+   "start": 24.55,
+   "end": 24.69
+  },
+  {
+   "word": "you",
+   "start": 24.69,
+   "end": 24.79
+  },
+  {
+   "word": "end",
+   "start": 24.79,
+   "end": 24.96
+  },
+  {
+   "word": "up",
+   "start": 24.96,
+   "end": 25.06
+  },
+  {
+   "word": "with",
+   "start": 25.06,
+   "end": 25.25
+  },
+  {
+   "word": "three",
+   "start": 25.25,
+   "end": 25.45
+  },
+  {
+   "word": "pots",
+   "start": 25.45,
+   "end": 25.73
+  },
+  {
+   "word": "of",
+   "start": 25.73,
+   "end": 25.82
+  },
+  {
+   "word": "corn",
+   "start": 25.82,
+   "end": 26.24
+  },
+  {
+   "word": "you",
+   "start": 26.53,
+   "end": 26.64
+  },
+  {
+   "word": "have",
+   "start": 26.64,
+   "end": 26.87
+  },
+  {
+   "word": "no",
+   "start": 26.87,
+   "end": 27.0
+  },
+  {
+   "word": "turkey",
+   "start": 27.0,
+   "end": 27.46
+  },
+  {
+   "word": "and",
+   "start": 27.46,
+   "end": 27.56
+  },
+  {
+   "word": "somebody",
+   "start": 27.56,
+   "end": 27.86
+  },
+  {
+   "word": "moved",
+   "start": 27.86,
+   "end": 28.11
+  },
+  {
+   "word": "the",
+   "start": 28.11,
+   "end": 28.17
+  },
+  {
+   "word": "feast",
+   "start": 28.17,
+   "end": 28.47
+  },
+  {
+   "word": "up",
+   "start": 28.47,
+   "end": 28.65
+  },
+  {
+   "word": "a",
+   "start": 28.65,
+   "end": 28.68
+  },
+  {
+   "word": "day",
+   "start": 28.68,
+   "end": 29.03
+  },
+  {
+   "word": "and",
+   "start": 29.32,
+   "end": 29.46
+  },
+  {
+   "word": "nobody",
+   "start": 29.46,
+   "end": 29.94
+  },
+  {
+   "word": "told",
+   "start": 29.94,
+   "end": 30.18
+  },
+  {
+   "word": "the",
+   "start": 30.18,
+   "end": 30.24
+  },
+  {
+   "word": "guy",
+   "start": 30.24,
+   "end": 30.4
+  },
+  {
+   "word": "with",
+   "start": 30.4,
+   "end": 30.51
+  },
+  {
+   "word": "the",
+   "start": 30.51,
+   "end": 30.57
+  },
+  {
+   "word": "pie",
+   "start": 30.57,
+   "end": 30.85
+  },
+  {
+   "word": "dandy",
+   "start": 31.52,
+   "end": 31.87
+  },
+  {
+   "word": "the",
+   "start": 31.87,
+   "end": 32.01
+  },
+  {
+   "word": "scroll",
+   "start": 32.01,
+   "end": 32.42
+  },
+  {
+   "word": "that's",
+   "start": 32.42,
+   "end": 32.6
+  },
+  {
+   "word": "nailed",
+   "start": 32.6,
+   "end": 32.86
+  },
+  {
+   "word": "to",
+   "start": 32.86,
+   "end": 32.95
+  },
+  {
+   "word": "the",
+   "start": 32.95,
+   "end": 33.03
+  },
+  {
+   "word": "wall",
+   "start": 33.03,
+   "end": 33.34
+  },
+  {
+   "word": "it",
+   "start": 33.43,
+   "end": 33.55
+  },
+  {
+   "word": "holds",
+   "start": 33.55,
+   "end": 33.8
+  },
+  {
+   "word": "every",
+   "start": 33.8,
+   "end": 34.05
+  },
+  {
+   "word": "dish",
+   "start": 34.05,
+   "end": 34.4
+  },
+  {
+   "word": "who's",
+   "start": 34.45,
+   "end": 34.6
+  },
+  {
+   "word": "on",
+   "start": 34.6,
+   "end": 34.72
+  },
+  {
+   "word": "it",
+   "start": 34.72,
+   "end": 34.85
+  },
+  {
+   "word": "what",
+   "start": 34.9,
+   "end": 35.03
+  },
+  {
+   "word": "it",
+   "start": 35.03,
+   "end": 35.12
+  },
+  {
+   "word": "needs",
+   "start": 35.12,
+   "end": 35.43
+  },
+  {
+   "word": "what's",
+   "start": 35.59,
+   "end": 35.78
+  },
+  {
+   "word": "already",
+   "start": 35.78,
+   "end": 36.02
+  },
+  {
+   "word": "done",
+   "start": 36.02,
+   "end": 36.26
+  },
+  {
+   "word": "before",
+   "start": 36.3,
+   "end": 36.77
+  },
+  {
+   "word": "they",
+   "start": 36.77,
+   "end": 36.93
+  },
+  {
+   "word": "cook",
+   "start": 36.93,
+   "end": 37.32
+  },
+  {
+   "word": "anything",
+   "start": 38.09,
+   "end": 39.12
+  },
+  {
+   "word": "every",
+   "start": 39.12,
+   "end": 39.37
+  },
+  {
+   "word": "pilgrim",
+   "start": 39.37,
+   "end": 39.75
+  },
+  {
+   "word": "checks",
+   "start": 39.75,
+   "end": 40.05
+  },
+  {
+   "word": "it",
+   "start": 40.05,
+   "end": 40.3
+  },
+  {
+   "word": "and",
+   "start": 40.3,
+   "end": 40.65
+  },
+  {
+   "word": "after",
+   "start": 40.65,
+   "end": 41.02
+  },
+  {
+   "word": "any",
+   "start": 41.02,
+   "end": 41.3
+  },
+  {
+   "word": "task",
+   "start": 41.3,
+   "end": 41.58
+  },
+  {
+   "word": "they",
+   "start": 41.58,
+   "end": 41.67
+  },
+  {
+   "word": "finish",
+   "start": 41.67,
+   "end": 42.13
+  },
+  {
+   "word": "they",
+   "start": 42.25,
+   "end": 42.39
+  },
+  {
+   "word": "update",
+   "start": 42.39,
+   "end": 42.73
+  },
+  {
+   "word": "it",
+   "start": 42.73,
+   "end": 42.87
+  },
+  {
+   "word": "so",
+   "start": 43.38,
+   "end": 43.51
+  },
+  {
+   "word": "if",
+   "start": 43.51,
+   "end": 43.57
+  },
+  {
+   "word": "the",
+   "start": 43.57,
+   "end": 43.64
+  },
+  {
+   "word": "feast",
+   "start": 43.64,
+   "end": 43.93
+  },
+  {
+   "word": "gets",
+   "start": 43.93,
+   "end": 44.09
+  },
+  {
+   "word": "moved",
+   "start": 44.09,
+   "end": 44.34
+  },
+  {
+   "word": "again",
+   "start": 44.34,
+   "end": 44.62
+  },
+  {
+   "word": "they",
+   "start": 44.62,
+   "end": 44.94
+  },
+  {
+   "word": "are",
+   "start": 44.94,
+   "end": 45.05
+  },
+  {
+   "word": "all",
+   "start": 45.05,
+   "end": 45.32
+  },
+  {
+   "word": "aware",
+   "start": 45.32,
+   "end": 45.68
+  },
+  {
+   "word": "and",
+   "start": 45.68,
+   "end": 46.14
+  },
+  {
+   "word": "if",
+   "start": 46.14,
+   "end": 46.23
+  },
+  {
+   "word": "you",
+   "start": 46.23,
+   "end": 46.39
+  },
+  {
+   "word": "run",
+   "start": 46.39,
+   "end": 46.63
+  },
+  {
+   "word": "out",
+   "start": 46.63,
+   "end": 46.81
+  },
+  {
+   "word": "of",
+   "start": 46.81,
+   "end": 46.87
+  },
+  {
+   "word": "any",
+   "start": 46.87,
+   "end": 47.09
+  },
+  {
+   "word": "ingredient",
+   "start": 47.09,
+   "end": 47.73
+  },
+  {
+   "word": "every",
+   "start": 47.73,
+   "end": 48.01
+  },
+  {
+   "word": "dish",
+   "start": 48.01,
+   "end": 48.28
+  },
+  {
+   "word": "that",
+   "start": 48.28,
+   "end": 48.4
+  },
+  {
+   "word": "depends",
+   "start": 48.4,
+   "end": 48.74
+  },
+  {
+   "word": "on",
+   "start": 48.74,
+   "end": 48.91
+  },
+  {
+   "word": "it",
+   "start": 48.91,
+   "end": 49.05
+  },
+  {
+   "word": "gets",
+   "start": 49.05,
+   "end": 49.28
+  },
+  {
+   "word": "flagged",
+   "start": 49.28,
+   "end": 49.65
+  },
+  {
+   "word": "it's",
+   "start": 50.05,
+   "end": 50.21
+  },
+  {
+   "word": "the",
+   "start": 50.21,
+   "end": 50.31
+  },
+  {
+   "word": "same",
+   "start": 50.31,
+   "end": 50.59
+  },
+  {
+   "word": "pilgrims",
+   "start": 50.59,
+   "end": 51.2
+  },
+  {
+   "word": "but",
+   "start": 51.29,
+   "end": 51.39
+  },
+  {
+   "word": "the",
+   "start": 51.39,
+   "end": 51.45
+  },
+  {
+   "word": "feast",
+   "start": 51.45,
+   "end": 51.8
+  },
+  {
+   "word": "actually",
+   "start": 51.8,
+   "end": 52.2
+  },
+  {
+   "word": "happens",
+   "start": 52.2,
+   "end": 52.72
+  },
+  {
+   "word": "is",
+   "start": 53.26,
+   "end": 53.52
+  },
+  {
+   "word": "this",
+   "start": 53.52,
+   "end": 53.61
+  },
+  {
+   "word": "metaphor",
+   "start": 53.61,
+   "end": 53.86
+  },
+  {
+   "word": "perfect",
+   "start": 53.86,
+   "end": 54.32
+  },
+  {
+   "word": "no",
+   "start": 54.71,
+   "end": 55.03
+  },
+  {
+   "word": "but",
+   "start": 55.03,
+   "end": 55.45
+  },
+  {
+   "word": "happy",
+   "start": 55.45,
+   "end": 55.74
+  },
+  {
+   "word": "thanksgiving",
+   "start": 55.74,
+   "end": 56.21
+  },
+  {
+   "word": "go",
+   "start": 56.57,
+   "end": 56.73
+  },
+  {
+   "word": "try",
+   "start": 56.73,
+   "end": 56.95
+  },
+  {
+   "word": "dandy",
+   "start": 56.95,
+   "end": 57.27
+  }
+ ]
+}

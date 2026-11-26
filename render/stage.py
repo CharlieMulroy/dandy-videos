@@ -723,7 +723,7 @@ def render_video(spec, preview=False, stills=False, final=False):
     with open(os.path.join(out, f"qa-{spec['look_tag']}-vertical.json"), "w") as f:
         json.dump(dict(canvas="vertical", look=spec.get("look", "void stage"), duration=total, problems=problems,
                        checks=["check_layout", "check_copy", "check_gold", "check_end_card"],
-                       end_card="with Dandy Man", scenes=[dict(id=s, start=round(starts[s], 2), duration=d) for s, d, _ in scenes]), f, indent=2)
+                       end_card=spec.get("end_card", "with Dandy Man"), scenes=[dict(id=s, start=round(starts[s], 2), duration=d) for s, d, _ in scenes]), f, indent=2)
     if problems:
         print("QA FAILED:")
         for p in problems:

@@ -1,0 +1,11 @@
+0.5 7.5 | Okay follow along while I explain our product using a Thanksgiving metaphor my cofounder did not approve this but I'm gonna do it anyway
+7.4 11.8 | So the year sixteen twenty one the pilgrims are making their first ever Thanksgiving dinner
+11.7 17.6 | The feast represents your project the pilgrims are your A I agents they're hard workers extremely fast
+17.5 24.4 | however one problem is that every morning they wake up and forget everything who's catching the turkey who's on corn what's already cooking
+24.4 31.3 | So you end up with three pots of corn you have no turkey and somebody moved the feast up a day and nobody told the guy with the pie
+31.3 33.35 | Dandy the scroll that's nailed to the wall
+33.3 36.4 | it holds every dish who's on it what it needs what's already done
+36.3 42.2 | Before they cook anything every pilgrim checks it and after any task they finish
+42.1 49.8 | they update it so if the feast gets moved again they are all aware and if you run out of any ingredient every dish that depends on it gets flagged
+49.9 52.9 | It's the same pilgrims but the feast actually happens
+53.0 58.0 | Is this metaphor perfect no but Happy Thanksgiving go try Dandy

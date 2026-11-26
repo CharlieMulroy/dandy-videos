@@ -1,6 +1,6 @@
 {
   "note": "One row per video. Source of truth for where each video stands; mirrors the Video Catalog node in Dandy (product: Dandy Video Studio). Update when a script is approved, a render is made, narration is recorded or a video is posted. Null means not confirmed yet.",
-  "updated": "2026-11-24",
+  "updated": "2026-11-26",
   "videos": [
     {
       "number": "01",
@@ -308,6 +308,24 @@
         "links": {}
       },
       "notes": "Propagation, the Dandy-specific version (Charlie's pick Nov 24). Void Stage first draft felt too close to the older videos, so it moved to a new look like 14: City at Night, one continuous camera, purple only once Dandy appears, no Dandy Man in the scenes (end card with him). v2 (Nov 24, after Charlie said the city felt disconnected from Dandy): adds his line 'Think of your project as a city.', opens on the project map rising into the city and ends with the city flattening into Dandy's purple map, card-style name signs, column signs hung on the power lines. Placeholder timing, scratch sound bed; checks pass. Waiting on Charlie's notes, a read from Nick on the mechanics, then narration (voiceover/city.json). Not in Drive. v3 (Nov 24, after Charlie said the city didn't look full or real enough): every block filled with buildings rising from their lots (glass towers, offices lit by the floor, apartments, low-rise), corner shading and rooftop clutter, parks and car parks, sidewalks, lane lines, crosswalks, streetlight pools and window spill, haze over the far city, moving headlights, windows switching on and off, tower beacons. The still city is baked once per render. Final Nov 24: Charlie recorded the narration with his music (read as scripted); scenes and cues retimed to word times from a forced alignment (voiceover/force_align.py), voice brought up 4 dB to about -16.5 LUFS, music faded over the last 1.5 s, end card after 'Nothing caught off guard.' through the music. 43.8 s, checks pass. Not posted."
+    },
+    {
+      "number": "17",
+      "slug": "17-thanksgiving",
+      "title": "The Thanksgiving Metaphor",
+      "kind": "metaphor",
+      "look": "Plymouth 1621 (new, no Look node yet)",
+      "script_path": "videos/17-thanksgiving/script.md",
+      "renderer_path": "videos/17-thanksgiving/plymouth/render_plymouth.py",
+      "duration_s": 61.52,
+      "script_status": "approved",
+      "narration_status": "recorded",
+      "render_status": "preview",
+      "posted": {
+        "platforms": [],
+        "links": {}
+      },
+      "notes": "Thanksgiving video (Charlie's idea, Nov 26): fast, informal, pilgrims; feast = project, pilgrims = AI agents, Dandy = the scroll nailed to the wall. He recorded first with his music and reworded the draft, so the words were transcribed and aligned and the scenes cut to his read. First render Nov 26 at final quality, checks pass, about -18 LUFS. Waiting on his notes. Not in Drive."
     }
   ]
 }
